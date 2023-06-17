@@ -1,0 +1,14 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+  <div id="content-main">
+    {% block welcome-msg %}
+      <strong>{{ user }}</strong>
+    {% endblock %}
+
+    <!-- カスタムボタンの追加 -->
+    <div class="custom-button-container">
+      {% include "admin/custom_button.html" %}
+    </div>
+  </div>
+{% endblock %}

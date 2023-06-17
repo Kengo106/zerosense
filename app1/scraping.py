@@ -10,20 +10,30 @@ from webdriver_manager.chrome import ChromeDriverManager
 import pandas as  pd
 from django.db import transaction
 from .models import RaceResult, Odds
+import os
+import time
+
+# scraping.pyのディレクトリを取得
+
+
 
 def initialize_browser():
     # Chrome WebDriverのパスを指定
-    webdriver_path = "chromedriver.exe"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
+    # WebDriverのパスを指定
+    webdriver_path = os.path.join(script_dir, "chromedriver.exe")
 
     # Chromeのヘッドレスオプションを設定する
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')
+    #chrome_options = Options()
+    #chrome_options.add_argument('--headless')
 
     # Serviceオブジェクトを作成
     service = Service(webdriver_path)
 
     # Chromeを起動
-    browser = webdriver.Chrome(service=service, options=chrome_options)
+    #browser = webdriver.Chrome(service=service, options=chrome_options)
+    browser = webdriver.Chrome(service=service)
 
     return browser
 
@@ -41,6 +51,8 @@ def scrape_race_results(browser):
     elem_race = elem_quick_menu_list[3]  # 左から4項目目のレース結果を選択
 
     elem_race.click()
+    time.sleep(1)  # 5秒間プログラムを一時停止
+
 
     # browser.find_element(By.CLASS_NAME, "link_list multi div3 center")
     race_list = browser.find_element(By.ID, "main")
@@ -53,27 +65,29 @@ def scrape_race_results(browser):
         race_list = browser.find_elements(By.CLASS_NAME, "cell.kaisai")[0]
         race_page = race_list.find_elements(By.TAG_NAME, "a")[0]
 
-        race_page.click()
+    race_page.click()
+    time.sleep(1) 
 
     race_page_list = browser.find_elements(By.CLASS_NAME, "race_num")  # レース結果の1R,2R,,,,を取得
     R1_race_page = race_page_list[1]  # R1レース結果を取得
-    R1_race_page.click()  # R1レース結果まで移動
+    R1_race_page.click()
+    time.sleep(1)   # R1レース結果まで移動
 
     return browser
 
 
-column_names =  ['着順', '馬番', '馬名', '単勝', '複勝最小', '複勝最大']  # 保存する項目を選択
 
 class GetResult:
     
     def __init__(self, browser):
-        self.soup = None
-        self.race_list = None
-        self.day_location_list = None
-        self.num_locations = 0
-        self.num_days = 0
-        self.num_races = 0
-        self.browser =browser
+        self.soup = BeautifulSoup(browser.page_source, "html.parser")
+        race_list = browser.find_elements(By.CSS_SELECTOR, "ul.nav.race-num.mt15")[0]
+        self.race_list = race_list.find_elements(By.TAG_NAME, "li")
+        self.day_location_list = browser.find_elements(By.CSS_SELECTOR, "div.link_list.multi.div3.center.mid.narrow")
+        self.num_locations = len(self.day_location_list[0].find_elements(By.TAG_NAME, "div"))
+        self.num_days = len(self.day_location_list)
+        self.num_races = len(self.race_list)
+        self.browser = browser
 
     def get_page(self):  # ページ情報の取得
         self.soup = BeautifulSoup(self.browser.page_source, "html.parser")
@@ -115,32 +129,32 @@ class GetResult:
             try:  # エラーが発生する可能性のあるコード (要検討)
                 num_num = int(num_list[0].text)
             except:  # エラー発生時の処理
-                num_num = str(num_list[0].text)
+                num_num = None
 
             place_list = table.find_all("td", attrs={"class": "place"})
             try:
                 place_num = int(place_list[0].text)
             except:
-                place_num = str(place_list[0].text)
+                place_num = None
 
             weight_list = table.find_all("td", attrs={"class": "weight"})
             try:
                 weight_num = float(weight_list[0].text)
             except:
-                weight_num = str(weight_list[0].text)
+                weight_num = None
 
             h_weight_list = table.find_all("td", attrs={"class": "h_weight"})
             try:
                 h_weight_num = int(str(h_weight_list[0].text).split("(")[0])
             except:
-                h_weight_num = str(h_weight_list[0].text)
+                h_weight_num = None
 
 
             pop_list = table.find_all("td", attrs={"class": "pop"})
             try:
                 pop_num = int(pop_list[0].text)
             except:
-                pop_num = str(pop_list[0].text)            
+                pop_num = None            
 
 
             time_list = table.find_all("td", attrs={"class": "time"})
@@ -192,30 +206,30 @@ class GetResult:
             try:  # エラーが発生する可能性のあるコード
                 num_num = int(num_list[0].text)
             except:  # エラー発生時の処理
-                num_num = str(num_list[0].text)
+                num_num = None
                 
             odds_tan_list = table.find_all("td", attrs={"class": "odds_tan"})
             try:
                 odds_tan_num = float(odds_tan_list[0].text)
             except:
-                odds_tan_num = str(odds_tan_list[0].text)
+                odds_tan_num = None
 
             odds_fuku_list = table.find_all("td", attrs={"class": "odds_fuku"})
            
             if odds_fuku_list[0].text == "取消":
-                    odds_fuku_min_num = "取消"
-                    odds_fuku_max_num = "取消"
+                    odds_fuku_min_num = -1
+                    odds_fuku_max_num = -1
 
             else:
                 try:
                     odds_fuku_min_num = float(odds_fuku_list[0].find_all("span", attrs={"class": "min"})[0].text)
                 except:
-                    odds_fuku_min_num = str(odds_fuku_list[0].find_all("span", attrs={"class": "min"})[0].text)
+                    odds_fuku_min_num = None
 
                 try:
                     odds_fuku_max_num = float(odds_fuku_list[0].find_all("span", attrs={"class": "max"})[0].text)
                 except:
-                    odds_fuku_max_num = str(odds_fuku_list[0].find_all("span", attrs={"class": "max"})[0].text)
+                    odds_fuku_max_num = None
                 
             horse_list = table.find_all("td", attrs={"class": "horse"})
             horse_str = str(horse_list[0].text).replace("\n","")
