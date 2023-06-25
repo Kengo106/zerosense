@@ -6,8 +6,8 @@ from django.http import HttpResponse
 
 from .scraping import initialize_browser, scrape_race_results, GetResult, scrape_data
 
-def base_site_view(request):
-    return render(request, 'base.html')
+def home_site_view(request):
+    return render(request, 'home.html')
 
 def my_server_route_view(request):
     if request.method == 'POST':

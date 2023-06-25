@@ -13,10 +13,16 @@ class RaceResult(models.Model):
     pop = models.IntegerField(null=True)  #  pop_num
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.race_name + " " + self.horse_name
+
+
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["horse_name", "race_name"], name="unique_race_result")
         ]
+
+    
         
 class Odds(models.Model):
     horse_name = models.CharField(max_length=255, null=True)  #  result_datum["馬名"] = horse_str
@@ -26,6 +32,9 @@ class Odds(models.Model):
     odds_fuku_min = models.FloatField(null=True)
     odds_fuku_max = models.FloatField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.race_name + " " + self.horse_name
 
     class Meta:
         constraints = [

@@ -16,10 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import my_server_route_view, base_site_view
+from .views import my_server_route_view, home_site_view
 
 urlpatterns = [
-    path('',base_site_view, name = 'base_site'),
+    path('',home_site_view, name = 'base_site'),
     path('button',my_server_route_view, name='my-server-route'),
 
 ]

@@ -23,12 +23,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="/">スクレイピング</a>
     </nav>
-    <div class="position-relative" style="left: -1000px; top: 50px;">
-    <form action="button" method="POST">
-        {% csrf_token %}
-    <button type="submit" class="btn btn-primary custom-button">スクレイピング実行</button>
-    </form>
-    </div>
+    {% block button %}
+    {% endblock %}   
     <div class="container mt-4">
     {% block main %}
     {% endblock %}
