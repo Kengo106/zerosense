@@ -26,7 +26,7 @@ class ApiOddsView(APIView):
         odds_results = Odds.objects.order_by('-created_at').all()[:10]
         serialized_data_list = []
         for odds_result in odds_results:
-            Serializer = RaceResultSeriralizer(odds_result)
+            Serializer = OddsSerilizer(odds_result)
             serialized_data_list.append(Serializer.data)
             
         return Response(serialized_data_list)
