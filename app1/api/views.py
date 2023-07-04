@@ -1,7 +1,9 @@
 from ..models import RaceResult, Odds
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import RaceResultSeriralizer, OddsSerilizer
+from .serializers import RaceResultSeriralizer, OddsSerilizer, RacenameSerializer
+from django.db.models import Subquery, OuterRef
+
 
 class ApiRaceView(APIView):
 
@@ -30,3 +32,11 @@ class ApiOddsView(APIView):
             serialized_data_list.append(Serializer.data)
             
         return Response(serialized_data_list)
+    
+class ApiRaceNameView(APIView):
+    
+    def get(self, request, format=None):
+        distinct_race_ids = RaceResult.objects.order_by('race_name', '-created_at').distinct('race_name').values('id')
+        race_names = RaceResult.objects.filter(id__in=Subquery(distinct_race_ids)).order_by('-created_at')  # 分からないので後でSQLの勉強をする
+        serializer = RacenameSerializer(race_names, many=True)
+        return Response(serializer.data)

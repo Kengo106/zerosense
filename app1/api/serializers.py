@@ -10,3 +10,8 @@ class OddsSerilizer(serializers.ModelSerializer):
     class Meta:
         model = Odds
         fields = '__all__'
+
+class RacenameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RaceResult
+        fields = ['race_name']
