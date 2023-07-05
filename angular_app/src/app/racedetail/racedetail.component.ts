@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
+import { RaceService } from '../race.service';
 
 
 @Component({
@@ -10,23 +11,32 @@ import { Location } from '@angular/common';
 })
 export class RacedetailComponent implements OnInit {
 
-  racename: string = '';
+  raceName: string = '';
+  raceResult: [] = []
 
   constructor(
     private route: ActivatedRoute,
-    private location: Location
+    private location: Location,
+    private raceaService: RaceService,
   ){}
 
   ngOnInit(){
     this.getRaceName();
+
   }
 
   getRaceName(){
-    this.racename = String(this.route.snapshot.paramMap.get('race_name'))
+    this.raceName = String(this.route.snapshot.paramMap.get('race_name'))
   }
 
   goBack(){
     this.location.back()
   }
 
+  getRaceResult(){
+    this.raceaService.getResult(this.raceName).subscribe((data)=> this.raceResult = data)
+  }
+
 }
+
+

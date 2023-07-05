@@ -16,6 +16,16 @@ export class RaceService {
     return racenames
 
   }
+  
+  
+  getResult(raceName: string): Observable<any> {
+    const url = `${this.raceresultUrl}?race_name=${raceName}`
+    const raceresult = this.http.get<any>(url)
+    return raceresult
+  }
+
 
   private racenameUrl: string = 'http://127.0.0.1:8000/api/racename/';
+  
+  private raceresultUrl: string = 'http://127.0.0.1:8000/api/racename/';
 }
