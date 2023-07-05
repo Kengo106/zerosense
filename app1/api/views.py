@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import RaceResultSeriralizer, OddsSerilizer, RacenameSerializer
 from django.db.models import Subquery, OuterRef
+from django_filters import rest_framework as filters
 
 
 class ApiRaceView(APIView):
@@ -40,3 +41,15 @@ class ApiRaceNameView(APIView):
         race_names = RaceResult.objects.filter(id__in=Subquery(distinct_race_ids)).order_by('-created_at')  # 分からないので後でSQLの勉強をする
         serializer = RacenameSerializer(race_names, many=True)
         return Response(serializer.data)
+    
+class FilterResult(filters.FilterSet):
+    class Meta:
+        model = RaceResult
+        fields = '__all__'
+    
+class ApiResultOddsview(APIView):
+    def get(self, request, format=None):
+        filterset = FilterResult(request.query_params, queryset=RaceResult.objects.all())
+        serializer = RaceResultSeriralizer(instance=filterset.qs, many=True)
+        return Response(serializer.data)
+
