@@ -1,1 +1,5 @@
-<p>racenames works!</p>
+<ul>
+    <li *ngFor="let race of raceNames">
+        <a routerLink="/racedetail/{{ race.race_name }}">{{ race.race_name }}</a>
+    </li>
+</ul>
