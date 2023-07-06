@@ -1,4 +1,9 @@
 <h2>{{ raceName }}</h2>
 
-
+<table>
+    <tbody *ngFor="let record of raceResult">
+        <td>{{record.place_num}}位</td>
+        <td>{{record.horse_name}}</td>
+    </tbody>
+</table>
 <button type="button" (click)="goBack()">レース一覧に戻る</button>

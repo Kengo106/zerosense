@@ -12,7 +12,7 @@ import { RaceService } from '../race.service';
 export class RacedetailComponent implements OnInit {
 
   raceName: string = '';
-  raceResult: [] = []
+  raceResult: any[] = []
 
   constructor(
     private route: ActivatedRoute,
@@ -22,7 +22,7 @@ export class RacedetailComponent implements OnInit {
 
   ngOnInit(){
     this.getRaceName();
-
+    this.getRaceResult();
   }
 
   getRaceName(){
@@ -34,7 +34,8 @@ export class RacedetailComponent implements OnInit {
   }
 
   getRaceResult(){
-    this.raceaService.getResult(this.raceName).subscribe((data)=> this.raceResult = data)
+    this.raceaService.getResult(this.raceName).subscribe((data)=>{this.raceResult = data.sort((a:any,b:any)=>a.place_num-b.place_num);console.log(this.raceResult);} )
+
   }
 
 }

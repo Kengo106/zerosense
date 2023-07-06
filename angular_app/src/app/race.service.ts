@@ -27,5 +27,5 @@ export class RaceService {
 
   private racenameUrl: string = 'http://127.0.0.1:8000/api/racename/';
   
-  private raceresultUrl: string = 'http://127.0.0.1:8000/api/racename/';
+  private raceresultUrl: string = 'http://127.0.0.1:8000/api/resultodds/';
 }
