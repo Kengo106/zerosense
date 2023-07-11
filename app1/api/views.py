@@ -1,7 +1,7 @@
-from ..models import RaceResult, Odds
+from ..models import RaceResult, Odds, JoinResultOdds
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import RaceResultSeriralizer, OddsSerilizer, RacenameSerializer
+from .serializers import RaceResultSeriralizer, OddsSerilizer, RacenameSerializer, JoinResultOddsSerializer
 from django.db.models import Subquery, OuterRef
 from django_filters import rest_framework as filters
 
@@ -52,10 +52,25 @@ class FilterOdds(filters.FilterSet):
         model = Odds
         fields = '__all__'
 
+class  FilterJoinResultOdds(filters.FilterSet):
+    class Meta:
+        model = JoinResultOdds
+        fields= "__all__"
     
 class ApiResultOddsview(APIView):
     def get(self, request, format=None):
-        filterset = FilterResult(request.query_params, queryset=RaceResult.objects.all())
-        serializer = RaceResultSeriralizer(instance=filterset.qs, many=True)
-        return Response(serializer.data)
+        filterresult = FilterResult(request.query_params, queryset=RaceResult.objects.all())
+        filterodds = FilterOdds(request.query_params, queryset=Odds.objects.all())
+        result_serializer = RaceResultSeriralizer(instance=filterresult.qs, many=True)
+        odds_serializer = OddsSerilizer(instance=filterodds.qs, many=True)
+        return Response({
+            "result": result_serializer.data,
+            "odds": odds_serializer.data
+        } )
 
+class ApiJoinView(APIView):
+    def get(self, request, format=None):
+        filterjoin = FilterJoinResultOdds(
+            request.query_params, queryset=JoinResultOdds.objects.select_related('RaceResult_id',"Odds_id").all())
+        join_serializer = JoinResultOddsSerializer(instance=filterjoin.qs, many=True)
+        return Response(join_serializer.data)

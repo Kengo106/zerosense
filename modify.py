@@ -10,7 +10,8 @@ from app1.api.serializers import OddsSerilizer, RaceResultSeriralizer
 from app1.api.views import FilterOdds
 
 def get_raceresult():
-        race_results = RaceResult.objects.order_by("-created_at").all()
+        race_results = RaceResult.objects.order_by("-created_at").exclude(
+             id__in=JoinResultOdds.objects.values_list("RaceResult_id",flat=True)).all()
         serialized_data_list = []
         for race_result in race_results:
             Serializer_result = RaceResultSeriralizer(race_result)

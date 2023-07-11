@@ -1,9 +1,22 @@
 <h2>{{ raceName }}</h2>
 
 <table>
-    <tbody *ngFor="let record of raceResult">
-        <td>{{record.place_num}}位</td>
-        <td>{{record.horse_name}}</td>
+    <thead>
+        <td>順位<button type="button" (click)="sortResult()">sort</button></td>
+        <td>馬名</td>
+        <td>単勝</td>
+    </thead>
+    <tbody *ngFor="let result of raceResult">
+        <td>{{result.place_num}}位</td>
+        <td>{{result.horse_name}}</td>
+        <span *ngFor="let odds of raceOdds">
+            <td *ngIf="result.horse_name === odds.horse_name">
+                {{odds.odds_tan}}
+            </td>
+        </span>
     </tbody>
 </table>
-<button type="button" (click)="goBack()">レース一覧に戻る</button>
+<span>
+    コメント：<input type="text"><button type="submit">送信</button>
+</span>
+<div><button type="button" (click)="goBack()">レース一覧に戻る</button></div>

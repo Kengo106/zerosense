@@ -12,7 +12,9 @@ import { RaceService } from '../race.service';
 export class RacedetailComponent implements OnInit {
 
   raceName: string = '';
-  raceResult: any[] = []
+  raceResult: any[] = [];
+  raceOdds: any[] = [];
+  flag: number = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -34,8 +36,16 @@ export class RacedetailComponent implements OnInit {
   }
 
   getRaceResult(){
-    this.raceaService.getResult(this.raceName).subscribe((data)=>{this.raceResult = data.sort((a:any,b:any)=>a.place_num-b.place_num);console.log(this.raceResult);} )
+    this.raceaService.getResult(this.raceName).subscribe((data)=>{
+      this.raceResult = data.result.sort((a:any,b:any)=>a.place_num-b.place_num);
+      this.raceOdds = data.odds;
+      console.log(this.raceResult);
+    } )
+  }
 
+  sortResult(){
+    this.raceResult.sort((a:any,b:any)=>((-1)**this.flag)*(b.place_num-a.place_num))
+    this.flag = 1 -this.flag
   }
 
 }
