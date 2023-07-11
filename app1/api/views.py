@@ -46,6 +46,12 @@ class FilterResult(filters.FilterSet):
     class Meta:
         model = RaceResult
         fields = '__all__'
+
+class FilterOdds(filters.FilterSet):
+    class Meta:
+        model = Odds
+        fields = '__all__'
+
     
 class ApiResultOddsview(APIView):
     def get(self, request, format=None):

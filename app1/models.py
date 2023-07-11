@@ -41,4 +41,11 @@ class Odds(models.Model):
             models.UniqueConstraint(fields=["horse_name", "race_name"], name="unique_odds")
         ]
 
+class JoinResultOdds(models.Model):
+    RaceResult_id = models.ForeignKey(RaceResult, on_delete=models.CASCADE)
+    Odds_id = models.ForeignKey(Odds, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.RaceResult_id} - {self.Odds_id}"
+
 
