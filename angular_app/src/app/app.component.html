@@ -1,2 +1,9 @@
 <h1>{{title}}</h1>
+<div class="date-input-container">
+    <input class="date-input" [matDatepicker]="picker" [(ngModel)]="date" placeholder="Choose a date">
+    <button type="submit">検索</button>
+    <mat-datepicker #picker></mat-datepicker>
+    <div class="button" (click)="picker.open()">開催日選択</div>
+  </div>
+  
 <router-outlet></router-outlet>

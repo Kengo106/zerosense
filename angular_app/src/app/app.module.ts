@@ -7,6 +7,13 @@ import { RacenamesComponent } from './racenames/racenames.component';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { RacedetailComponent } from './racedetail/racedetail.component';
 import { Location } from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
+import { JPDateAdapter } from './jpdate-adapter';
+
+
 
 @NgModule({
   declarations: [
@@ -18,8 +25,16 @@ import { Location } from '@angular/common';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    BrowserAnimationsModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    FormsModule,
   ],
-  providers: [Location],
+  providers: [
+    Location,
+    {provide: MAT_DATE_LOCALE, useValue: 'ja-JP'},
+    {provide: DateAdapter, useClass: JPDateAdapter},
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

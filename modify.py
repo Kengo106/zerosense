@@ -32,8 +32,8 @@ def get_raceresult():
             for result_data in serialized_data_list:
                 
                 JoinResultOdds.objects.update_or_create(
-                    RaceResult_id=RaceResult.objects.get(id=result_data['RaceResult_id']),
-                    Odds_id=Odds.objects.get(id=result_data["odds_id"]),
+                    RaceResult=RaceResult.objects.get(id=result_data['RaceResult_id']),
+                    Odds=Odds.objects.get(id=result_data["odds_id"]),
                 )
     
 

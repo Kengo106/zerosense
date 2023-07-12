@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as  pd
 from django.db import transaction
-from .models import RaceResult, Odds
+from .models import RaceResult, Odds, JoinResultOdds
 import os
 import time
 
@@ -274,7 +274,19 @@ class GetResult:
                         'odds_fuku_max': odds_data['複勝最大'],
                     }
                 )
-                
+            
+            for result_data in self.result:
+
+                JoinResultOdds.objects.update_or_create(
+                    RaceResult=RaceResult.objects.filter(
+                        horse_number=result_data['馬番'],
+                        race_name=result_data['レース名'],
+                    ).first(),
+                    Odds=Odds.objects.filter(
+                        horse_number=result_data['馬番'],
+                        race_name=result_data['レース名'],
+                    ).first(),
+                )
 
 def scrape_data(GR, browser):
     for day in range(GR.num_days):
