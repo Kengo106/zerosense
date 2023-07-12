@@ -2,18 +2,14 @@
 
 <table>
     <thead>
-        <td>順位<button type="button" (click)="sortResult()">sort</button></td>
+        <td>順位<button type="button" (click)="sortPlace()">sort</button></td>
         <td>馬名</td>
-        <td>単勝</td>
+        <td>単勝<button type="button" (click)="sortOddsTan()">sort</button></td>
     </thead>
     <tbody *ngFor="let result of raceResult">
         <td>{{result.place_num}}位</td>
         <td>{{result.horse_name}}</td>
-        <span *ngFor="let odds of raceOdds">
-            <td *ngIf="result.horse_name === odds.horse_name">
-                {{odds.odds_tan}}
-            </td>
-        </span>
+        <td>{{result.odds_tan}}</td>
     </tbody>
 </table>
 <span>

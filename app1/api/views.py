@@ -70,7 +70,7 @@ class ApiResultOddsview(APIView):
 
 class ApiJoinView(APIView):
     def get(self, request, format=None):
-        filterjoin = FilterJoinResultOdds(
-            request.query_params, queryset=JoinResultOdds.objects.select_related('RaceResult_id',"Odds_id").all())
-        join_serializer = JoinResultOddsSerializer(instance=filterjoin.qs, many=True)
+        race_name = request.query_params.get("race_name")
+        join_query = JoinResultOdds.objects.select_related('RaceResult',"Odds").filter(RaceResult__race_name=race_name)
+        join_serializer = JoinResultOddsSerializer(instance=join_query, many=True)
         return Response(join_serializer.data)
