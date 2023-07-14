@@ -29,6 +29,7 @@ export class RacedetailComponent implements OnInit {
 
   getRaceName(){
     this.raceName = String(this.route.snapshot.paramMap.get('race_name'))
+    console.log(this.raceName)
   }
 
   goBack(){
@@ -52,6 +53,7 @@ export class RacedetailComponent implements OnInit {
         trainer_name: item.RaceResult.trainer_name,
       }))
       console.log(this.raceResult);
+      this.raceResult.sort((a:any,b:any)=>(a.place_num-b.place_num))
     } )
   }
 

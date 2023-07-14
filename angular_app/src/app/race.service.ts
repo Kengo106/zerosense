@@ -19,7 +19,8 @@ export class RaceService {
   
   
   getResult(raceName: string): Observable<any> {
-    const url = `${this.raceresultUrl}?race_name=${raceName}`
+    const url = `${this.raceresultUrl}?race_name=${encodeURIComponent(raceName).replace(/%C2%A0/g,'%20')}`
+    console.log(url)
     const raceresult = this.http.get<any>(url)
     return raceresult
   }

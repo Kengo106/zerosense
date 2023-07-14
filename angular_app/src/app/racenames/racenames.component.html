@@ -1,5 +1,11 @@
+<div class="date-input-container">
+    <input class="date-input" [matDatepicker]="picker" [(ngModel)]="date" placeholder="Choose a date">
+    <button type="submit" (click)="check()">検索</button>
+    <mat-datepicker #picker></mat-datepicker>
+    <div class="button" (click)="picker.open()">開催日選択</div>
+</div>
 <ul>
     <li *ngFor="let race of raceNames">
-        <a routerLink="/racedetail/{{ race.name }}">{{ race.name }}</a>
+        <a routerLink="/racedetail/{{ race.date }}（{{ race.dayOfTheWeek}}）{{ race.name }}&nbsp;{{ race.num}}">{{ race.date }}（{{ race.dayOfTheWeek}}）{{ race.name }}&nbsp;{{ race.num}} </a>
     </li>
 </ul>
