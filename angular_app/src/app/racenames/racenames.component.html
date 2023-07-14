@@ -1,11 +1,13 @@
 <div class="date-input-container">
-    <input class="date-input" [matDatepicker]="picker" [(ngModel)]="date" placeholder="Choose a date">
-    <button type="submit" (click)="check()">検索</button>
-    <mat-datepicker #picker></mat-datepicker>
-    <div class="button" (click)="picker.open()">開催日選択</div>
-</div>
+    <input class="date-input" [matDatepicker]="picker" [matDatepickerFilter]="dateFilter" (dateChange)="check()" [(ngModel)]="date">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker [dateClass]="dateClass"></mat-datepicker>
+    <div class="button" (click)="picker.open()">開催日</div>
+  </div>
+  
+  
 <ul>
-    <li *ngFor="let race of raceNames">
+    <li *ngFor="let race of raceNamesDisplay">
         <a routerLink="/racedetail/{{ race.date }}（{{ race.dayOfTheWeek}}）{{ race.name }}&nbsp;{{ race.num}}">{{ race.date }}（{{ race.dayOfTheWeek}}）{{ race.name }}&nbsp;{{ race.num}} </a>
     </li>
 </ul>
