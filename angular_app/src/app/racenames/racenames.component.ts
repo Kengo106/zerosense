@@ -29,9 +29,7 @@ export class RacenamesComponent implements OnInit {
       .split('月').join('-')
       .split('日')[0].split('-').map(part => parseInt(part,10))
       let newDate = new Date(year, month - 1, day);
-    
 
-  
       return newDate;
     })
     return selectableDates.some(selectableDate => 
