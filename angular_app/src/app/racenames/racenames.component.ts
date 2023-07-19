@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RaceService } from '../race.service';
-import { RaceNameObj } from '../race.interface';
+
 import { formatDate } from '@angular/common';
+import { RaceNameObj } from '../race.interface';
 
 
 @Component({
