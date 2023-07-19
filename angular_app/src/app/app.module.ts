@@ -12,6 +12,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
 import { JPDateAdapter } from './jpdate-adapter';
+import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
+import { environment } from '../environments/environment';
+import { provideAuth,getAuth } from '@angular/fire/auth';
+import { LoginComponent } from './login/login.component';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+
 
 
 
@@ -19,7 +26,8 @@ import { JPDateAdapter } from './jpdate-adapter';
   declarations: [
     AppComponent,
     RacenamesComponent,
-    RacedetailComponent
+    RacedetailComponent,
+    LoginComponent,
   ],
   imports: [
     BrowserModule,
@@ -29,6 +37,10 @@ import { JPDateAdapter } from './jpdate-adapter';
     MatDatepickerModule,
     MatNativeDateModule,
     FormsModule,
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideAuth(() => getAuth()),
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
   ],
   providers: [
     Location,
