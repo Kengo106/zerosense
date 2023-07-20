@@ -5,10 +5,10 @@ import { RacenamesComponent } from './racenames/racenames.component';
 import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
-  {path: '', redirectTo: 'racenames', pathMatch: 'full'},
+  { path: '', redirectTo: 'racenames', pathMatch: 'full'},
   { path: 'racenames', component: RacenamesComponent}, 
   { path: 'racedetail/:race_name', component: RacedetailComponent},
-  { path: 'login', component: LoginComponent}
+  { path: 'account/login', component: LoginComponent},
 ];
 
 @NgModule({

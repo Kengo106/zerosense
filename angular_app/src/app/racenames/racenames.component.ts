@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RaceService } from '../race.service';
+import { RaceService } from '../service/race.service';
 
 import { formatDate } from '@angular/common';
 import { RaceNameObj } from '../race.interface';

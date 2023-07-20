@@ -1,0 +1,12 @@
+<nav class="navbar fixed-top navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">Zerosece</a>
+
+    <!-- ログイン状態で分岐 -->
+    <span class="navbar-text" *ngIf="!login">
+          <a routerLink="/account/login">Login</a>
+    </span>
+    <span class="navbar-text" *ngIf="login">
+          <a routerLink="/account/login" (click)="logout()">Logout</a>
+    </span>
+    <!-- 分岐ここまで -->
+  </nav>

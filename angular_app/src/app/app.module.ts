@@ -18,6 +18,8 @@ import { provideAuth,getAuth } from '@angular/fire/auth';
 import { LoginComponent } from './login/login.component';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
+import { HeaderComponent } from './header/header.component';
+
 
 
 
@@ -28,6 +30,8 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
     RacenamesComponent,
     RacedetailComponent,
     LoginComponent,
+    HeaderComponent,
+
   ],
   imports: [
     BrowserModule,

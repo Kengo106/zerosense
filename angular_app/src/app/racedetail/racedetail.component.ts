@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
-import { RaceService } from '../race.service';
+import { RaceService } from '../service/race.service';
 
 
 @Component({
