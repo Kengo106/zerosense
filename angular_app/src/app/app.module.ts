@@ -11,7 +11,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
-import { JPDateAdapter } from './jpdate-adapter';
+import { JPDateAdapter } from './calender/jpdate-adapter';
 import { initializeApp,provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
 import { provideAuth,getAuth } from '@angular/fire/auth';
@@ -19,6 +19,7 @@ import { LoginComponent } from './login/login.component';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { HeaderComponent } from './header/header.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
 
 
 
@@ -31,6 +32,7 @@ import { HeaderComponent } from './header/header.component';
     RacedetailComponent,
     LoginComponent,
     HeaderComponent,
+    SignUpComponent,
 
   ],
   imports: [

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { SessionService } from '../service/session.service';
+import { Password, Session } from '../class/user';
 
 @Component({
   selector: 'app-login',
@@ -8,31 +9,18 @@ import { SessionService } from '../service/session.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  email: string = "";
-  password: string = "";
 
-  constructor(
-    private auth: AngularFireAuth,
-    private sessionservise : SessionService
-  ) { }
+  public account = new Password();
 
+  constructor(private sessionservise : SessionService) { }
 
   ngOnInit(): void {
     
   }
 
-  submitLogin(){
-    this.sessionservise.login()
+  submitLogin(e: Event){
+    e.preventDefault()
+    this.sessionservise.login(this.account)
   }
 
-  login() {
-    this.auth.signInWithEmailAndPassword(this.email, this.password)
-      .then(() => {
-        // ログイン成功時の処理
-      })
-      .catch((error: any) => {
-        // ログイン失敗時の処理
-        console.error(error);
-      });
-  }
 }

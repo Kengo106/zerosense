@@ -1,3 +1,4 @@
+<h1>レース結果</h1>
 <div class="date-input-container">
     <input class="date-input" [matDatepicker]="picker" [matDatepickerFilter]="dateFilter" (dateChange)="check()" [(ngModel)]="date">
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -11,3 +12,4 @@
         <a routerLink="/racedetail/{{ race.date }}（{{ race.dayOfTheWeek}}）{{ race.name }}&nbsp;{{ race.num}}">{{ race.date }}（{{ race.dayOfTheWeek}}）{{ race.name }}&nbsp;{{ race.num}} </a>
     </li>
 </ul>
+

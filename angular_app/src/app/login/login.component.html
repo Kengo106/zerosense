@@ -1,14 +1,17 @@
-<h2>Login</h2>
-<form (ngSubmit)="login()">
-  <div>
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" [(ngModel)]="email" required>
-  </div>
-  <div>
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" [(ngModel)]="password" required>
-  </div>
-  <button type="submit">Login</button>
-  <button class="btn btn-lg btn-info btn-block" type="submit" (click)="submitLogin()">LOGIN</button><!-- submitLogin()を追加 -->
-
-</form>
+<div class="page">
+    <section class="card">
+        <form class="form-login" (ngSubmit)="submitLogin($event)" #loginForm="ngForm">
+            <h2>
+                ログイン
+            </h2>
+              <label for="email">Email address </label>
+              <input type="email" id="email" name="email" placeholder="Email address" 
+              [(ngModel)]="account.email" #email="ngModel" autocomplete="username email" required autofocus>
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" class="form-control" [(ngModel)]="account.password" #password="ngModel"  required>
+            <button type="submit">Login</button>
+            <button class="btn btn-lg btn-info btn-block" type="submit" [disabled]="!loginForm.form.valid">LOGIN</button><!-- submitLogin()を追加 -->
+       </form>
+       <a routerLink="/account/signup">新規登録</a>         
+    </section>
+</div>
