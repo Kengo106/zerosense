@@ -42,10 +42,19 @@ class Odds(models.Model):
         ]
 
 class JoinResultOdds(models.Model):
-    RaceResult = models.ForeignKey(RaceResult, on_delete=models.CASCADE)
-    Odds = models.ForeignKey(Odds, on_delete=models.CASCADE)
+    RaceResult = models.OneToOneField(RaceResult, on_delete=models.CASCADE)
+    Odds = models.OneToOneField(Odds, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.RaceResult_id} - {self.Odds_id}"
 
 
+# class VoteRace(models.Model):
+#     user_id = models.ForeignKey('auth.User', on_delete=models.CASCADE)
+#     tournament_id = models.IntegerField()
+#     race_id = models.IntegerField()
+#     horse_id_win = models.IntegerField()
+#     horse_id_place = models.IntegerField()
+#     horse_id_show = models.IntegerField()
+#     vote_time = models.DateTimeField(auto_now_add=True)
+#     comment = models.TextField(blank=True, null=True)

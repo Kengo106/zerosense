@@ -1,0 +1,133 @@
+@startuml zerosense
+
+entity "RaceResult" as RaceResult {
+  + RaceResult_id [PK]
+  --
+  horse_name
+  horse_number
+  race_name
+  place_num
+  jockey_name
+  trainer_name
+  time
+  h_weight
+  pop
+  created_at
+  ==
+  レース結果
+}
+
+entity "Odds" as Odds {
+  + Odds_id [PK]
+  --
+  horse_name
+  horse_number
+  race_name
+  odds_tan
+  odds_fuku_min
+  odds_fuku_max
+  created_at
+  ==
+  オッズ
+}
+
+entity "JoinResultOdds" as JoinResultOdds {
+  + JoinResultOdds_id [PK]
+  --
+  # RaceResult_id [FK]
+  # Odds_id [FK]
+  ==
+  レース結果とオッズを紐づける
+}
+
+entity User {
+  + UID [PK]
+  --
+  adress 
+  username
+  ==
+  ゼロセンスユーザー
+}
+
+entity Game {
+  + Game_id [PK]
+  --
+  # GameRule_id [FK]
+  name
+  start_datetime
+  ==
+  大会
+}
+
+entity GameRule {
+  + GameRule_id [PK]
+  --
+  rule_start_datetime
+  rule_end_datetime
+  open
+  logic_id
+  ==
+  大会のルール
+}
+
+entity Vote {
+  + Vote_id [PK]
+  --
+  # user_id [FK]
+  # Game_id [FK]
+  horse_id_first
+  horse_id_second
+  horse_id_third
+  vote_time
+  comment
+  ==
+  投票
+  投票時点で大会に参加
+  ユーザーと 大会を紐づける
+}
+
+entity GameResult{
+  + GameResult_id [PK]
+  --
+  # JoinResultOdds_id [FK]
+  # Game_id [FK]
+  rank
+  ==
+  大会対象のレースと
+  レース結果を紐づける
+  ランクも取得する  
+}
+
+entity GameHorse {
+  + GameHorse_id [PK]
+  --
+  # Game_id [FK]
+  horse_name
+  ==
+  大会の出走馬
+}
+
+entity Comment {
+  + comment_id [PK]
+  --
+  # Game_id [FK]
+  # UID [FK]
+  coment_text
+  created_at
+  ==
+  大会に対するコメント
+}
+
+Game ||--|| GameResult
+User ||--o{ Vote
+Game ||--o{ Vote
+Game ||--|{ GameHorse
+User ||--o{ Comment
+GameResult ||--o{ Comment
+GameRule ||--o{ Game
+RaceResult ||--|| JoinResultOdds
+Odds ||-|| JoinResultOdds
+JoinResultOdds ||--o|GameResult
+
+@enduml
+

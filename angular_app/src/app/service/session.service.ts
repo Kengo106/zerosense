@@ -15,25 +15,26 @@ export class SessionService {
 
     constructor(private router: Router, private afAuth: AngularFireAuth) {}
 
-    login(account: Password): void {
-        this.afAuth
-            .signInWithEmailAndPassword(account.email, account.password)
-            .then((auth) => {
-                if (!auth.user?.emailVerified) {
-                    this.afAuth.signOut();
-                    console.log(account.email);
-                    return Promise.reject('メールアドレスが登録できません');
-                } else {
-                    this.session.login = true;
-                    this.sessionSubject.next(this.session);
-                    return this.router.navigate(['/']);
-                }
-            })
-            .then(() => alert('ログインしました'))
-            .catch((err) => {
-                console.log(err);
-                alert('ログインに失敗しました。\n' + err);
-            });
+    async login(account: Password): Promise<void> {
+        try {
+            const auth = await this.afAuth.signInWithEmailAndPassword(
+                account.email,
+                account.password,
+            );
+            if (!auth.user?.emailVerified) {
+                await this.afAuth.signOut();
+                console.log(account.email);
+                throw new Error('メールアドレスが登録できません');
+            } else {
+                this.session.login = true;
+                this.sessionSubject.next(this.session);
+                await alert('ログインしました');
+                await this.router.navigate(['/']);
+            }
+        } catch (error) {
+            console.log(error);
+            alert('ログインに失敗しました。\n' + error);
+        }
     }
 
     logout(): void {
@@ -55,10 +56,6 @@ export class SessionService {
             account.email,
             account.password,
         );
-        // // .catch(err=>{
-        //   console.log(err),
-        //   alert('アカウントの作成に失敗しました。')
-        // })
         try {
             if (userCredential.user) {
                 console.log(account.username + 'です');
