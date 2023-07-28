@@ -1,7 +1,7 @@
 @startuml zerosense
 
 entity "RaceResult" as RaceResult {
-  + RaceResult_id [PK]
+  + id [PK]
   --
   horse_name
   horse_number
@@ -18,7 +18,7 @@ entity "RaceResult" as RaceResult {
 }
 
 entity "Odds" as Odds {
-  + Odds_id [PK]
+  + id [PK]
   --
   horse_name
   horse_number
@@ -32,7 +32,7 @@ entity "Odds" as Odds {
 }
 
 entity "JoinResultOdds" as JoinResultOdds {
-  + JoinResultOdds_id [PK]
+  + id [PK]
   --
   # RaceResult_id [FK]
   # Odds_id [FK]
@@ -47,10 +47,11 @@ entity User {
   username
   ==
   ゼロセンスユーザー
+  ※Firebase上に用意
 }
 
 entity Game {
-  + Game_id [PK]
+  + id [PK]
   --
   # GameRule_id [FK]
   name
@@ -60,7 +61,7 @@ entity Game {
 }
 
 entity GameRule {
-  + GameRule_id [PK]
+  + id [PK]
   --
   rule_start_datetime
   rule_end_datetime
@@ -71,9 +72,9 @@ entity GameRule {
 }
 
 entity Vote {
-  + Vote_id [PK]
+  + id [PK]
   --
-  # user_id [FK]
+  # UID [FK]
   # Game_id [FK]
   horse_id_first
   horse_id_second
@@ -87,7 +88,7 @@ entity Vote {
 }
 
 entity GameResult{
-  + GameResult_id [PK]
+  + id [PK]
   --
   # JoinResultOdds_id [FK]
   # Game_id [FK]
@@ -99,7 +100,7 @@ entity GameResult{
 }
 
 entity GameHorse {
-  + GameHorse_id [PK]
+  + id [PK]
   --
   # Game_id [FK]
   horse_name
@@ -108,7 +109,7 @@ entity GameHorse {
 }
 
 entity Comment {
-  + comment_id [PK]
+  + id [PK]
   --
   # Game_id [FK]
   # UID [FK]
@@ -123,7 +124,7 @@ User ||--o{ Vote
 Game ||--o{ Vote
 Game ||--|{ GameHorse
 User ||--o{ Comment
-GameResult ||--o{ Comment
+Game ||--o{ Comment
 GameRule ||--o{ Game
 RaceResult ||--|| JoinResultOdds
 Odds ||-|| JoinResultOdds

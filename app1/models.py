@@ -1,33 +1,41 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
+
 class RaceResult(models.Model):
-    horse_name = models.CharField(max_length=255, null=True)  #  result_datum["馬名"] = horse_str
-    horse_number = models.IntegerField(null=True)  #   result_datum["馬番"] = num_num
-    race_name = models.CharField(max_length=255, null=True)  #   result_datum["レース名"]
-    place_num = models.IntegerField(null=True)  #  result_datum["着順"]
-    jockey_name = models.CharField(max_length=255, null=True)  #  result_datum["騎手名"]
-    trainer_name = models.CharField(max_length=255, null=True)  #  result_datum["調教師名"]
-    time = models.CharField(max_length=255, null=True)  #  result_datum["タイム"](文字型になっている)
-    h_weight = models.FloatField(null=True)  #  result_datum["馬体重"]
-    pop = models.IntegerField(null=True)  #  pop_num
+    # result_datum["馬名"] = horse_str
+    horse_name = models.CharField(max_length=255, null=True)
+    horse_number = models.IntegerField(
+        null=True)  # result_datum["馬番"] = num_num
+    race_name = models.CharField(
+        max_length=255, null=True)  # result_datum["レース名"]
+    place_num = models.IntegerField(null=True)  # result_datum["着順"]
+    jockey_name = models.CharField(
+        max_length=255, null=True)  # result_datum["騎手名"]
+    trainer_name = models.CharField(
+        max_length=255, null=True)  # result_datum["調教師名"]
+    # result_datum["タイム"](文字型になっている)
+    time = models.CharField(max_length=255, null=True)
+    h_weight = models.FloatField(null=True)  # result_datum["馬体重"]
+    pop = models.IntegerField(null=True)  # pop_num
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.race_name + " " + self.horse_name
 
-
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["horse_name", "race_name"], name="unique_race_result")
+            models.UniqueConstraint(
+                fields=["horse_name", "race_name"], name="unique_race_result")
         ]
 
-    
-        
+
 class Odds(models.Model):
-    horse_name = models.CharField(max_length=255, null=True)  #  result_datum["馬名"] = horse_str
+    # result_datum["馬名"] = horse_str
+    horse_name = models.CharField(max_length=255, null=True)
     horse_number = models.IntegerField(null=True)
-    race_name = models.CharField(max_length=255, null=True)  #   result_datum["レース名"]
+    race_name = models.CharField(
+        max_length=255, null=True)  # result_datum["レース名"]
     odds_tan = models.FloatField(null=True)
     odds_fuku_min = models.FloatField(null=True)
     odds_fuku_max = models.FloatField(null=True)
@@ -38,8 +46,10 @@ class Odds(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=["horse_name", "race_name"], name="unique_odds")
+            models.UniqueConstraint(
+                fields=["horse_name", "race_name"], name="unique_odds")
         ]
+
 
 class JoinResultOdds(models.Model):
     RaceResult = models.OneToOneField(RaceResult, on_delete=models.CASCADE)
@@ -49,12 +59,43 @@ class JoinResultOdds(models.Model):
         return f"{self.RaceResult_id} - {self.Odds_id}"
 
 
-# class VoteRace(models.Model):
-#     user_id = models.ForeignKey('auth.User', on_delete=models.CASCADE)
-#     tournament_id = models.IntegerField()
-#     race_id = models.IntegerField()
-#     horse_id_win = models.IntegerField()
-#     horse_id_place = models.IntegerField()
-#     horse_id_show = models.IntegerField()
-#     vote_time = models.DateTimeField(auto_now_add=True)
-#     comment = models.TextField(blank=True, null=True)
+class GameRule(models.Model):
+    rule_start_datetime = models.DateTimeField()
+    rule_end_datetime = models.DateTimeField()
+    open = models.BooleanField()
+    logic_id = models.IntegerField()
+
+
+class Game(models.Model):
+    GameRule = models.ForeignKey(GameRule, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    start_datetime = models.DateTimeField()
+
+
+class Vote(models.Model):
+    UID = models.CharField()
+    Game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    horse_id_first = models.IntegerField()
+    horse_id_second = models.IntegerField()
+    horse_id_third = models.IntegerField()
+    vote_time = models.DateTimeField()
+    comment = models.TextField()
+
+
+class GameResult(models.Model):
+    JoinResultOdds = models.ForeignKey(
+        JoinResultOdds, on_delete=models.CASCADE)
+    Game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    rank = models.IntegerField()
+
+
+class GameHorse(models.Model):
+    Game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    horse_name = models.CharField(max_length=255)
+
+
+class Comment(models.Model):
+    Game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    UID = models.CharField()
+    comment_text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
