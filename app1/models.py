@@ -74,7 +74,7 @@ class Game(models.Model):
 
 
 class Vote(models.Model):
-    UID = models.CharField()
+    UID = models.ForeignKey("User",on_delete=models.CASCADE,)
     Game = models.ForeignKey(Game, on_delete=models.CASCADE)
     horse_id_first = models.IntegerField()
     horse_id_second = models.IntegerField()
@@ -97,6 +97,10 @@ class GameRaceHorse(models.Model):
 
 class Comment(models.Model):
     Game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    UID = models.CharField()
+    UID = models.ForeignKey("User",on_delete=models.CASCADE)
     comment_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+class User(models.Model):
+    UID = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
