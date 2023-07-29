@@ -41,13 +41,22 @@ entity "JoinResultOdds" as JoinResultOdds {
 }
 
 entity User {
+  + id [PK]
+  --
+  # UID [FK]
+  username
+  ==
+  ゼロセンスユーザー
+}
+
+entity FirebaseUser {
   + UID [PK]
   --
   adress 
   username
   ==
-  ゼロセンスユーザー
-  ※Firebase上に用意
+  Firebase上に用意している
+  ゼロセンスユーザーDB
 }
 
 entity Game {
@@ -75,7 +84,7 @@ entity GameRule {
 entity Vote {
   + id [PK]
   --
-  # UID [FK]
+  # User_id [FK]
   # Game_id [FK]
   horse_id_first
   horse_id_second
@@ -113,7 +122,7 @@ entity Comment {
   + id [PK]
   --
   # Game_id [FK]
-  # UID [FK]
+  # User_id [FK]
   coment_text
   created_at
   ==
@@ -130,6 +139,7 @@ GameRule ||--o{ Game
 RaceResult ||--|| JoinResultOdds
 Odds ||-|| JoinResultOdds
 JoinResultOdds ||--o|GameRace
+FirebaseUser ||..||User
 
 @enduml
 
