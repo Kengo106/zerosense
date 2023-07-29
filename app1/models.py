@@ -67,8 +67,9 @@ class GameRule(models.Model):
 
 
 class Game(models.Model):
-    GameRule = models.ForeignKey(GameRule, on_delete=models.CASCADE)
+    GameRule = models.ForeignKey(GameRule, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255)
+    GameRace = models.ForeignKey("GameRace", on_delete=models.CASCADE,)
     start_datetime = models.DateTimeField()
 
 
@@ -82,15 +83,15 @@ class Vote(models.Model):
     comment = models.TextField()
 
 
-class GameResult(models.Model):
+class GameRace(models.Model):
     JoinResultOdds = models.ForeignKey(
-        JoinResultOdds, on_delete=models.CASCADE)
-    Game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    rank = models.IntegerField()
+        JoinResultOdds, on_delete=models.CASCADE, null=True)
+    race_name = models.CharField(max_length=255)
+    rank = models.CharField(max_length=255)
 
 
-class GameHorse(models.Model):
-    Game = models.ForeignKey(Game, on_delete=models.CASCADE)
+class GameRaceHorse(models.Model):
+    GameRace = models.ForeignKey(GameRace, on_delete=models.CASCADE, null=True)
     horse_name = models.CharField(max_length=255)
 
 

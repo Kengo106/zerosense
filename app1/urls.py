@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import my_server_route_view, home_site_view
+from .views import my_server_route_view, home_site_view, GradeRaceScraping
 
 urlpatterns = [
     path('',home_site_view, name = 'base_site'),
-    path('button',my_server_route_view, name='my-server-route'),
-    path('api/',include('app1.api.urls'))
+    path('getresult',my_server_route_view, name='my-server-route'),
+    path("getgraderace",GradeRaceScraping.as_view(), name='graderace'),
+    path('api/',include('app1.api.urls')),
 
 ]

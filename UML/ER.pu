@@ -1,4 +1,4 @@
-@startuml zerosense
+@startuml ER図
 
 entity "RaceResult" as RaceResult {
   + id [PK]
@@ -53,7 +53,8 @@ entity User {
 entity Game {
   + id [PK]
   --
-  # GameRule_id [FK]
+  # GameRule_id [FK] NULL=TRUE
+  # GameRace_id [FK]
   name
   start_datetime
   ==
@@ -87,11 +88,11 @@ entity Vote {
   ユーザーと 大会を紐づける
 }
 
-entity GameResult{
+entity GameRace{
   + id [PK]
   --
-  # JoinResultOdds_id [FK]
-  # Game_id [FK]
+  # JoinResultOdds_id [FK] NULL=TRUE
+  race_name
   rank
   ==
   大会対象のレースと
@@ -99,10 +100,10 @@ entity GameResult{
   ランクも取得する  
 }
 
-entity GameHorse {
+entity GameRaceHorse {
   + id [PK]
   --
-  # Game_id [FK]
+  # GameRace_id [FK] NULL=TRUE
   horse_name
   ==
   大会の出走馬
@@ -119,16 +120,16 @@ entity Comment {
   大会に対するコメント
 }
 
-Game ||--|| GameResult
+Game |o--|| GameRace
 User ||--o{ Vote
 Game ||--o{ Vote
-Game ||--|{ GameHorse
+GameRace ||-left-|{ GameRaceHorse
 User ||--o{ Comment
 Game ||--o{ Comment
 GameRule ||--o{ Game
 RaceResult ||--|| JoinResultOdds
 Odds ||-|| JoinResultOdds
-JoinResultOdds ||--o|GameResult
+JoinResultOdds ||--o|GameRace
 
 @enduml
 

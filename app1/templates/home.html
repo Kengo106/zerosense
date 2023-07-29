@@ -1,10 +1,22 @@
 {% extends "base.html" %}
-
-{% block button %}
-<div class="position-relative" style="left: -1000px; top: 50px;">
-    <form action="button" method="POST">
-        {% csrf_token %}
-    <button type="submit" class="btn btn-primary custom-button">スクレイピング実行</button>
-    </form>
-    </div>
+{% block get-result-button %}
+<div style="padding: 20px;">
+  <form action="getresult" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">
+      レース結果を取得
+    </button>
+  </form>
+</div>
+{% endblock %}
+{% block get-grade-button %}
+<div style="padding: 20px;">
+  <!-- Adjust top property accordingly -->
+  <form action="getgraderace" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">
+      重賞レースを取得
+    </button>
+  </form>
+</div>
 {% endblock %}
