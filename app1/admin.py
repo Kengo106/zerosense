@@ -1,12 +1,12 @@
 from django.contrib import admin
-from .models import RaceResult, Odds, JoinResultOdds, Game, GameRule, Vote, GameRace, GameRaceHorse, Comment
+from .models import Game, GameRule, Vote, Race, RaceComment, Horse, HorsePlace, GameComment, User
 
-admin.site.register(RaceResult)
-admin.site.register(Odds)
-admin.site.register(JoinResultOdds)
 admin.site.register(Game)
 admin.site.register(GameRule)
 admin.site.register(Vote)
-admin.site.register(GameRace)
-admin.site.register(GameRaceHorse)
-admin.site.register(Comment)
+admin.site.register(Race)
+admin.site.register(Horse)
+admin.site.register(HorsePlace)
+admin.site.register(GameComment)
+admin.site.register(RaceComment)
+admin.site.register(User)

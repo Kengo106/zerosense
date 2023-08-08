@@ -1,43 +1,13 @@
 @startuml ER図
 
-entity "RaceResult" as RaceResult {
+
+entity HorsePlace {
   + id [PK]
   --
-  horse_name
-  horse_number
-  race_name
-  place_num
-  jockey_name
-  trainer_name
-  time
-  h_weight
-  pop
-  created_at
+  # Horse_id [FK]
+  place
   ==
   レース結果
-}
-
-entity "Odds" as Odds {
-  + id [PK]
-  --
-  horse_name
-  horse_number
-  race_name
-  odds_tan
-  odds_fuku_min
-  odds_fuku_max
-  created_at
-  ==
-  オッズ
-}
-
-entity "JoinResultOdds" as JoinResultOdds {
-  + id [PK]
-  --
-  # RaceResult_id [FK]
-  # Odds_id [FK]
-  ==
-  レース結果とオッズを紐づける
 }
 
 entity User {
@@ -63,7 +33,6 @@ entity Game {
   + id [PK]
   --
   # GameRule_id [FK] NULL=TRUE
-  # GameRace_id [FK]
   name
   start_datetime
   ==
@@ -73,8 +42,7 @@ entity Game {
 entity GameRule {
   + id [PK]
   --
-  rule_start_datetime
-  rule_end_datetime
+  span
   open
   logic_id
   ==
@@ -85,40 +53,39 @@ entity Vote {
   + id [PK]
   --
   # User_id [FK]
+  # Race_id [FK]
   # Game_id [FK]
-  horse_id_first
-  horse_id_second
-  horse_id_third
-  vote_time
+  # Horse_id_first [FK]
+  # Horse_id_second [FK]
+  # Horse_id_third [FK]
+  created_at
   comment
   ==
   投票
   投票時点で大会に参加
-  ユーザーと 大会を紐づける
+  ユーザーと大会を紐づける
 }
 
-entity GameRace{
+entity Race{
   + id [PK]
   --
-  # JoinResultOdds_id [FK] NULL=TRUE
   race_name
-  rank
+  grade
   ==
-  大会対象のレースと
-  レース結果を紐づける
-  ランクも取得する  
+  投票対象のレース名
+  grade(GⅢなど)を取得する  
 }
 
-entity GameRaceHorse {
+entity Horse {
   + id [PK]
   --
-  # GameRace_id [FK] NULL=TRUE
-  horse_name
+  # Race_id [FK] 
+  horse_name NULL=TRUE
   ==
   大会の出走馬
 }
 
-entity Comment {
+entity GameComment {
   + id [PK]
   --
   # Game_id [FK]
@@ -129,16 +96,29 @@ entity Comment {
   大会に対するコメント
 }
 
-Game |o--|| GameRace
+entity RaceComment {
+  + id [PK]
+  --
+  # Race_id [FK]
+  # User_id [FK]
+  coment_text
+  created_at
+  ==
+  大会に対するコメント
+}
+
+
 User ||--o{ Vote
+Horse }--o{ Vote
+Race ||--o{ Vote
 Game ||--o{ Vote
-GameRace ||-left-|{ GameRaceHorse
-User ||--o{ Comment
-Game ||--o{ Comment
+Race ||--{ Horse
+User ||--o{ GameComment
+Game ||--o{ GameComment
+User ||--o{ RaceComment
+Race ||--o{ RaceComment
 GameRule ||--o{ Game
-RaceResult ||--|| JoinResultOdds
-Odds ||-|| JoinResultOdds
-JoinResultOdds ||--o|GameRace
+HorsePlace ||--|| Horse
 FirebaseUser ||..||User
 
 @enduml

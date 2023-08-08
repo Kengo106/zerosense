@@ -58,10 +58,12 @@ class JoinResultOdds(models.Model):
     def __str__(self):
         return f"{self.RaceResult_id} - {self.Odds_id}"
 
+class User(models.Model):
+    UID = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
 
 class GameRule(models.Model):
-    rule_start_datetime = models.DateTimeField()
-    rule_end_datetime = models.DateTimeField()
+
     open = models.BooleanField()
     logic_id = models.IntegerField()
 
@@ -69,38 +71,43 @@ class GameRule(models.Model):
 class Game(models.Model):
     GameRule = models.ForeignKey(GameRule, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255)
-    GameRace = models.ForeignKey("GameRace", on_delete=models.CASCADE,)
     start_datetime = models.DateTimeField()
 
-
-class Vote(models.Model):
-    UID = models.ForeignKey("User",on_delete=models.CASCADE,)
-    Game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    horse_id_first = models.IntegerField()
-    horse_id_second = models.IntegerField()
-    horse_id_third = models.IntegerField()
-    vote_time = models.DateTimeField()
-    comment = models.TextField()
-
-
-class GameRace(models.Model):
-    JoinResultOdds = models.ForeignKey(
-        JoinResultOdds, on_delete=models.CASCADE, null=True)
+class Race(models.Model):
     race_name = models.CharField(max_length=255)
     rank = models.CharField(max_length=255)
 
 
-class GameRaceHorse(models.Model):
-    GameRace = models.ForeignKey(GameRace, on_delete=models.CASCADE, null=True)
+
+class Horse(models.Model):
+    Race = models.ForeignKey(Race, on_delete=models.CASCADE, null=True)
     horse_name = models.CharField(max_length=255)
 
 
-class Comment(models.Model):
+class HorsePlace(models.Model):
+    Horse = models.ForeignKey(Horse, on_delete=models.CASCADE)
+    place = models.IntegerField(null=True)
+
+
+class GameComment(models.Model):
     Game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    UID = models.ForeignKey("User",on_delete=models.CASCADE)
+    UID = models.ForeignKey(User,on_delete=models.CASCADE)
     comment_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
-class User(models.Model):
-    UID = models.CharField(max_length=255)
-    username = models.CharField(max_length=255)
+class RaceComment(models.Model):
+    Race = models.ForeignKey(Race, on_delete=models.CASCADE)
+    UID = models.ForeignKey(User,on_delete=models.CASCADE)
+    comment_text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class Vote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    race = models.ForeignKey(Race, on_delete=models.CASCADE)
+    horse_first = models.ForeignKey(Horse, on_delete=models.CASCADE, related_name='votes_first')
+    horse_second = models.ForeignKey(Horse, on_delete=models.CASCADE, related_name='votes_second')
+    horse_third = models.ForeignKey(Horse, on_delete=models.CASCADE, related_name='votes_third')
+    created_at = models.DateTimeField(auto_now_add=True)
+    comment = models.TextField()
+

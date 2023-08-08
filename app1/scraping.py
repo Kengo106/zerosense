@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 from django.db import transaction
-from .models import RaceResult, Odds, JoinResultOdds, GameRace, GameRaceHorse
+from .models import RaceResult, Odds, JoinResultOdds, Race, Horse, HorsePlace
 import os
 import time
 
@@ -357,16 +357,77 @@ def scrape_grade_race(browser):
 
     with transaction.atomic():
         for grade_race in grade_races:
-            game_race, _ = GameRace.objects.update_or_create(
+            game_race, _ = Race.objects.update_or_create(
                 race_name=grade_race["race_name"],
                 defaults={
                     'rank': grade_race["grade"]
                 }
             )
 
-            GameRaceHorse.objects.update_or_create(
+            Horse.objects.update_or_create(
                 horse_name=grade_race["horse_name"],
                 defaults={
-                    "GameRace": game_race,
+                    "Race": game_race,
                 }
             )
+
+def scrape_grade_race_result(browser):
+
+    # 起動したWebDriverにJRAのURLを入力
+    url = "https://www.jra.go.jp/"
+    browser.get(url)
+
+    elem_quick_menu = browser.find_element(
+        By.ID, "quick_menu")  # 上のクイックメニューを選択
+    elem_quick_menu_list = elem_quick_menu.find_elements(
+        By.TAG_NAME, "li")  # クイックメニューから出馬表を指定するためにliタグを指定
+    elem_race = elem_quick_menu_list[1]  # 左から2項目の出馬表を選択
+
+    elem_race.click()
+    time.sleep(1)  # 5秒間プログラムを一時停止
+    
+    grade_races = []
+
+    grade_race = browser.find_element(By.ID, "grade_race")  # 重賞表示個所に移動
+    race_grade_imgs = grade_race.find_elements(By.TAG_NAME, "img")  # グレートを表す画像を取得
+    grade_num = len(race_grade_imgs)
+    print(grade_num)
+    for i in range(grade_num):
+        grade_race = browser.find_element(By.ID, "grade_race")  # 重賞表示個所に移動
+        race_grade_imgs = grade_race.find_elements(By.TAG_NAME, "img")  # グレートを表す画像を取得
+        race_grade_imgs[i].click()  # レース出走馬画面に移動
+        sleep(1)
+        race_result = browser.find_element(By.CLASS_NAME,"result")  # 結果表示画面に移動
+        race_result.click()
+        race_name = browser.find_element(By.CLASS_NAME, "race_name")  # レース名を取得
+        horse_tables = browser.find_element(By.TAG_NAME, "table").find_element(By.TAG_NAME, "tbody").find_elements(By.TAG_NAME, "tr")  # 出馬表に移動
+        
+        for horse_table in horse_tables:  # 馬情報が載っている列を一行づつ取得(ヘッダーを省く)
+            grade_race_datum = {}
+            grade_race_datum["horse_name"]= horse_table.find_element(By.CLASS_NAME, "horse").text   # 馬名を取得
+            grade_race_datum["place"] = horse_table.find_element(By.CLASS_NAME, "place").text # 着順を取得
+            grade_race_datum["race_name"] = race_name.text # レース名を取得
+            grade_races.append(grade_race_datum)
+        browser.back()
+        browser.back()
+
+    with transaction.atomic():
+        for grade_race in grade_races:
+            race, _ =Race.objects.get_or_create(race_name=grade_race["race_name"])
+            horse, _ =Horse.objects.get_or_create(Race=race,horse_name=grade_race["horse_name"])
+            if grade_race["place"].isdigit():
+                place = int(grade_race["place"])
+                HorsePlace.objects.update_or_create(
+                    Horse=horse,  # フィルタリングキーの指定　ない場合はHorse=horseでcreateされる
+                    defaults={
+                        "place": place
+                    }
+                )
+            else:
+                place = 999
+                HorsePlace.objects.update_or_create(
+                    Horse=horse,
+                    defaults={
+                        "place": place
+                    }
+                ) 

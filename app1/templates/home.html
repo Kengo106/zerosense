@@ -20,3 +20,14 @@
   </form>
 </div>
 {% endblock %}
+{% block get-graderesult-button %}
+<div style="padding: 20px;">
+  <!-- Adjust top property accordingly -->
+  <form action="getgraderaceresult" method="POST">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">
+      重賞レースの結果を取得
+    </button>
+  </form>
+</div>
+{%endblock %}

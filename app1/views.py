@@ -5,7 +5,7 @@ from django.views import View
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from .scraping import initialize_browser, scrape_race_results, GetResult, scrape_data, scrape_grade_race
+from .scraping import initialize_browser, scrape_race_results, GetResult, scrape_data, scrape_grade_race, scrape_grade_race_result
 
 
 def home_site_view(request):
@@ -26,4 +26,10 @@ class GradeRaceScraping(View):
     def post(self, request):
         browser = initialize_browser()
         scrape_grade_race(browser)
+        return render(request, "finish.html")
+
+class GradeRaceResultScraping(View):
+    def post(self, request):
+        browser = initialize_browser()
+        scrape_grade_race_result(browser)
         return render(request, "finish.html")
