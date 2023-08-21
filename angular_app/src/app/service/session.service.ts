@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Password, Session } from '../class/user';
-import { Subject } from 'rxjs';
+import { Password } from '../class/user';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
@@ -12,9 +12,10 @@ import { RaceService } from './race.service';
     providedIn: 'root',
 })
 export class SessionService {
-    public session = new Session();
-    public sessionSubject = new Subject<Session>();
-    public sessionState = this.sessionSubject.asObservable();
+    private loginSubject = new BehaviorSubject<boolean>(false);
+    loginState$ = this.loginSubject.asObservable();
+    private usernameSubject = new BehaviorSubject<string>('');
+    username$ = this.usernameSubject.asObservable();
 
     constructor(
         private router: Router,
@@ -23,9 +24,11 @@ export class SessionService {
     ) {
         this.afAuth.authState.subscribe((user) => {
             if (user) {
-                this.session.login = true;
+                this.usernameSubject.next(user!.displayName || '');
+                this.loginSubject.next(true);
             } else {
-                this.session.login = false;
+                this.usernameSubject.next('');
+                this.loginSubject.next(false);
             }
         });
     }
@@ -42,8 +45,6 @@ export class SessionService {
                 console.log(account.email);
                 throw new Error('emailVerifiedが空');
             } else {
-                this.session.login = true;
-                this.sessionSubject.next(this.session);
                 await alert('ログインしました');
                 await this.router.navigate(['/']);
             }
@@ -57,7 +58,6 @@ export class SessionService {
         this.afAuth
             .signOut()
             .then(() => {
-                this.sessionSubject.next(this.session.reset());
                 return this.router.navigate(['/account/login']);
             })
             .then(() => alert('ログアウトしました'))

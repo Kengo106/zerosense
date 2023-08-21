@@ -4,17 +4,19 @@ import { RacedetailComponent } from './racedetail/racedetail.component';
 import { RacenamesComponent } from './racenames/racenames.component';
 import { LoginComponent } from './login/login.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'racenames', pathMatch: 'full'},
-  { path: 'racenames', component: RacenamesComponent}, 
-  { path: 'racedetail/:race_name', component: RacedetailComponent},
-  { path: 'account/login', component: LoginComponent},
-  { path: 'account/signup', component: SignUpComponent},
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
+    { path: 'racenames', component: RacenamesComponent },
+    { path: 'racedetail/:race_name', component: RacedetailComponent },
+    { path: 'account/login', component: LoginComponent },
+    { path: 'account/signup', component: SignUpComponent },
+    { path: 'home', component: HomeComponent },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forRoot(routes)],
+    exports: [RouterModule],
 })
 export class AppRoutingModule {}

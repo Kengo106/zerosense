@@ -1,1 +1,16 @@
+<h1>新規大会作成</h1>
+<form (ngSubmit)="onSubmit()">
+    <div >
+        <label for="group">大会名</label>
+        <input type="text" id="group" [(ngModel)]="groupName" required>
+    </div>
+    <div>
+        <label for="private">公開</label>
+        <input type="radio" name="open" id="private" value=true [(ngModel)]="open" required>
+        <label for="close">非公開</label>
+        <input type="radio" name="open" id="close" value=false [(ngModel)]="open" required>
+        
+    </div>
 
+    <button type="submit">作成</button>
+</form>

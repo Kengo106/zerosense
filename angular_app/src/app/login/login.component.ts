@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { SessionService } from '../service/session.service';
-import { Password, Session } from '../class/user';
+import { Password } from '../class/user';
 
 @Component({
     selector: 'app-login',

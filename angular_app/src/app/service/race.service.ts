@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, timeInterval } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
@@ -26,6 +26,12 @@ export class RaceService {
     postUID(uid: string, username: string) {
         return this.http.post<any>(this.postUIDUrl, { uid: uid, username: username });
     }
+
+    createNewGame(groupName: string, open: boolean) {
+        return this.http.post(this.createNewGameUrl, { gamename: groupName, open: open });
+    }
+
+    private createNewGameUrl: string = 'http://127.0.0.1:8000/api/NewGame/';
 
     private racenameUrl: string = 'http://127.0.0.1:8000/api/racename/';
 

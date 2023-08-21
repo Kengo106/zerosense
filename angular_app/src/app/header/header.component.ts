@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { SessionService } from '../service/session.service';
-import { Session } from '../class/user';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 
 @Component({
@@ -10,22 +9,13 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 })
 export class HeaderComponent implements OnInit {
     public login = false;
-    public username = '';
+    public userName = '';
 
     constructor(public sessionService: SessionService, private afAuth: AngularFireAuth) {}
 
     ngOnInit(): void {
-        this.sessionService.sessionState.subscribe((session: Session) => {
-            if (session) {
-                this.login = session.login;
-            }
-        });
-
-        this.afAuth.authState.subscribe((user) => {
-            if (user) {
-                this.username = user.displayName || '';
-            }
-        });
+        this.sessionService.loginState$.subscribe((isLogin) => (this.login = isLogin));
+        this.sessionService.username$.subscribe((name) => (this.userName = name));
     }
 
     logout(): void {
