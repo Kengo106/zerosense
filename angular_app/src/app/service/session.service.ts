@@ -3,7 +3,10 @@ import { Password, Session } from '../class/user';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { auth } from 'firebaseui';
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/auth';
+
+import { RaceService } from './race.service';
 
 @Injectable({
     providedIn: 'root',
@@ -13,10 +16,23 @@ export class SessionService {
     public sessionSubject = new Subject<Session>();
     public sessionState = this.sessionSubject.asObservable();
 
-    constructor(private router: Router, private afAuth: AngularFireAuth) {}
+    constructor(
+        private router: Router,
+        private afAuth: AngularFireAuth,
+        private raceService: RaceService,
+    ) {
+        this.afAuth.authState.subscribe((user) => {
+            if (user) {
+                this.session.login = true;
+            } else {
+                this.session.login = false;
+            }
+        });
+    }
 
     async login(account: Password): Promise<void> {
         try {
+            await this.afAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
             const auth = await this.afAuth.signInWithEmailAndPassword(
                 account.email,
                 account.password,
@@ -24,7 +40,7 @@ export class SessionService {
             if (!auth.user?.emailVerified) {
                 await this.afAuth.signOut();
                 console.log(account.email);
-                throw new Error('メールアドレスが登録できません');
+                throw new Error('emailVerifiedが空');
             } else {
                 this.session.login = true;
                 this.sessionSubject.next(this.session);
@@ -58,12 +74,15 @@ export class SessionService {
         );
         try {
             if (userCredential.user) {
-                console.log(account.username + 'です');
                 await userCredential.user.updateProfile({
                     displayName: account.username,
                 });
-                await userCredential.user.sendEmailVerification();
-                alert('メールアドレス確認メールを送信しました。');
+                const uid = userCredential.user.uid;
+                const username = account.username;
+                this.raceService.postUID(uid, username).subscribe(async (response) => {
+                    await userCredential.user!.sendEmailVerification();
+                    alert('メールアドレス確認メールを送信しました。');
+                });
             } else {
                 alert('userCredential.userが空');
             }

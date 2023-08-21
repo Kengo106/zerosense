@@ -20,6 +20,7 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { HeaderComponent } from './header/header.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
+import { NewgameComponent } from './newgame/newgame.component';
 
 
 
@@ -33,6 +34,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
     LoginComponent,
     HeaderComponent,
     SignUpComponent,
+    NewgameComponent,
 
   ],
   imports: [

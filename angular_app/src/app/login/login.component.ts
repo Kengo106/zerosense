@@ -4,23 +4,19 @@ import { SessionService } from '../service/session.service';
 import { Password, Session } from '../class/user';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
+    public account = new Password();
 
-  public account = new Password();
+    constructor(private sessionservise: SessionService) {}
 
-  constructor(private sessionservise : SessionService) { }
+    ngOnInit(): void {}
 
-  ngOnInit(): void {
-    
-  }
-
-  submitLogin(e: Event){
-    e.preventDefault()
-    this.sessionservise.login(this.account)
-  }
-
+    submitLogin(e: Event) {
+        e.preventDefault();
+        this.sessionservise.login(this.account);
+    }
 }
