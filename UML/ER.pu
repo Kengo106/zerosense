@@ -1,4 +1,4 @@
-@startuml ER図
+@startuml 20230810_ER図
 
 
 entity HorsePlace {
@@ -71,9 +71,13 @@ entity Race{
   --
   race_name
   grade
+  race_date
+  is_votable
   ==
   投票対象のレース名
   grade(GⅢなど)を取得する  
+  投票受付中ならis_votable
+  が1終了なら0
 }
 
 entity Horse {
@@ -94,6 +98,15 @@ entity GameComment {
   created_at
   ==
   大会に対するコメント
+}
+
+entity GamePlayers {
+  + id [PK]
+  --
+  # Game_id [FK]
+  # User_id [FK]
+  ==
+  大会の参加者を登録する
 }
 
 entity RaceComment {
@@ -119,7 +132,8 @@ User ||--o{ RaceComment
 Race ||--o{ RaceComment
 GameRule ||--o{ Game
 HorsePlace ||--|| Horse
-FirebaseUser ||..||User
-
+FirebaseUser ||..|| User
+Game ||--|{ GamePlayers
+User ||--o{ GamePlayers
 @enduml
 

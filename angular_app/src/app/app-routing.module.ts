@@ -5,6 +5,7 @@ import { RacenamesComponent } from './racenames/racenames.component';
 import { LoginComponent } from './login/login.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { HomeComponent } from './home/home.component';
+import { NewgameComponent } from './newgame/newgame.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -13,6 +14,7 @@ const routes: Routes = [
     { path: 'account/login', component: LoginComponent },
     { path: 'account/signup', component: SignUpComponent },
     { path: 'home', component: HomeComponent },
+    { path: 'newgame', component: NewgameComponent },
 ];
 
 @NgModule({

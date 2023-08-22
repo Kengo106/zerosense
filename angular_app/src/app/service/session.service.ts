@@ -16,6 +16,8 @@ export class SessionService {
     loginState$ = this.loginSubject.asObservable();
     private usernameSubject = new BehaviorSubject<string>('');
     username$ = this.usernameSubject.asObservable();
+    private uidSubject = new BehaviorSubject<string>('');
+    uid$ = this.uidSubject.asObservable();
 
     constructor(
         private router: Router,
@@ -24,11 +26,13 @@ export class SessionService {
     ) {
         this.afAuth.authState.subscribe((user) => {
             if (user) {
-                this.usernameSubject.next(user!.displayName || '');
+                this.usernameSubject.next(user.displayName || '');
                 this.loginSubject.next(true);
+                this.uidSubject.next(user.uid);
             } else {
                 this.usernameSubject.next('');
                 this.loginSubject.next(false);
+                this.uidSubject.next('');
             }
         });
     }

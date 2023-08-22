@@ -27,11 +27,18 @@ export class RaceService {
         return this.http.post<any>(this.postUIDUrl, { uid: uid, username: username });
     }
 
-    createNewGame(groupName: string, open: boolean) {
-        return this.http.post(this.createNewGameUrl, { gamename: groupName, open: open });
+    createNewGame(gameName: string, open: boolean, uid: string, span: string) {
+        console.log(gameName, open, uid, span);
+        console.log(typeof open);
+        return this.http.post(this.createNewGameUrl, {
+            gamename: gameName,
+            open: open,
+            uid: uid,
+            span: span,
+        });
     }
 
-    private createNewGameUrl: string = 'http://127.0.0.1:8000/api/NewGame/';
+    private createNewGameUrl: string = 'http://127.0.0.1:8000/api/newgame/';
 
     private racenameUrl: string = 'http://127.0.0.1:8000/api/racename/';
 

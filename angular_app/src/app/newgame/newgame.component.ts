@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { RaceService } from '../service/race.service';
+import { SessionService } from '../service/session.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-newgame',
@@ -7,11 +9,38 @@ import { RaceService } from '../service/race.service';
     styleUrls: ['./newgame.component.scss'],
 })
 export class NewgameComponent {
-    public groupName: string = '';
+    public gameName: string = '';
+    public strOpen: string = '';
     public open: boolean = false;
+    public uid: string = '';
+    public span: string = '';
 
-    constructor(private raceServce: RaceService) {}
+    constructor(
+        private raceServce: RaceService,
+        private sessionService: SessionService,
+        private router: Router,
+    ) {
+        this.sessionService.uid$.subscribe((UID) => (this.uid = UID));
+    }
     onSubmit() {
-        this.raceServce.createNewGame(this.groupName, this.open);
+        if (this.uid && this.uid !== '') {
+            if (this.strOpen == 'true') {
+                this.open = true;
+            } else {
+                this.open = false;
+            }
+            this.raceServce.createNewGame(this.gameName, this.open, this.uid, this.span).subscribe({
+                next: (response) => {
+                    alert(`大会を作成しました\n${this.gameName}`);
+                    this.router.navigate(['/home']);
+                },
+                error: (error) => {
+                    alert(`error\n${error}`);
+                },
+            });
+        } else {
+            alert('ログインしてください');
+            this.router.navigate(['/account/login']);
+        }
     }
 }

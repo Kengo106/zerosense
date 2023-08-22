@@ -2,14 +2,18 @@
 <form (ngSubmit)="onSubmit()">
     <div >
         <label for="group">大会名</label>
-        <input type="text" id="group" [(ngModel)]="groupName" required>
+        <input type="text" id="group" name="gameName" [(ngModel)]="gameName" required>
     </div>
     <div>
         <label for="private">公開</label>
-        <input type="radio" name="open" id="private" value=true [(ngModel)]="open" required>
+        <input type="radio" name="open" id="private" value=true [(ngModel)]="strOpen" required>
         <label for="close">非公開</label>
-        <input type="radio" name="open" id="close" value=false [(ngModel)]="open" required>
+        <input type="radio" name="open" id="close" value=false [(ngModel)]="strOpen" required>
         
+    </div>
+    <div>
+        <label for="span">開催期間</label>
+        <input type="text" id="span" name="span" [(ngModel)]="span" required>
     </div>
 
     <button type="submit">作成</button>

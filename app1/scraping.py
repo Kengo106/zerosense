@@ -12,6 +12,8 @@ from django.db import transaction
 from .models import RaceResult, Odds, JoinResultOdds, Race, Horse, HorsePlace
 import os
 import time
+import re
+from datetime import datetime
 
 # scraping.pyのディレクトリを取得
 
@@ -332,14 +334,17 @@ def scrape_grade_race(browser):
     grade_num = len(race_grade_imgs)
     for i in range(grade_num):
         grade_race = browser.find_element(By.ID, "grade_race")  # 重賞表示個所に移動
-        # race_names = grade_race.find_elements(By.CLASS_NAME, "race_num")
-        # race_name = race_names[i].text  # レース名を取得
         race_grade_imgs = grade_race.find_elements(
             By.TAG_NAME, "img")  # グレートを表す画像を取得
         race_grade = race_grade_imgs[i].get_attribute('alt')  # グレートを取得
         race_grade_imgs[i].click()  # レース出走馬画面に移動
         sleep(1)
-        race_name = browser.find_element(By.CLASS_NAME, "race_name")
+        race_name = browser.find_element(By.CLASS_NAME, "race_name")  # レース名を取得
+        race_date = browser.find_element(
+            By.CSS_SELECTOR, ".cell.date")  # レース日を取得
+        # .date()は年月日だけのオブジェクトをかえす
+        race_date_object = datetime.strptime(re.search(
+            r"(\d{4}年\d{1,2}月\d{1,2}日)", race_date.text).group(0), '%Y年%m月%d日').date()
         horse_table = browser.find_element(By.ID, "syutsuba")  # 出馬表に移動
         horse_infos = horse_table.find_elements(
             By.CLASS_NAME, "horse")  # 表内の出走馬が表示される列を取得
@@ -351,6 +356,7 @@ def scrape_grade_race(browser):
             grade_race_datum["grade"] = race_grade
             grade_race_datum["race_name"] = race_name.text
             grade_race_datum["horse_name"] = horse_name.text
+            grade_race_datum["race_date"] = race_date_object
             grade_races.append(grade_race_datum)
 
         browser.back()
@@ -360,7 +366,9 @@ def scrape_grade_race(browser):
             game_race, _ = Race.objects.update_or_create(
                 race_name=grade_race["race_name"],
                 defaults={
-                    'rank': grade_race["grade"]
+                    'rank': grade_race["grade"],
+                    'race_date': grade_race["race_date"],
+                    'is_votable': 1
                 }
             )
 
@@ -370,6 +378,7 @@ def scrape_grade_race(browser):
                     "Race": game_race,
                 }
             )
+
 
 def scrape_grade_race_result(browser):
 
@@ -385,36 +394,44 @@ def scrape_grade_race_result(browser):
 
     elem_race.click()
     time.sleep(1)  # 5秒間プログラムを一時停止
-    
+
     grade_races = []
 
     grade_race = browser.find_element(By.ID, "grade_race")  # 重賞表示個所に移動
-    race_grade_imgs = grade_race.find_elements(By.TAG_NAME, "img")  # グレートを表す画像を取得
+    race_grade_imgs = grade_race.find_elements(
+        By.TAG_NAME, "img")  # グレートを表す画像を取得
     grade_num = len(race_grade_imgs)
     print(grade_num)
     for i in range(grade_num):
         grade_race = browser.find_element(By.ID, "grade_race")  # 重賞表示個所に移動
-        race_grade_imgs = grade_race.find_elements(By.TAG_NAME, "img")  # グレートを表す画像を取得
+        race_grade_imgs = grade_race.find_elements(
+            By.TAG_NAME, "img")  # グレートを表す画像を取得
         race_grade_imgs[i].click()  # レース出走馬画面に移動
         sleep(1)
-        race_result = browser.find_element(By.CLASS_NAME,"result")  # 結果表示画面に移動
+        race_result = browser.find_element(
+            By.CLASS_NAME, "result")  # 結果表示画面に移動
         race_result.click()
         race_name = browser.find_element(By.CLASS_NAME, "race_name")  # レース名を取得
-        horse_tables = browser.find_element(By.TAG_NAME, "table").find_element(By.TAG_NAME, "tbody").find_elements(By.TAG_NAME, "tr")  # 出馬表に移動
-        
+        horse_tables = browser.find_element(By.TAG_NAME, "table").find_element(
+            By.TAG_NAME, "tbody").find_elements(By.TAG_NAME, "tr")  # 出馬表に移動
+
         for horse_table in horse_tables:  # 馬情報が載っている列を一行づつ取得(ヘッダーを省く)
             grade_race_datum = {}
-            grade_race_datum["horse_name"]= horse_table.find_element(By.CLASS_NAME, "horse").text   # 馬名を取得
-            grade_race_datum["place"] = horse_table.find_element(By.CLASS_NAME, "place").text # 着順を取得
-            grade_race_datum["race_name"] = race_name.text # レース名を取得
+            grade_race_datum["horse_name"] = horse_table.find_element(
+                By.CLASS_NAME, "horse").text   # 馬名を取得
+            grade_race_datum["place"] = horse_table.find_element(
+                By.CLASS_NAME, "place").text  # 着順を取得
+            grade_race_datum["race_name"] = race_name.text  # レース名を取得
             grade_races.append(grade_race_datum)
-        browser.back()
         browser.back()
 
     with transaction.atomic():
         for grade_race in grade_races:
-            race, _ =Race.objects.get_or_create(race_name=grade_race["race_name"])
-            horse, _ =Horse.objects.get_or_create(Race=race,horse_name=grade_race["horse_name"])
+            Race.objects.filter(
+                race_name=grade_race["race_name"]).update(is_votable=0)
+            race = Race.objects.get(race_name=grade_race["race_name"])
+            horse, _ = Horse.objects.get_or_create(
+                Race=race, horse_name=grade_race["horse_name"])
             if grade_race["place"].isdigit():
                 place = int(grade_race["place"])
                 HorsePlace.objects.update_or_create(
@@ -430,4 +447,4 @@ def scrape_grade_race_result(browser):
                     defaults={
                         "place": place
                     }
-                ) 
+                )

@@ -22,3 +22,4 @@ class JoinResultOddsSerializer(serializers.ModelSerializer):
     class Meta:
         model = JoinResultOdds
         fields = ["RaceResult", "Odds"]
+
