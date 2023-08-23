@@ -1,0 +1,9 @@
+<h2>大会検索</h2>
+<h3>参加する大会を検索する</h3>
+<div>
+    <form (ngSubmit)="onSubmit()">
+        <label for="name">大会名</label>
+        <input type="text" name="gameName" id="name" [(ngModel)]="gameName" required >
+        <button type="submit">参加する</button>
+    </form >
+</div>
