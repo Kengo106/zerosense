@@ -1,4 +1,26 @@
-<p>ホーム画面</p>
-<p>投票受付中の重賞レース、過去の重賞レースの結果などのリンクを貼る</p>
-<p>参加中の大会を表示する</p>
-<p>ゲーム一覧、サイトポリシーも</p>
+<h3>参加中の大会</h3>
+<div *ngIf="games; then thenBlock else nogame"></div>
+    <ng-template #thenBlock>
+         <p *ngFor="let game of games">
+            {{game}}
+        </p>          
+    </ng-template>
+    <ng-template #nogame>
+        参加中の大会がありません        
+   </ng-template>   
+<h3>投票受付中のレース一覧</h3>
+<div *ngIf="isVotableRace; then votableBlock else noVote"></div>
+    <ng-template #votableBlock>
+        <table>
+            <tbody>
+                <tr *ngFor="let race of isVotableRace">
+                    <td>{{race.date}}</td><td>{{race.name}}</td><td>{{race.grade}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </ng-template>
+    <ng-template #noVote>
+        投票対象のレースがありません        
+   </ng-template>   
+<h3>過去のレース結果</h3>
+<h3>サイトポリシー</h3>

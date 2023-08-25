@@ -1,0 +1,11 @@
+a {
+    background-color: darkgreen; // 深緑の背景
+    color: white; // 文字色を白に設定
+    display: block; // ブロック要素として設定し、下のpaddingやmarginを適用するため
+    padding: 10px 0; // 上下に10pxのpaddingを追加して帯状にする
+    text-align: left; // タイトルを中央寄せにする
+
+    h1 {
+        margin: 0; // h1のデフォルトの余白を取り除く
+    }
+}

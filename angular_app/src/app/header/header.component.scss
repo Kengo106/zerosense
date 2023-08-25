@@ -1,0 +1,23 @@
+.navbar {
+    display: flex;
+    justify-content: flex-start; /* 右揃えにする */
+    background-color: #333; // 暗いグレーの背景色
+    color: white; // 文字色を白に
+}
+
+.navbar-text {
+    display: flex;
+    align-items: center; /* 縦方向の中央揃えにする */
+    gap: 10px; /* 要素同士の間隔をとる */
+}
+
+.navbar-text h2 {
+    margin: 0; /* h2タグの余白を取り除く */
+}
+// header.component.scss
+a:visited {
+    color: white;
+}
+
+
+

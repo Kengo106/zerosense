@@ -35,7 +35,7 @@ export class NewgameComponent {
                     this.router.navigate(['/home']);
                 },
                 error: (error) => {
-                    alert(`error\n${error}`);
+                    alert(`error\n${error.message}`);
                 },
             });
         } else {

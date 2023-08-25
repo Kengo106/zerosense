@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, timeInterval } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Race } from '../race.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -37,10 +38,22 @@ export class RaceService {
     }
 
     joinGame(gameName: string, uid: string) {
-        return this.http.post<any>(this.joinGameUrl, { gamename: gameName, uid: uid });
+        return this.http.post<any>(this.gameUrl, { gamename: gameName, uid: uid });
     }
 
-    private joinGameUrl: string = 'http://127.0.0.1:8000/api/joingame/';
+    getCurrentGames(uid: string) {
+        let params = new HttpParams().set('uid', uid);
+        return this.http.get<any>(this.gameUrl, { params: params });
+    }
+
+    getVotableRaces(): Observable<Race[]> {
+        let params = new HttpParams().set('flag', 1);
+        return this.http.get<Race[]>(this.raceUrl, { params });
+    }
+
+    private raceUrl: string = 'http://127.0.0.1:8000/api/race/';
+
+    private gameUrl: string = 'http://127.0.0.1:8000/api/joingame/';
 
     private newGameUrl: string = 'http://127.0.0.1:8000/api/newgame/';
 

@@ -62,7 +62,7 @@ export class SessionService {
         this.afAuth
             .signOut()
             .then(() => {
-                return this.router.navigate(['/account/login']);
+                return this.router.navigate(['']);
             })
             .then(() => alert('ログアウトしました'))
             .catch((err) => {
