@@ -23,6 +23,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { NewgameComponent } from './newgame/newgame.component';
 import { HomeComponent } from './home/home.component';
 import { SerchgameComponent } from './serchgame/serchgame.component';
+import { VoteComponent } from './vote/vote.component';
 
 
 
@@ -39,6 +40,7 @@ import { SerchgameComponent } from './serchgame/serchgame.component';
     NewgameComponent,
     HomeComponent,
     SerchgameComponent,
+    VoteComponent,
 
   ],
   imports: [

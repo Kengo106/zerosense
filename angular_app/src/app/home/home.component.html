@@ -13,8 +13,11 @@
     <ng-template #votableBlock>
         <table>
             <tbody>
-                <tr *ngFor="let race of isVotableRace">
-                    <td>{{race.date}}</td><td>{{race.name}}</td><td>{{race.grade}}</td>
+                <tr *ngFor="let race of isVotableRace" (click)="moveVote(race)">
+                        <td>{{race.date}}</td>
+                        <td>{{race.name}}</td>
+                        <td>{{race.grade}}</td>
+                        <td><button>投票する</button></td>
                 </tr>
             </tbody>
         </table>

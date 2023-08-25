@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { Race } from '../race.interface';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-home',
@@ -12,7 +13,11 @@ export class HomeComponent implements OnInit {
     public uid: string = '';
     public games: string[] = [];
     public isVotableRace: Race[] = [];
-    constructor(private raceService: RaceService, private sessionService: SessionService) {}
+    constructor(
+        private raceService: RaceService,
+        private sessionService: SessionService,
+        private router: Router,
+    ) {}
 
     ngOnInit() {
         this.sessionService.uid$.subscribe((currentUid) => {
@@ -25,5 +30,9 @@ export class HomeComponent implements OnInit {
             response.map((race) => this.isVotableRace.push(race));
             console.log(this.isVotableRace);
         });
+    }
+
+    moveVote(race: Race) {
+        this.router.navigate(['/vote'], { queryParams: race });
     }
 }

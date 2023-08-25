@@ -25,7 +25,7 @@ export class RaceService {
     }
 
     postUID(uid: string, username: string) {
-        return this.http.post<any>(this.postUIDUrl, { uid: uid, username: username });
+        return this.http.post<any>(this.UIDUrl, { uid: uid, username: username });
     }
 
     createNewGame(gameName: string, open: boolean, uid: string, span: string) {
@@ -51,6 +51,14 @@ export class RaceService {
         return this.http.get<Race[]>(this.raceUrl, { params });
     }
 
+    getVote(race: Race) {
+        let params = new HttpParams()
+            .set('grade', race.grade)
+            .set('date', race.date)
+            .set('name', race.name);
+        return this.http.post(this.voteUrl, { params });
+    }
+
     private raceUrl: string = 'http://127.0.0.1:8000/api/race/';
 
     private gameUrl: string = 'http://127.0.0.1:8000/api/joingame/';
@@ -61,5 +69,7 @@ export class RaceService {
 
     private raceresultUrl: string = 'http://127.0.0.1:8000/api/join/';
 
-    private postUIDUrl: string = 'http://127.0.0.1:8000/api/UID/';
+    private UIDUrl: string = 'http://127.0.0.1:8000/api/UID/';
+
+    private voteUrl: string = 'http://127.0.0.1:8000/api/vote/';
 }
