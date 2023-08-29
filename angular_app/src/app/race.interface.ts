@@ -10,3 +10,10 @@ export interface Race {
     name: string;
     date: string;
 }
+
+export interface VoteForm {
+    first: number | null; //HorseのID
+    second: number | null;
+    third: number | null;
+    comment: string | null;
+}

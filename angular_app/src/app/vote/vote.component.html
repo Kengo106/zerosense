@@ -1,1 +1,28 @@
 <h2>{{race.name}}{{race.grade}}</h2>
+<h3>出走馬</h3>
+<div *ngFor="let horse of horseList">
+    <p>{{horse.name}}</p>
+</div>
+
+<form (ngSubmit)="onSubmit()">
+    <label for="first">一着：</label>
+    <select name="firsthorse" id="first" [(ngModel)]="voteForm.first" required>
+        <option [value]="horse.id" *ngFor="let horse of horseList">
+            {{horse.name}}
+        </option>
+    </select>
+    <label for="second">二着：</label>
+    <select name="secondhorse" id="second" [(ngModel)]="voteForm.second" required>
+        <option [value]="horse.id" *ngFor="let horse of horseList">
+            {{horse.name}}
+        </option>
+    </select>
+    <label for="third">三着：</label>
+    <select name="thirdhorse" id="third" [(ngModel)]="voteForm.third" required>
+        <option [value]="horse.id" *ngFor="let horse of horseList">
+            {{horse.name}}
+        </option>
+    </select>
+    コメント：<textarea name="comment" [(ngModel)]="voteForm.comment" id="comment" cols="30" rows="10"></textarea>
+    <button type="submit">投票する</button>
+</form>

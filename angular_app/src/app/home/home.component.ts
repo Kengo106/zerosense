@@ -22,13 +22,17 @@ export class HomeComponent implements OnInit {
     ngOnInit() {
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
+            console.log(this.uid);
             this.raceService.getCurrentGames(this.uid).subscribe((response) => {
+                this.games = [];
                 response.map((game: string) => this.games.push(game));
+                // console.log(this.games);
             });
         });
         this.raceService.getVotableRaces().subscribe((response: Race[]) => {
+            this.isVotableRace = [];
             response.map((race) => this.isVotableRace.push(race));
-            console.log(this.isVotableRace);
+            // console.log(this.isVotableRace);
         });
     }
 

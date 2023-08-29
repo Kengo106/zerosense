@@ -1,0 +1,24 @@
+form {
+    width: 600px;  // フォーム全体の横幅を固定
+    margin: left;   // 中央寄せ
+  
+    label {
+      font-weight: bold;
+      margin: 10px 0;
+    }
+  
+    select {
+      margin: 5px 0;
+      width: 100%;  // select要素の横幅をフォームに合わせる
+    }
+  
+    textarea#comment {
+      width: 100%;  // コメントのテキストエリアの横幅をフォームに合わせる
+      height: 200px; // コメントのテキストエリアの縦幅を固定
+    }
+  
+    button {
+      width: 100px;  // ボタンの横幅を固定
+    }
+  }
+  

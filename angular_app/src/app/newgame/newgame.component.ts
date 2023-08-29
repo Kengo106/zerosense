@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { Router } from '@angular/router';
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
     templateUrl: './newgame.component.html',
     styleUrls: ['./newgame.component.scss'],
 })
-export class NewgameComponent {
+export class NewgameComponent implements OnInit {
     public gameName: string = '';
     public strOpen: string = '';
     public open: boolean = false;
@@ -19,7 +19,9 @@ export class NewgameComponent {
         private raceServce: RaceService,
         private sessionService: SessionService,
         private router: Router,
-    ) {
+    ) {}
+
+    ngOnInit(): void {
         this.sessionService.uid$.subscribe((UID) => (this.uid = UID));
     }
     onSubmit() {

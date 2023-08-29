@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, timeInterval } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Race } from '../race.interface';
+import { Race, VoteForm } from '../race.interface';
 
 @Injectable({
     providedIn: 'root',
@@ -43,6 +43,7 @@ export class RaceService {
 
     getCurrentGames(uid: string) {
         let params = new HttpParams().set('uid', uid);
+        console.log(uid);
         return this.http.get<any>(this.gameUrl, { params: params });
     }
 
@@ -51,12 +52,18 @@ export class RaceService {
         return this.http.get<Race[]>(this.raceUrl, { params });
     }
 
-    getVote(race: Race) {
+    getVote(race: Race, uid: string) {
         let params = new HttpParams()
             .set('grade', race.grade)
             .set('date', race.date)
-            .set('name', race.name);
-        return this.http.post(this.voteUrl, { params });
+            .set('name', race.name)
+            .set('uid', uid);
+        return this.http.get(this.voteUrl, { params });
+    }
+
+    submitVote(voteForm: VoteForm, uid: string, race: Race) {
+        // console.log({ voteForm: voteForm, uid: uid, racename: race });
+        return this.http.post(this.voteUrl, { voteForm: voteForm, uid: uid, racename: race });
     }
 
     private raceUrl: string = 'http://127.0.0.1:8000/api/race/';

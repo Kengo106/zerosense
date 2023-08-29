@@ -25,6 +25,7 @@ export class SessionService {
         private raceService: RaceService,
     ) {
         this.afAuth.authState.subscribe((user) => {
+            // console.log(user);
             if (user) {
                 this.usernameSubject.next(user.displayName || '');
                 this.loginSubject.next(true);
@@ -49,8 +50,8 @@ export class SessionService {
                 console.log(account.email);
                 throw new Error('emailVerifiedが空');
             } else {
-                await alert('ログインしました');
-                await this.router.navigate(['/']);
+                alert('ログインしました');
+                this.router.navigate(['/']);
             }
         } catch (error) {
             console.log(error);
@@ -58,17 +59,15 @@ export class SessionService {
         }
     }
 
-    logout(): void {
-        this.afAuth
-            .signOut()
-            .then(() => {
-                return this.router.navigate(['']);
-            })
-            .then(() => alert('ログアウトしました'))
-            .catch((err) => {
-                console.log(err);
-                alert('ログアウトに失敗しました /n' + err);
-            });
+    async logout(): Promise<any> {
+        try {
+            await this.afAuth.signOut();
+            alert('ログアウトしました');
+            await this.router.navigate(['']);
+        } catch (err) {
+            console.log(err);
+            alert('ログアウトに失敗しました /n' + err);
+        }
     }
 
     async signup(account: Password): Promise<void> {
