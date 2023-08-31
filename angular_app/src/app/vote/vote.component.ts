@@ -3,6 +3,7 @@ import { Race, VoteForm } from '../race.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
+import { Location } from '@angular/common';
 
 @Component({
     selector: 'app-vote',
@@ -15,12 +16,15 @@ export class VoteComponent implements OnInit {
         name: '',
         date: '',
     };
-    public voteForm: VoteForm = {
+    userName: string = '';
+    voteList: any[] = [];
+    public myVote: VoteForm = {
         first: null,
         second: null,
         third: null,
         comment: '',
     };
+    gameName: string = '';
     public uid: string = '';
     public horseList: {
         id: number;
@@ -32,9 +36,13 @@ export class VoteComponent implements OnInit {
         private router: Router,
         private raceService: RaceService,
         private sessionService: SessionService,
+        private location: Location,
     ) {}
 
     ngOnInit() {
+        this.route.queryParams.subscribe((params) => (this.gameName = params['gamename']));
+        console.log(this.gameName);
+        this.sessionService.username$.subscribe((myName) => (this.userName = myName));
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
             this.route.queryParams.subscribe((params) => {
@@ -44,33 +52,43 @@ export class VoteComponent implements OnInit {
                     date: params['date'] as string,
                 };
             });
-            this.raceService.getVote(this.race, this.uid).subscribe((response: any) => {
-                this.voteForm = {
-                    first: response.vote.first as number | null,
-                    second: response.vote.second as number | null,
-                    third: response.vote.third as number | null,
-                    comment: response.vote.comment as string | null,
-                };
-                this.horseList = [];
-                response.horses.map((horse: any) => this.horseList.push(horse));
-            });
+            this.raceService
+                .getVote(this.race, this.uid, this.gameName)
+                .subscribe((response: any) => {
+                    this.myVote = {
+                        first: response.vote.first as number | null,
+                        second: response.vote.second as number | null,
+                        third: response.vote.third as number | null,
+                        comment: response.vote.comment as string | null,
+                    };
+
+                    this.horseList = [];
+                    response.horses.map((horse: any) => this.horseList.push(horse));
+                    this.voteList = [];
+                    response.votelist.map((vote: any) => {
+                        this.voteList.push(vote);
+                    });
+                    console.log(this.voteList);
+                });
         });
     }
 
     onSubmit() {
-        if (this.voteForm.comment === '' || this.voteForm.comment === undefined) {
-            this.voteForm.comment = null;
+        if (this.myVote.comment === '' || this.myVote.comment === undefined) {
+            this.myVote.comment = null;
         }
-        console.log(this.voteForm);
+        console.log(this.myVote);
         if (
-            this.voteForm.first != this.voteForm.second &&
-            this.voteForm.first !== this.voteForm.third &&
-            this.voteForm.second !== this.voteForm.third
+            this.myVote.first != this.myVote.second &&
+            this.myVote.first !== this.myVote.third &&
+            this.myVote.second !== this.myVote.third
         ) {
-            this.raceService.submitVote(this.voteForm, this.uid, this.race).subscribe({
+            this.raceService.submitVote(this.myVote, this.uid, this.race, this.gameName).subscribe({
                 next: (responce: any) => {
                     alert(responce.sucsess);
-                    this.router.navigate(['/home']);
+                    this.router.navigate(['/gamemain'], {
+                        queryParams: { gamename: this.gameName },
+                    });
                 },
                 error: (error: any) => {
                     alert('error');
@@ -79,5 +97,8 @@ export class VoteComponent implements OnInit {
         } else {
             alert('異なる馬を投票してください');
         }
+    }
+    goBack() {
+        this.location.back();
     }
 }

@@ -115,7 +115,7 @@ class RaceComment(models.Model):
 
 class Vote(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, null=True)
     race = models.ForeignKey(Race, on_delete=models.CASCADE)
     horse_first = models.ForeignKey(
         Horse, on_delete=models.CASCADE, related_name='votes_first')
@@ -124,4 +124,4 @@ class Vote(models.Model):
     horse_third = models.ForeignKey(
         Horse, on_delete=models.CASCADE, related_name='votes_third')
     created_at = models.DateTimeField(auto_now_add=True)
-    comment = models.TextField()
+    comment = models.TextField(null=True)

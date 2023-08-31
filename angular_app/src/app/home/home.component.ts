@@ -28,7 +28,6 @@ export class HomeComponent implements OnInit {
             this.isLogin = login;
             console.log(this.isLogin);
         });
-        this.gameService.putGameName(null);
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
             this.raceService.getCurrentGames(this.uid).subscribe((response) => {
@@ -39,8 +38,6 @@ export class HomeComponent implements OnInit {
     }
 
     moveGameMain(game: string) {
-        this.gameService.putGameName(game);
-
-        this.router.navigate(['/gamemain'], { queryParams: { game: game } });
+        this.router.navigate(['/gamemain'], { queryParams: { gamename: game } });
     }
 }

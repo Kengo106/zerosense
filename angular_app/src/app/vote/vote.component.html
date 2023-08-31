@@ -1,28 +1,46 @@
-<h2>{{race.name}}{{race.grade}}</h2>
-<h3>出走馬</h3>
-<div *ngFor="let horse of horseList">
-    <p>{{horse.name}}</p>
+    <h2>{{race.name}}{{race.grade}}</h2>
+    <div style="display: flex;">
+        <div>
+                <h3>出走馬</h3>
+    <div *ngFor="let horse of horseList">
+        <p style="margin:0; padding: 0;">{{horse.name}}</p>
+    </div>
+        </div>
+<div>
+        <h3>投票</h3>
+    <div>
+        <tr *ngFor="let vote of voteList">
+            <div *ngIf="vote.name!=userName">
+                <td>{{vote.name}}</td><td>一着：{{vote.first.name}}</td><td>二着：{{vote.second.name}}</td><td>三着：{{vote.third.name}}</td>
+            </div>
+        </tr>
+    </div>
+</div>
+
 </div>
 
 <form (ngSubmit)="onSubmit()">
     <label for="first">一着：</label>
-    <select name="firsthorse" id="first" [(ngModel)]="voteForm.first" required>
+    <select name="firsthorse" id="first" [(ngModel)]="myVote.first" required>
+        <option value=null disabled>選択してください</option>
         <option [value]="horse.id" *ngFor="let horse of horseList">
             {{horse.name}}
         </option>
     </select>
     <label for="second">二着：</label>
-    <select name="secondhorse" id="second" [(ngModel)]="voteForm.second" required>
+    <select name="secondhorse" id="second" [(ngModel)]="myVote.second" required>
+        <option value=null disabled>選択してください</option>
         <option [value]="horse.id" *ngFor="let horse of horseList">
             {{horse.name}}
         </option>
     </select>
     <label for="third">三着：</label>
-    <select name="thirdhorse" id="third" [(ngModel)]="voteForm.third" required>
+    <select name="thirdhorse" id="third" [(ngModel)]="myVote.third" required>
+        <option value=null disabled>選択してください</option>
         <option [value]="horse.id" *ngFor="let horse of horseList">
             {{horse.name}}
         </option>
     </select>
-    コメント：<textarea name="comment" [(ngModel)]="voteForm.comment" id="comment" cols="30" rows="10"></textarea>
+    コメント：<textarea name="comment" [(ngModel)]="myVote.comment" id="comment" cols="30" rows="10"></textarea>
     <button type="submit">投票する</button>
 </form>

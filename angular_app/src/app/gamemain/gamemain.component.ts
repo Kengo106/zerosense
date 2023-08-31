@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Race } from '../race.interface';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'app-gamemain',
@@ -11,32 +11,32 @@ import { Router } from '@angular/router';
 })
 export class GamemainComponent {
     public uid: string = '';
-    public games: string[] = [];
+    game: string = '';
+
     public isVotableRace: Race[] = [];
     constructor(
         private raceService: RaceService,
         private sessionService: SessionService,
         private router: Router,
+        private route: ActivatedRoute,
     ) {}
 
     ngOnInit() {
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
             console.log(this.uid);
-            this.raceService.getCurrentGames(this.uid).subscribe((response) => {
-                this.games = [];
-                response.map((game: string) => this.games.push(game));
-                // console.log(this.games);
-            });
         });
         this.raceService.getVotableRaces().subscribe((response: Race[]) => {
             this.isVotableRace = [];
             response.map((race) => this.isVotableRace.push(race));
             // console.log(this.isVotableRace);
         });
+        this.route.queryParams.subscribe((params) => {
+            this.game = params['gamename'];
+        });
     }
 
-    moveVote(race: Race) {
-        this.router.navigate(['/vote'], { queryParams: race });
+    moveVote(race: Race, game: string) {
+        this.router.navigate(['/vote'], { queryParams: { ...race, gamename: game } });
     }
 }

@@ -50,18 +50,24 @@ export class RaceService {
         return this.http.get<Race[]>(this.raceUrl, { params });
     }
 
-    getVote(race: Race, uid: string) {
+    getVote(race: Race, uid: string, gameName: string) {
         let params = new HttpParams()
             .set('grade', race.grade)
             .set('date', race.date)
             .set('name', race.name)
-            .set('uid', uid);
+            .set('uid', uid)
+            .set('gamename', gameName);
         return this.http.get(this.voteUrl, { params });
     }
 
-    submitVote(voteForm: VoteForm, uid: string, race: Race) {
+    submitVote(voteForm: VoteForm, uid: string, race: Race, game: string) {
         // console.log({ voteForm: voteForm, uid: uid, racename: race });
-        return this.http.post(this.voteUrl, { voteForm: voteForm, uid: uid, racename: race });
+        return this.http.post(this.voteUrl, {
+            voteForm: voteForm,
+            uid: uid,
+            racename: race,
+            game: game,
+        });
     }
 
     private raceUrl: string = 'http://127.0.0.1:8000/api/race/';

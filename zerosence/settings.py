@@ -10,6 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from dotenv import (
+    find_dotenv,
+    load_dotenv,
+)
+import dj_database_url
 from pathlib import Path
 import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -79,11 +84,6 @@ WSGI_APPLICATION = 'zerosence.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-import dj_database_url
-from dotenv import (
-    find_dotenv,
-    load_dotenv,
-)
 load_dotenv(find_dotenv())
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=600),
@@ -137,3 +137,8 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
+
+
+# settings.py
+CSRF_COOKIE_NAME = 'csrftoken'  # デフォルト
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # デフォルト
