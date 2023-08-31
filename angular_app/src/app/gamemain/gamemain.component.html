@@ -1,1 +1,29 @@
-<p>gamemain works!</p>
+<h3>参加中の大会</h3>
+<div *ngIf="games; then thenBlock else nogame"></div>
+    <ng-template #thenBlock>
+         <p *ngFor="let game of games">
+            {{game}}
+        </p>          
+    </ng-template>
+    <ng-template #nogame>
+        参加中の大会がありません        
+   </ng-template>   
+<h3>投票受付中のレース一覧</h3>
+<div *ngIf="isVotableRace; then votableBlock else noVote"></div>
+    <ng-template #votableBlock>
+        <table>
+            <tbody>
+                <tr *ngFor="let race of isVotableRace" (click)="moveVote(race)">
+                        <td>{{race.date}}</td>
+                        <td>{{race.name}}</td>
+                        <td>{{race.grade}}</td>
+                        <td><button>投票する</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </ng-template>
+    <ng-template #noVote>
+        投票対象のレースがありません        
+   </ng-template>   
+<h3>過去のレース結果</h3>
+<h3>サイトポリシー</h3>

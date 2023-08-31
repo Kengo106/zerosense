@@ -19,7 +19,6 @@ export class RaceService {
             /%C2%A0/g,
             '%20',
         )}`;
-        console.log(url);
         const raceresult = this.http.get<any>(url);
         return raceresult;
     }
@@ -43,7 +42,6 @@ export class RaceService {
 
     getCurrentGames(uid: string) {
         let params = new HttpParams().set('uid', uid);
-        console.log(uid);
         return this.http.get<any>(this.gameUrl, { params: params });
     }
 

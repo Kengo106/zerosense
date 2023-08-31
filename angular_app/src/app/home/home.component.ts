@@ -3,6 +3,8 @@ import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { Race } from '../race.interface';
 import { Router } from '@angular/router';
+import { GameService } from '../service/game.service';
+import { async } from 'rxjs';
 
 @Component({
     selector: 'app-home',
@@ -13,30 +15,32 @@ export class HomeComponent implements OnInit {
     public uid: string = '';
     public games: string[] = [];
     public isVotableRace: Race[] = [];
+    isLogin: boolean = false;
     constructor(
         private raceService: RaceService,
         private sessionService: SessionService,
         private router: Router,
+        private gameService: GameService,
     ) {}
 
     ngOnInit() {
+        this.sessionService.loginState$.subscribe((login) => {
+            this.isLogin = login;
+            console.log(this.isLogin);
+        });
+        this.gameService.putGameName(null);
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
-            console.log(this.uid);
             this.raceService.getCurrentGames(this.uid).subscribe((response) => {
                 this.games = [];
                 response.map((game: string) => this.games.push(game));
-                // console.log(this.games);
             });
-        });
-        this.raceService.getVotableRaces().subscribe((response: Race[]) => {
-            this.isVotableRace = [];
-            response.map((race) => this.isVotableRace.push(race));
-            // console.log(this.isVotableRace);
         });
     }
 
-    moveVote(race: Race) {
-        this.router.navigate(['/vote'], { queryParams: race });
+    moveGameMain(game: string) {
+        this.gameService.putGameName(game);
+
+        this.router.navigate(['/gamemain'], { queryParams: { game: game } });
     }
 }
