@@ -12,8 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class GamemainComponent {
     public uid: string = '';
     game: string = '';
-
-    public isVotableRace: Race[] = [];
+    isVotableRace: Race[] = [];
     constructor(
         private raceService: RaceService,
         private sessionService: SessionService,
@@ -25,11 +24,14 @@ export class GamemainComponent {
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
             console.log(this.uid);
-        });
-        this.raceService.getVotableRaces().subscribe((response: Race[]) => {
-            this.isVotableRace = [];
-            response.map((race) => this.isVotableRace.push(race));
-            // console.log(this.isVotableRace);
+
+            this.raceService.getVotableRaces(this.uid).subscribe((response) => {
+                this.isVotableRace = [];
+                response.map((responce) => {
+                    this.isVotableRace.push(responce);
+                });
+                console.log(this.isVotableRace);
+            });
         });
         this.route.queryParams.subscribe((params) => {
             this.game = params['gamename'];

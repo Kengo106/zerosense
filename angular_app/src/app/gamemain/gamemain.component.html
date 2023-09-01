@@ -1,6 +1,6 @@
 
 <h3>投票受付中のレース一覧</h3>
-<div *ngIf="isVotableRace; then votableBlock else noVote"></div>
+<div *ngIf="isVotableRace; then votableBlock else noVotable"></div>
     <ng-template #votableBlock>
         <table>
             <tbody>
@@ -8,12 +8,18 @@
                         <td>{{race.date}}</td>
                         <td>{{race.name}}</td>
                         <td>{{race.grade}}</td>
-                        <td><button>投票する</button></td>
+                        <div *ngIf="race.voted;then votedBlock else noVoted"></div>
+                        <ng-template #votedBlock>
+                        <td><button>更新する</button></td>
+                    </ng-template>
+                    <ng-template #noVoted>
+                        <td><button class="no-voted">投票する</button></td>
+                    </ng-template>
                 </tr>
             </tbody>
         </table>
     </ng-template>
-    <ng-template #noVote>
+    <ng-template #noVotable>
         投票対象のレースがありません        
    </ng-template>   
 <h3>過去のレース結果</h3>

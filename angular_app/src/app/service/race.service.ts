@@ -45,8 +45,8 @@ export class RaceService {
         return this.http.get<any>(this.gameUrl, { params: params });
     }
 
-    getVotableRaces(): Observable<Race[]> {
-        let params = new HttpParams().set('flag', 1);
+    getVotableRaces(uid: string): Observable<Race[]> {
+        let params = new HttpParams().set('flag', 1).set('uid', uid);
         return this.http.get<Race[]>(this.raceUrl, { params });
     }
 

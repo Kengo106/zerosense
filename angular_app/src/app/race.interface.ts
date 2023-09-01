@@ -9,6 +9,7 @@ export interface Race {
     grade: string;
     name: string;
     date: string;
+    voted: boolean | null;
 }
 
 export interface VoteForm {

@@ -185,8 +185,25 @@ class ApiRaceView(APIView):
     def get(self, request, format=None):
         try:
             flag = request.query_params.get('flag')
-            races = [{"grade": race.rank, "name": race.race_name, "date": race.race_date}
-                     for race in Race.objects.filter(is_votable=flag)]
+            uid = request.query_params.get('uid')
+            user = User.objects.filter(UID=uid).first()
+            print(1)
+            print(user)
+            print(1)
+            voted_races = [
+                vote.race for vote in Vote.objects.filter(user=user)]
+            print(voted_races)
+            races = []
+            for race in Race.objects.filter(is_votable=flag):
+                datum = {}
+                if race in voted_races:
+                    datum = {"grade": race.rank,
+                             "name": race.race_name, "date": race.race_date, 'voted': True}
+                else:
+                    datum = {"grade": race.rank,
+                             "name": race.race_name, "date": race.race_date, 'voted': False}
+
+                races.append(datum)
 
             return Response(races, status=status.HTTP_200_OK)
         except Exception as e:

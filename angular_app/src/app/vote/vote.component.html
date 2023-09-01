@@ -11,7 +11,7 @@
     <div>
         <tr *ngFor="let vote of voteList">
             <div *ngIf="vote.name!=userName">
-                <td>{{vote.name}}</td><td>一着：{{vote.first.name}}</td><td>二着：{{vote.second.name}}</td><td>三着：{{vote.third.name}}</td>
+                <td>{{vote.name}}</td><td>一着：{{vote.first.name}}</td><td>二着：{{vote.second.name}}</td><td>三着：{{vote.third.name}}</td><td>{{vote.comment}}</td>
             </div>
         </tr>
     </div>
