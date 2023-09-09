@@ -1,4 +1,4 @@
-@startuml 20230829_ER図
+@startuml 20230907_ER図
 
 
 entity HorsePlace {
@@ -89,6 +89,25 @@ entity Horse {
   大会の出走馬
 }
 
+entity Odds {
+  + id [PK]
+  --
+  # Race_id [FK]
+  tan
+  fuku_1
+  fuku_2
+  fuku_3
+  umaren
+  umatan
+  wide_1_2
+  wide_1_3
+  wide_2_3
+  3renfuku
+  3rentan
+  ==
+  払い戻し金を取得する
+}
+
 entity GameComment {
   + id [PK]
   --
@@ -120,7 +139,7 @@ entity RaceComment {
   大会に対するコメント
 }
 
-
+Race ||--|| Odds
 User ||--o{ Vote
 Horse }--o{ Vote
 Race ||--o{ Vote
