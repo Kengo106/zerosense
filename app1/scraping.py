@@ -25,6 +25,10 @@ def initialize_browser():
     # WebDriverのパスを指定
     webdriver_path = os.path.join(script_dir, "chromedriver.exe")
 
+    # Chromeの実行可能ファイルのパスを指定
+    chrome_options = Options()
+    chrome_options.binary_location = r'C:\Users\81806\Desktop\python\JRA\zerosence\app1\chrome\win64-114.0.5735.133\chrome-win64\chrome.exe'
+
     # Chromeのヘッドレスオプションを設定する
     # chrome_options = Options()
     # chrome_options.add_argument('--headless')
@@ -34,7 +38,7 @@ def initialize_browser():
 
     # Chromeを起動
     # browser = webdriver.Chrome(service=service, options=chrome_options)
-    browser = webdriver.Chrome(service=service)
+    browser = webdriver.Chrome(service=service, options=chrome_options)
 
     return browser
 
@@ -371,13 +375,16 @@ def scrape_grade_race(browser):
                     'is_votable': 1
                 }
             )
+            try:
 
-            Horse.objects.update_or_create(
-                horse_name=grade_race["horse_name"],
-                defaults={
-                    "Race": game_race,
-                }
-            )
+                Horse.objects.update_or_create(
+                    Race=game_race,
+                    horse_name=grade_race["horse_name"],
+                )
+
+            except:
+                # print(game_race.race_name)
+                print(grade_race["horse_name"])
 
 
 def scrape_grade_race_result(browser):
@@ -390,61 +397,65 @@ def scrape_grade_race_result(browser):
         By.ID, "quick_menu")  # 上のクイックメニューを選択
     elem_quick_menu_list = elem_quick_menu.find_elements(
         By.TAG_NAME, "li")  # クイックメニューから出馬表を指定するためにliタグを指定
-    elem_race = elem_quick_menu_list[1]  # 左から2項目の出馬表を選択
+    elem_race = elem_quick_menu_list[3]  # 左から4項目のレース結果を選択
 
     elem_race.click()
-    time.sleep(1)  # 5秒間プログラムを一時停止
+    time.sleep(1)  # プログラムを一時停止
 
     grade_races = []
 
-    grade_race = browser.find_element(By.ID, "grade_race")  # 重賞表示個所に移動
-    race_grade_imgs = grade_race.find_elements(
-        By.TAG_NAME, "img")  # グレートを表す画像を取得
-    grade_num = len(race_grade_imgs)
-    print(grade_num)
-    for i in range(grade_num):
-        grade_race = browser.find_element(By.ID, "grade_race")  # 重賞表示個所に移動
-        race_grade_imgs = grade_race.find_elements(
-            By.TAG_NAME, "img")  # グレートを表す画像を取得
-        race_grade_imgs[i].click()  # レース出走馬画面に移動
-        sleep(1)
-        race_result = browser.find_element(
-            By.CLASS_NAME, "result")  # 結果表示画面に移動
-        race_result.click()
-        race_name = browser.find_element(By.CLASS_NAME, "race_name")  # レース名を取得
-        horse_tables = browser.find_element(By.TAG_NAME, "table").find_element(
-            By.TAG_NAME, "tbody").find_elements(By.TAG_NAME, "tr")  # 出馬表に移動
+    grade_races_elements_num = len(browser.find_elements(
+        By.CLASS_NAME, "race"))  # 取得対象のレース数を取得
 
-        for horse_table in horse_tables:  # 馬情報が載っている列を一行づつ取得(ヘッダーを省く)
-            grade_race_datum = {}
-            grade_race_datum["horse_name"] = horse_table.find_element(
-                By.CLASS_NAME, "horse").text   # 馬名を取得
-            grade_race_datum["place"] = horse_table.find_element(
-                By.CLASS_NAME, "place").text  # 着順を取得
-            grade_race_datum["race_name"] = race_name.text  # レース名を取得
-            grade_races.append(grade_race_datum)
+    for i in range(grade_races_elements_num):
+        grade_races_elements = browser.find_elements(
+            By.CLASS_NAME, "race")
+
+        grade_races_elements[i].click()  # 順番にレースページへ
+
+        soup = BeautifulSoup(browser.page_source, "html.parser")
+
+        race_name = soup.find('div', id='race_result').find(
+            'span', class_="race_name").text
+
+        tbody = soup.find('tbody')
+        places = tbody.find_all('td', class_='place')
+        horses = tbody.find_all('td', class_='horse')
+
+        for place, horse in zip(places, horses):
+            race_datamu = {}
+            race_datamu['race_name'] = race_name
+            race_datamu["place"] = place.text.strip()
+            race_datamu["horse_name"] = horse.text.strip()
+            grade_races.append(race_datamu)
+        sleep(1)
         browser.back()
 
     with transaction.atomic():
         for grade_race in grade_races:
             Race.objects.filter(
                 race_name=grade_race["race_name"]).update(is_votable=0)
-            race = Race.objects.get(race_name=grade_race["race_name"])
-            horse, _ = Horse.objects.get_or_create(
-                Race=race, horse_name=grade_race["horse_name"])
-            if grade_race["place"].isdigit():
-                place = int(grade_race["place"])
-                HorsePlace.objects.update_or_create(
-                    Horse=horse,  # フィルタリングキーの指定　ない場合はHorse=horseでcreateされる
-                    defaults={
-                        "place": place
-                    }
-                )
-            else:
-                place = 999
-                HorsePlace.objects.update_or_create(
-                    Horse=horse,
-                    defaults={
-                        "place": place
-                    }
-                )
+
+            try:
+                race = Race.objects.get(race_name=grade_race["race_name"])
+                horse, _ = Horse.objects.get_or_create(
+                    Race=race, horse_name=grade_race["horse_name"])
+                if grade_race["place"].isdigit():
+                    place = int(grade_race["place"])
+                    HorsePlace.objects.update_or_create(
+                        Horse=horse,  # フィルタリングキーの指定　ない場合はHorse=horseでcreateされる
+                        defaults={
+                            "place": place
+                        }
+                    )
+                else:
+                    place = 999
+                    HorsePlace.objects.update_or_create(
+                        Horse=horse,
+                        defaults={
+                            "place": place
+                        }
+                    )
+                    print(grade_race["horse_name"], grade_race["place"])
+            except:
+                pass

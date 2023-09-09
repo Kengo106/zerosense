@@ -187,14 +187,11 @@ class ApiRaceView(APIView):
             flag = request.query_params.get('flag')
             uid = request.query_params.get('uid')
             user = User.objects.filter(UID=uid).first()
-            print(1)
-            print(user)
-            print(1)
             voted_races = [
                 vote.race for vote in Vote.objects.filter(user=user)]
-            print(voted_races)
             races = []
             for race in Race.objects.filter(is_votable=flag):
+                print(race.is_votable)
                 datum = {}
                 if race in voted_races:
                     datum = {"grade": race.rank,

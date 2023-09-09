@@ -63,7 +63,7 @@ export class SessionService {
         try {
             await this.afAuth.signOut();
             alert('ログアウトしました');
-            await this.router.navigate(['']);
+            await this.router.navigate(['account/login']);
         } catch (err) {
             console.log(err);
             alert('ログアウトに失敗しました /n' + err);
