@@ -1,4 +1,4 @@
-@startuml 20230907_ER図
+@startuml 20230911_ER図
 
 
 entity HorsePlace {
@@ -99,11 +99,11 @@ entity Odds {
   fuku_3
   umaren
   umatan
-  wide_1_2
-  wide_1_3
-  wide_2_3
-  3renfuku
-  3rentan
+  wide_12
+  wide_13
+  wide_23
+  renfuku_3
+  rentan_3
   ==
   払い戻し金を取得する
 }
