@@ -9,11 +9,12 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 from django.db import transaction
-from .models import Race, Horse, HorsePlace
+from .models import Race, Horse, HorsePlace, Odds
 import os
 import time
 import re
 from datetime import datetime
+import traceback
 
 # scraping.pyのディレクトリを取得
 
@@ -56,7 +57,7 @@ def scrape_grade_race(browser):
     elem_race = elem_quick_menu_list[1]  # 左から2項目の出馬表を選択
 
     elem_race.click()
-    time.sleep(1)  # 5秒間プログラムを一時停止
+    time.sleep(1)  # プログラムを一時停止
 
     grade_races = []
 
@@ -133,11 +134,12 @@ def scrape_grade_race_result(browser):
     time.sleep(1)  # プログラムを一時停止
 
     grade_races = []
+    grade_races_odds = []
 
     grade_races_elements_num = len(browser.find_elements(
         By.CLASS_NAME, "race"))  # 取得対象のレース数を取得
 
-    for i in range(grade_races_elements_num):
+    for i in range(min(grade_races_elements_num, 10)):  # 過去10レース分を取得
         grade_races_elements = browser.find_elements(
             By.CLASS_NAME, "race")
 
@@ -153,7 +155,39 @@ def scrape_grade_race_result(browser):
         places = tbody.find_all('td', class_='place')
         horses = tbody.find_all('td', class_='horse')
 
-        for place, horse in islice(zip(places, horses), 10):  # 10回までデータ取得
+        refunds = soup.find('div', class_='refund_unit mt15')
+        tan = refunds.find("li", class_="win").find(
+            'div', class_="yen").text.replace("円", "").replace(",", "")
+        fuku_1, fuku_2, fuku_3 = [yen.find('div', class_="yen").text.replace(
+            "円", "").replace(",", "") for yen in refunds.find("li", class_="place").find_all("div", "line")]
+        umaren = refunds.find("li", class_="umaren").find(
+            'div', class_="yen").text.replace("円", "").replace(",", "")
+        umatan = refunds.find("li", class_="umatan").find(
+            'div', class_="yen").text.replace("円", "").replace(",", "")
+        wide_12, wide_13, wide_23 = [yen.find('div', class_="yen").text.replace(
+            "円", "").replace(",", "") for yen in refunds.find("li", class_="wide").find_all("div", "line")]
+
+        trio = refunds.find("li", class_="trio").find(
+            'div', class_="yen").text.replace("円", "").replace(",", "")
+        tierce = refunds.find("li", class_="tierce").find(
+            'div', class_="yen").text.replace("円", "").replace(",", "")
+        odds_datamu = {}
+        odds_datamu["race_name"] = race_name
+        odds_datamu['tan'] = tan
+        odds_datamu['fuku_1'] = fuku_1
+        odds_datamu['fuku_2'] = fuku_2
+        odds_datamu['fuku_3'] = fuku_3
+        odds_datamu['umaren'] = umaren
+        odds_datamu['umatan'] = umatan
+        odds_datamu['wide_12'] = wide_12
+        odds_datamu['wide_13'] = wide_13
+        odds_datamu['wide_23'] = wide_23
+        odds_datamu['trio'] = trio
+        odds_datamu['tierce'] = tierce
+
+        grade_races_odds.append(odds_datamu)
+
+        for place, horse in zip(places, horses):
             race_datamu = {}
             race_datamu['race_name'] = race_name
             race_datamu["place"] = place.text.strip()
@@ -163,10 +197,37 @@ def scrape_grade_race_result(browser):
         browser.back()
 
     with transaction.atomic():
+        for grade_race_odds in grade_races_odds:
+            try:
+                update_count = Race.objects.filter(
+                    race_name=grade_race_odds["race_name"]).update(is_votable=0)
+                print(grade_race_odds["race_name"])
+                print(update_count)
+                race = Race.objects.get(race_name=grade_race_odds["race_name"])
+                Odds.objects.update_or_create(
+                    Race=race,
+                    defaults={
+                        'tan': int(grade_race_odds["tan"]),
+                        'fuku_1': int(grade_race_odds["fuku_1"]),
+                        'fuku_2': int(grade_race_odds["fuku_2"]),
+                        'fuku_3': int(grade_race_odds["fuku_3"]),
+                        'umaren': int(grade_race_odds["umaren"]),
+                        'umatan': int(grade_race_odds["umatan"]),
+                        'wide_12': int(grade_race_odds["wide_12"]),
+                        'wide_13': int(grade_race_odds["wide_13"]),
+                        'wide_23': int(grade_race_odds["wide_23"]),
+                        'trio': int(grade_race_odds["trio"]),
+                        'tierce': int(grade_race_odds["tierce"]),
+                    }
+                )
+            except Race.DoesNotExist:
+                print(
+                    f"Race with name {grade_race_odds['race_name']} does not exist.")
+            except Exception as e:
+                print("ERROR! odds")
+                print(str(e))
+                traceback.print_exc()
         for grade_race in grade_races:
-            Race.objects.filter(
-                race_name=grade_race["race_name"]).update(is_votable=0)
-
             try:
                 race = Race.objects.get(race_name=grade_race["race_name"])
                 horse, _ = Horse.objects.get_or_create(
@@ -188,6 +249,12 @@ def scrape_grade_race_result(browser):
                         }
                     )
                     print(grade_race["horse_name"], grade_race["place"])
-            except:
-                pass
+            except Race.DoesNotExist:
+                print(
+                    f"Race with name {grade_race_odds['race_name']} does not exist.")
+            except Exception as e:
+                print("ERROR! result")
+                print(str(e))
+                traceback.print_exc()
+
     return browser.quit()  # ブラウザを閉じる

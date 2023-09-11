@@ -81,5 +81,5 @@ class Odds(models.Model):
     wide_12 = models.IntegerField(default=0)
     wide_13 = models.IntegerField(default=0)
     wide_23 = models.IntegerField(default=0)
-    renfuku_3 = models.IntegerField(default=0)
-    rentan_3 = models.IntegerField(default=0)
+    trio = models.IntegerField(default=0)
+    tierce = models.IntegerField(default=0)
