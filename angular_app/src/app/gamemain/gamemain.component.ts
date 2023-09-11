@@ -35,6 +35,7 @@ export class GamemainComponent {
         });
         this.route.queryParams.subscribe((params) => {
             this.game = params['gamename'];
+            this.raceService.getScore(this.game).subscribe();
         });
     }
 
