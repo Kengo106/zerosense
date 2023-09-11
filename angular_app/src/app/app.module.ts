@@ -23,7 +23,6 @@ import { HomeComponent } from './home/home.component';
 import { SerchgameComponent } from './serchgame/serchgame.component';
 import { VoteComponent } from './vote/vote.component';
 import { GamemainComponent } from './gamemain/gamemain.component';
-import { GamenameComponent } from './gamename/gamename.component';
 
 @NgModule({
     declarations: [
@@ -36,7 +35,6 @@ import { GamenameComponent } from './gamename/gamename.component';
         SerchgameComponent,
         VoteComponent,
         GamemainComponent,
-        GamenameComponent,
     ],
     imports: [
         BrowserModule,

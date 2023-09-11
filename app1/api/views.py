@@ -1,4 +1,4 @@
-from ..models import User, Game, GameRule, GamePlayer, GameComment, Race, Horse, Vote
+from ..models import User, Game, GameRule, GamePlayer, GameComment, Race, Horse, Vote, Odds, HorsePlace
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Subquery, OuterRef
@@ -214,6 +214,62 @@ class ApiVoteView(APIView):
                 return Response({"sucsess": "投票しました"}, status=status.HTTP_200_OK)
             else:
                 return Response({"sucsess": "投票を更新しました"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error occurred: {e}")  # エラーメッセージを表示
+            traceback.print_exc()
+            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class APIScoreView(APIView):
+    def get(self, request, format=None):
+        try:
+            game = request.query_params.get("game")
+            game_object = Game.objects.filter(name=game).first()
+            game_player_objects = GamePlayer.objects.filter(Game=game_object)
+            responses = []
+            for game_player_object in game_player_objects:  # 各ゲームの参加者を取得
+                vote_objects = Vote.objects.filter(
+                    game=game_object, user=game_player_object.User)
+                response_datamu = {}
+                scores = []
+                for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
+                    score = 0
+                    odds_object = Odds.objects.filter(
+                        Race=vote_object.race)  # 各レースの払戻金を取得
+                    vote_1_place = HorsePlace.objects.filter(
+                        Horse=vote_object.horse_first).place
+                    vote_2_place = HorsePlace.objects.filter(
+                        Horse=vote_object.horse_second).place
+                    vote_3_place = HorsePlace.objects.filter(
+                        Horse=vote_object.horse_third).place
+                    votes = [vote_1_place, vote_2_place, vote_3_place]
+                    if vote_1_place == 1:
+                        score += sum(odds_object.tan, odds_object.fuku_1)
+                    if vote_1_place == 2:
+                        score += odds_object.fuku_2
+                    if vote_1_place == 3:
+                        score += odds_object.fuku_3
+                    if (vote_1_place*vote_2_place-2)*(vote_1_place*vote_3_place-2)*(vote_2_place*vote_3_place-2) == 0:
+                        score += odds_object.umaren
+                    if vote_1_place == 1 and vote_2_place == 2:
+                        score += odds_object.umatan
+                    if sum([1 for v in votes if v in [1, 2]]) >= 2:
+                        score += odds_object.wide_12
+                    if sum([1 for v in votes if v in [1, 3]]) >= 2:
+                        score += odds_object.wide_13
+                    if sum([1 for v in votes if v in [2, 3]]) >= 2:
+                        score += odds_object.wide_23
+                    if sum(votes) == 6:
+                        score += odds_object.trio
+                    if [1, 2, 3] == votes:
+                        score += odds_object.tierce
+                    scores.append(score)
+
+                response_datamu[f"{game_player_object.User.username}"] = sum(
+                    scores)
+                responses.append(response_datamu)
+
+            return Response({"sucsess"}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()
