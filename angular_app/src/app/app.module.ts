@@ -3,9 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { RacenamesComponent } from './racenames/racenames.component';
 import { HttpClient, HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
-import { RacedetailComponent } from './racedetail/racedetail.component';
 import { Location } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -30,8 +28,6 @@ import { GamenameComponent } from './gamename/gamename.component';
 @NgModule({
     declarations: [
         AppComponent,
-        RacenamesComponent,
-        RacedetailComponent,
         LoginComponent,
         HeaderComponent,
         SignUpComponent,
