@@ -1,19 +1,18 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Race } from '../race.interface';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 
 @Component({
-    selector: 'app-gamemain',
-    templateUrl: './gamemain.component.html',
-    styleUrls: ['./gamemain.component.scss'],
+    selector: 'app-test',
+    templateUrl: './test.component.html',
+    styleUrls: ['./test.component.scss'],
 })
-export class GamemainComponent implements OnInit {
+export class TestComponent {
     public uid: string = '';
     game: string = '';
-    isVotableRace: Race[] = [];
+    AllRace: Race[] = [];
     constructor(
         private raceService: RaceService,
         private sessionService: SessionService,
@@ -26,17 +25,16 @@ export class GamemainComponent implements OnInit {
             this.uid = currentUid;
             console.log(this.uid);
 
-            this.raceService.getVotableRaces(this.uid).subscribe((response) => {
-                this.isVotableRace = [];
+            this.raceService.getAllRaces(this.uid).subscribe((response) => {
+                this.AllRace = [];
                 response.map((responce) => {
-                    this.isVotableRace.push(responce);
+                    this.AllRace.push(responce);
                 });
-                console.log(this.isVotableRace);
+                console.log(this.AllRace);
             });
         });
         this.route.queryParams.subscribe((params) => {
             this.game = params['gamename'];
-            this.raceService.getScore(this.game).subscribe((response) => console.log(response));
         });
     }
 

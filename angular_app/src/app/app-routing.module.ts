@@ -7,6 +7,7 @@ import { NewgameComponent } from './newgame/newgame.component';
 import { SerchgameComponent } from './serchgame/serchgame.component';
 import { VoteComponent } from './vote/vote.component';
 import { GamemainComponent } from './gamemain/gamemain.component';
+import { TestComponent } from './test/test.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -17,6 +18,7 @@ const routes: Routes = [
     { path: 'joingame', component: SerchgameComponent },
     { path: 'vote', component: VoteComponent },
     { path: 'gamemain', component: GamemainComponent },
+    { path: 'test', component: TestComponent },
 ];
 
 @NgModule({
