@@ -3,7 +3,13 @@ import { Race } from '../race.interface';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, reduce } from 'rxjs';
+
+interface CompetitorData {
+    name: string;
+    place: any;
+    gamescore: any;
+}
 
 @Component({
     selector: 'app-gamemain',
@@ -14,6 +20,9 @@ export class GamemainComponent implements OnInit {
     public uid: string = '';
     game: string = '';
     isVotableRace: Race[] = [];
+    competitorDatas: CompetitorData[] = [];
+    competitors: string[] = [];
+
     constructor(
         private raceService: RaceService,
         private sessionService: SessionService,
@@ -36,7 +45,31 @@ export class GamemainComponent implements OnInit {
         });
         this.route.queryParams.subscribe((params) => {
             this.game = params['gamename'];
-            this.raceService.getScore(this.game).subscribe((response) => console.log(response));
+            this.raceService.getScore(this.game).subscribe((response: any) => {
+                console.log(response);
+                this.competitors = Object.keys(response);
+                let tempScore = this.competitors.map((competitor) => ({
+                    name: competitor,
+                    gamescore: Object.values(response[competitor]).reduce(
+                        (sumScore: any, score: any) => sumScore + score,
+                        0,
+                    ),
+                }));
+                tempScore.sort((a, b) => {
+                    let scoreA = a.gamescore as number;
+                    let scoreB = b.gamescore as number;
+                    return scoreB - scoreA;
+                });
+                tempScore.forEach((data, index) =>
+                    this.competitorDatas.push({
+                        name: data.name,
+                        place: index + 1,
+                        gamescore: data.gamescore,
+                    }),
+                );
+
+                console.log(this.competitorDatas);
+            });
         });
     }
 

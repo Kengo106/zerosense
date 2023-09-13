@@ -1,3 +1,17 @@
+<table>
+    <thead >
+        <th>順位</th><th *ngFor="let competitorData of competitorDatas">{{competitorData.place}}</th>
+    </thead>
+    <tbody>
+        <tr>
+            <th>プレイヤー</th><td *ngFor="let competitor of competitors">{{competitor}}</td>
+        </tr>
+        <tr>
+            <th>合計ポイント</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.gamescore}}</td>
+        </tr>
+        
+    </tbody>
+</table>
 
 <h3>投票受付中のレース一覧</h3>
 <div *ngIf="isVotableRace; then votableBlock else noVotable"></div>
