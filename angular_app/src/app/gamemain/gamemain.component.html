@@ -1,15 +1,17 @@
 <table>
     <thead >
-        <th>順位</th><th *ngFor="let competitorData of competitorDatas">{{competitorData.place}}</th>
+        <th>順位</th><th *ngFor="let competitorData of competitorDatas">{{competitorData.place}}位</th>
     </thead>
     <tbody>
         <tr>
-            <th>プレイヤー</th><td *ngFor="let competitor of competitors">{{competitor}}</td>
+            <th>プレイヤー</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.name}}</td>
         </tr>
         <tr>
-            <th>合計ポイント</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.gamescore}}</td>
+            <th>合計ポイント</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.nowscore}}</td>
         </tr>
-        
+        <tr>
+            <th>回収率</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.recovery_rate}}％</td>
+        </tr>
     </tbody>
 </table>
 
