@@ -8,6 +8,74 @@ from django.db import transaction
 import traceback
 
 
+def game_score(request):
+    # return{username:{racename:score}}
+
+    game = request.query_params.get("game")
+    game_object = Game.objects.filter(name=game).first()
+    game_player_objects = GamePlayer.objects.filter(Game=game_object)
+    user_datamu = {}
+    for game_player_object in game_player_objects:  # 各ゲームの参加者を取得
+        vote_objects = Vote.objects.filter(
+            game=game_object, user=game_player_object.User)
+        score_datamu = {}
+        for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
+            score = 0
+            odds_object = Odds.objects.filter(
+                Race=vote_object.race).first()  # 各レースの払戻金を取得
+            if HorsePlace.objects.filter(Horse=vote_object.horse_first).first():
+                vote_1_place = HorsePlace.objects.filter(
+                    Horse=vote_object.horse_first).first().place
+                vote_2_place = HorsePlace.objects.filter(
+                    Horse=vote_object.horse_second).first().place
+                vote_3_place = HorsePlace.objects.filter(
+                    Horse=vote_object.horse_third).first().place
+                votes = [vote_1_place, vote_2_place, vote_3_place]
+                if vote_1_place == 1:
+                    score += sum([odds_object.tan, odds_object.fuku_1])
+                if vote_1_place == 2:
+                    score += odds_object.fuku_2
+                if vote_1_place == 3:
+                    score += odds_object.fuku_3
+                if (vote_1_place*vote_2_place-2)*(vote_1_place*vote_3_place-2)*(vote_2_place*vote_3_place-2) == 0:
+                    score += odds_object.umaren
+                if vote_1_place == 1 and vote_2_place == 2:
+                    score += odds_object.umatan
+                if sum([1 for v in votes if v in [1, 2]]) >= 2:
+                    score += odds_object.wide_12
+                if sum([1 for v in votes if v in [1, 3]]) >= 2:
+                    score += odds_object.wide_13
+                if sum([1 for v in votes if v in [2, 3]]) >= 2:
+                    score += odds_object.wide_23
+                if sum(votes) == 6:
+                    score += odds_object.trio
+                if [1, 2, 3] == votes:
+                    score += odds_object.tierce
+                score_datamu[f'{vote_object.race.race_name}'] = score
+        user_datamu[f'{game_player_object.User.username}'] = score_datamu
+    game_infomation = []
+    for game_player_object in game_player_objects:
+        name = f'{game_player_object.User.username}'
+        temporary_datamu = {}
+        score = sum(
+            user_datamu[f'{game_player_object.User.username}'].values())
+
+        recovery_rate = int(score*100 /
+                            (1100*len(user_datamu[name])))
+        temporary_datamu["name"] = name
+        temporary_datamu["nowscore"] = score
+        temporary_datamu["recovery_rate"] = recovery_rate
+        print(recovery_rate)
+        game_infomation.append(temporary_datamu)
+    game_infomation = sorted(
+        game_infomation, key=lambda x: x["nowscore"], reverse=True)
+    response_data = []
+    for index, info in enumerate(game_infomation):
+        info["place"] = index + 1
+        response_data.append(info)
+    return user_datamu, response_data
+
+
 class ApiUIDView(APIView):
     def post(self, request, format=None):
         uid = request.data.get('uid')
@@ -32,7 +100,6 @@ class ApiNewGameView(APIView):
         uid = request.data.get("uid")
         public = request.data.get("open")
         span = request.data.get("span")
-        print(gamename, uid, type(public), span)
         try:
             with transaction.atomic():
                 game_rule = GameRule.objects.create(
@@ -113,7 +180,6 @@ class ApiRaceView(APIView):
             races = []
             for flag in flags:
                 for race in Race.objects.filter(is_votable=flag):
-                    print(race.is_votable)
                     datum = {}
                     if race in voted_races:
                         datum = {"grade": race.rank,
@@ -163,16 +229,6 @@ class ApiVoteView(APIView):
                 vote_list.append(votes)
 
             if my_vote:
-
-                print("Vote exists!")
-                print("Vote details:")
-                print(f"horse_first: {vote.horse_first.id}")
-                print(f"horse_second: {vote.horse_second.id}")
-                print(f"horse_third: {vote.horse_third.id}")
-                for horse in horses:
-                    print(horse)
-                print(f"comment: {vote.comment}")
-                # ... 以降のコード
 
                 return Response({"vote": {
                     'first': my_vote.horse_first.id,
@@ -230,51 +286,9 @@ class ApiVoteView(APIView):
 class APIScoreView(APIView):
     def get(self, request, format=None):
         try:
-            game = request.query_params.get("game")
-            game_object = Game.objects.filter(name=game).first()
-            game_player_objects = GamePlayer.objects.filter(Game=game_object)
-            user_datamu = {}
-            for game_player_object in game_player_objects:  # 各ゲームの参加者を取得
-                vote_objects = Vote.objects.filter(
-                    game=game_object, user=game_player_object.User)
-                score_datamu = {}
-                for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
-                    score = 0
-                    odds_object = Odds.objects.filter(
-                        Race=vote_object.race).first()  # 各レースの払戻金を取得
-                    print(vote_object.race.race_name)
-                    print(vote_object.horse_first.horse_name)
-                    if HorsePlace.objects.filter(Horse=vote_object.horse_first).first():
-                        vote_1_place = HorsePlace.objects.filter(
-                            Horse=vote_object.horse_first).first().place
-                        vote_2_place = HorsePlace.objects.filter(
-                            Horse=vote_object.horse_second).first().place
-                        vote_3_place = HorsePlace.objects.filter(
-                            Horse=vote_object.horse_third).first().place
-                        votes = [vote_1_place, vote_2_place, vote_3_place]
-                        if vote_1_place == 1:
-                            score += sum([odds_object.tan, odds_object.fuku_1])
-                        if vote_1_place == 2:
-                            score += odds_object.fuku_2
-                        if vote_1_place == 3:
-                            score += odds_object.fuku_3
-                        if (vote_1_place*vote_2_place-2)*(vote_1_place*vote_3_place-2)*(vote_2_place*vote_3_place-2) == 0:
-                            score += odds_object.umaren
-                        if vote_1_place == 1 and vote_2_place == 2:
-                            score += odds_object.umatan
-                        if sum([1 for v in votes if v in [1, 2]]) >= 2:
-                            score += odds_object.wide_12
-                        if sum([1 for v in votes if v in [1, 3]]) >= 2:
-                            score += odds_object.wide_13
-                        if sum([1 for v in votes if v in [2, 3]]) >= 2:
-                            score += odds_object.wide_23
-                        if sum(votes) == 6:
-                            score += odds_object.trio
-                        if [1, 2, 3] == votes:
-                            score += odds_object.tierce
-                        score_datamu[f'{vote_object.race.race_name}'] = score
-                user_datamu[f'{game_player_object.User.username}'] = score_datamu
-            return Response(user_datamu, status=status.HTTP_200_OK)
+            _, response_data = game_score(request=request)
+
+            return Response(response_data, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()

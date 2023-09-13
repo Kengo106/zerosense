@@ -8,7 +8,8 @@ import { Subscription, reduce } from 'rxjs';
 interface CompetitorData {
     name: string;
     place: any;
-    gamescore: any;
+    nowscore: any;
+    recovery_rate: any;
 }
 
 @Component({
@@ -47,27 +48,9 @@ export class GamemainComponent implements OnInit {
             this.game = params['gamename'];
             this.raceService.getScore(this.game).subscribe((response: any) => {
                 console.log(response);
-                this.competitors = Object.keys(response);
-                let tempScore = this.competitors.map((competitor) => ({
-                    name: competitor,
-                    gamescore: Object.values(response[competitor]).reduce(
-                        (sumScore: any, score: any) => sumScore + score,
-                        0,
-                    ),
-                }));
-                tempScore.sort((a, b) => {
-                    let scoreA = a.gamescore as number;
-                    let scoreB = b.gamescore as number;
-                    return scoreB - scoreA;
-                });
-                tempScore.forEach((data, index) =>
-                    this.competitorDatas.push({
-                        name: data.name,
-                        place: index + 1,
-                        gamescore: data.gamescore,
-                    }),
-                );
-
+                this.competitorDatas = [];
+                response.forEach((elem: any) => this.competitorDatas.push(elem));
+                this.competitorDatas.sort((a, b) => a.place - b.place);
                 console.log(this.competitorDatas);
             });
         });
