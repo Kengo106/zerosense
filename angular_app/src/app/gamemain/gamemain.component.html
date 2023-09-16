@@ -3,14 +3,54 @@
         <th>順位</th><th *ngFor="let competitorData of competitorDatas">{{competitorData.place}}位</th>
     </thead>
     <tbody>
+
         <tr>
             <th>プレイヤー</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.name}}</td>
         </tr>
+
         <tr>
             <th>合計ポイント</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.nowscore}}</td>
         </tr>
+
+        <tr>
+            <th>投票回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.vote_time}}回</td>
+        </tr>
         <tr>
             <th>回収率</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.recovery_rate}}％</td>
+        </tr>
+        <tr>
+            <th>先週のポイント</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.latest_week_race_score}}</td>
+        </tr>
+        <tr>
+            <th>月間勝利数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.get_top_in_month}}</td>
+        </tr>
+        <tr>
+            <th>万馬券的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.million_time}}</td>
+        </tr>
+        <tr (click)="toggleTime()">
+            <th>{{showTime ? '▽':'▷'}}的中回数</th>
+        </tr>
+
+        <tr *ngIf="showTime">
+            <th>単的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.tan_time}}回</td>
+        </tr>
+        <tr  *ngIf="showTime">
+            <th>複的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.fuku_time}}回</td>
+        </tr>
+        <tr *ngIf="showTime">
+            <th>馬連的中数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.umaren_time}}回</td>
+        </tr>
+        <tr *ngIf="showTime">
+            <th>馬単的中数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.umatan_time}}回</td>
+        </tr>
+        <tr *ngIf="showTime">
+            <th>ワイド的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.wide_time}}回</td>
+        </tr>
+        <tr *ngIf="showTime">
+            <th>三連複的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.trio_time}}回</td>
+        </tr>
+        <tr *ngIf="showTime">
+            <th>三連単的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.tierce_time}}回</td>
         </tr>
     </tbody>
 </table>

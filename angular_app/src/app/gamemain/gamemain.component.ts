@@ -10,6 +10,17 @@ interface CompetitorData {
     place: any;
     nowscore: any;
     recovery_rate: any;
+    latest_week_race_score: any;
+    vote_time: any;
+    tan_time: any;
+    fuku_time: any;
+    umaren_time: any;
+    umatan_time: any;
+    wide_time: any;
+    trio_time: any;
+    tierce_time: any;
+    million_time: any;
+    get_top_in_month: any;
 }
 
 @Component({
@@ -23,6 +34,7 @@ export class GamemainComponent implements OnInit {
     isVotableRace: Race[] = [];
     competitorDatas: CompetitorData[] = [];
     competitors: string[] = [];
+    showTime: boolean = false;
 
     constructor(
         private raceService: RaceService,
@@ -58,5 +70,9 @@ export class GamemainComponent implements OnInit {
 
     moveVote(race: Race, game: string) {
         this.router.navigate(['/vote'], { queryParams: { ...race, gamename: game } });
+    }
+
+    toggleTime() {
+        this.showTime = !this.showTime;
     }
 }
