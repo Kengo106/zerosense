@@ -25,6 +25,7 @@ import { VoteComponent } from './vote/vote.component';
 import { GamemainComponent } from './gamemain/gamemain.component';
 import { TestComponent } from './test/test.component';
 import { UpdatenameComponent } from './updatename/updatename.component';
+import { PastracesComponent } from './pastraces/pastraces.component';
 
 @NgModule({
     declarations: [
@@ -39,6 +40,7 @@ import { UpdatenameComponent } from './updatename/updatename.component';
         GamemainComponent,
         TestComponent,
         UpdatenameComponent,
+        PastracesComponent,
     ],
     imports: [
         BrowserModule,
