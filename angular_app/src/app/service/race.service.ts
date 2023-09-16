@@ -66,19 +66,21 @@ export class RaceService {
         return this.http.get(this.scoreUrl, { params });
     }
 
+    updateUserName(name: string, uid: string) {
+        return this.http.put(this.userNameUrl, { name: name, uid: uid });
+    }
+
     private raceUrl: string = 'http://127.0.0.1:8000/api/race/';
 
     private gameUrl: string = 'http://127.0.0.1:8000/api/joingame/';
 
     private newGameUrl: string = 'http://127.0.0.1:8000/api/newgame/';
 
-    private racenameUrl: string = 'http://127.0.0.1:8000/api/racename/';
-
-    private raceresultUrl: string = 'http://127.0.0.1:8000/api/join/';
-
     private UIDUrl: string = 'http://127.0.0.1:8000/api/UID/';
 
     private voteUrl: string = 'http://127.0.0.1:8000/api/vote/';
 
     private scoreUrl: string = 'http://127.0.0.1:8000/api/score/';
+
+    private userNameUrl: string = 'http://127.0.0.1:8000/api/username/';
 }

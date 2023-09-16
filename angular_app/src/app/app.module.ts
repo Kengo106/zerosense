@@ -24,6 +24,7 @@ import { SerchgameComponent } from './serchgame/serchgame.component';
 import { VoteComponent } from './vote/vote.component';
 import { GamemainComponent } from './gamemain/gamemain.component';
 import { TestComponent } from './test/test.component';
+import { UpdatenameComponent } from './updatename/updatename.component';
 
 @NgModule({
     declarations: [
@@ -37,6 +38,7 @@ import { TestComponent } from './test/test.component';
         VoteComponent,
         GamemainComponent,
         TestComponent,
+        UpdatenameComponent,
     ],
     imports: [
         BrowserModule,

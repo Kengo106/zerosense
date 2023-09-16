@@ -7,11 +7,11 @@
     </div>
         </div>
 <div>
-        <h3>投票</h3>
+        <h3>参加者の投票</h3>
     <div>
         <tr *ngFor="let vote of voteList">
             <div *ngIf="vote.name!=userName">
-                <td>{{vote.name}}</td><td>一着：{{vote.first.name}}</td><td>二着：{{vote.second.name}}</td><td>三着：{{vote.third.name}}</td><td>{{vote.comment}}</td>
+                <td>{{vote.name}}</td><td>◎：{{vote.first.name}}</td><td>○：{{vote.second.name}}</td><td>▲：{{vote.third.name}}</td><td>{{vote.comment}}</td>
             </div>
         </tr>
     </div>
@@ -20,21 +20,21 @@
 </div>
 
 <form (ngSubmit)="onSubmit()">
-    <label for="first">一着：</label>
+    <label for="first">◎：</label>
     <select name="firsthorse" id="first" [(ngModel)]="myVote.first" required>
         <option value=null disabled>選択してください</option>
         <option [value]="horse.id" *ngFor="let horse of horseList">
             {{horse.name}}
         </option>
     </select>
-    <label for="second">二着：</label>
+    <label for="second">○：</label>
     <select name="secondhorse" id="second" [(ngModel)]="myVote.second" required>
         <option value=null disabled>選択してください</option>
         <option [value]="horse.id" *ngFor="let horse of horseList">
             {{horse.name}}
         </option>
     </select>
-    <label for="third">三着：</label>
+    <label for="third">▲：</label>
     <select name="thirdhorse" id="third" [(ngModel)]="myVote.third" required>
         <option value=null disabled>選択してください</option>
         <option [value]="horse.id" *ngFor="let horse of horseList">
