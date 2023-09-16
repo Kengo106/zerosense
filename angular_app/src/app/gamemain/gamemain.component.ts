@@ -72,6 +72,10 @@ export class GamemainComponent implements OnInit {
         this.router.navigate(['/vote'], { queryParams: { ...race, gamename: game } });
     }
 
+    moveResult() {
+        this.router.navigate(['/pastraces/'], { queryParams: { gamename: this.game } });
+    }
+
     toggleTime() {
         this.showTime = !this.showTime;
     }

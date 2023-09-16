@@ -1,0 +1,18 @@
+<h2>{{race.name}}{{race.grade}}</h2>
+<div style="display: flex;">
+    <div>
+            <h3>出走馬</h3>
+<div *ngFor="let horse of horseList">
+    <p style="margin:0; padding: 0;">{{horse.name}}</p>
+</div>
+    </div>
+<div>
+    <h3>参加者の投票</h3>
+<div>
+    <tr *ngFor="let vote of voteList">
+        <div *ngIf="vote.name!=userName">
+            <td>{{vote.name}}</td><td>◎：{{vote.first.name}}</td><td>○：{{vote.second.name}}</td><td>▲：{{vote.third.name}}</td><td>{{vote.comment}}</td>
+        </div>
+    </tr>
+</div>
+<button (click)="goBack()">戻る</button>

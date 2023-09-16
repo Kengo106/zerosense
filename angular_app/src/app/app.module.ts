@@ -25,16 +25,9 @@ import { VoteComponent } from './vote/vote.component';
 import { GamemainComponent } from './gamemain/gamemain.component';
 import { TestComponent } from './test/test.component';
 import { UpdatenameComponent } from './updatename/updatename.component';
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 import { PastracesComponent } from './pastraces/pastraces.component';
-=======
->>>>>>> 38da2e003688560449035479b4887324e37a10d6
-=======
->>>>>>> 38da2e003688560449035479b4887324e37a10d6
-=======
->>>>>>> 38da2e003688560449035479b4887324e37a10d6
+import { RaceresultComponent } from './raceresult/raceresult.component';
 
 @NgModule({
     declarations: [
@@ -49,16 +42,8 @@ import { PastracesComponent } from './pastraces/pastraces.component';
         GamemainComponent,
         TestComponent,
         UpdatenameComponent,
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         PastracesComponent,
-=======
->>>>>>> 38da2e003688560449035479b4887324e37a10d6
-=======
->>>>>>> 38da2e003688560449035479b4887324e37a10d6
-=======
->>>>>>> 38da2e003688560449035479b4887324e37a10d6
+        RaceresultComponent,
     ],
     imports: [
         BrowserModule,
