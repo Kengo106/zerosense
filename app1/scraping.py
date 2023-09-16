@@ -136,6 +136,66 @@ def scrape_grade_race_result(browser):
     grade_races = []
     grade_races_odds = []
 
+    latest_grade_race_num = len(browser.find_element(
+        By.ID, "grade_race").find_elements(By.CLASS_NAME, 'race_num'))
+    for i in range(min(latest_grade_race_num, 10)):  # 先週の重賞結果を取得
+        grade_races_elements = browser.find_element(
+            By.ID, "grade_race").find_elements(By.CLASS_NAME, 'race_num')
+
+        grade_races_elements[i].click()  # 順番にレースページへ
+
+        soup = BeautifulSoup(browser.page_source,
+                             "html.parser")  # seleniumからbsへ変換
+
+        race_name = soup.find('div', id='race_result').find(
+            'span', class_="race_name").text  # ここでレース名を取得しないと短縮形になる
+
+        tbody = soup.find('tbody')
+        places = tbody.find_all('td', class_='place')
+        horses = tbody.find_all('td', class_='horse')
+
+        refunds = soup.find('div', class_='refund_unit mt15')
+        tan = refunds.find("li", class_="win").find(
+            'div', class_="yen").text.replace("円", "").replace(",", "")
+        fuku_1, fuku_2, fuku_3 = [yen.find('div', class_="yen").text.replace(
+            "円", "").replace(",", "") for yen in refunds.find("li", class_="place").find_all("div", "line")]
+        umaren = refunds.find("li", class_="umaren").find(
+            'div', class_="yen").text.replace("円", "").replace(",", "")
+        umatan = refunds.find("li", class_="umatan").find(
+            'div', class_="yen").text.replace("円", "").replace(",", "")
+        wide_12, wide_13, wide_23 = [yen.find('div', class_="yen").text.replace(
+            "円", "").replace(",", "") for yen in refunds.find("li", class_="wide").find_all("div", "line")]
+
+        trio = refunds.find("li", class_="trio").find(
+            'div', class_="yen").text.replace("円", "").replace(",", "")
+        tierce = refunds.find("li", class_="tierce").find(
+            'div', class_="yen").text.replace("円", "").replace(",", "")
+        odds_datamu = {}
+        odds_datamu["race_name"] = race_name
+        odds_datamu['tan'] = tan
+        odds_datamu['fuku_1'] = fuku_1
+        odds_datamu['fuku_2'] = fuku_2
+        odds_datamu['fuku_3'] = fuku_3
+        odds_datamu['umaren'] = umaren
+        odds_datamu['umatan'] = umatan
+        odds_datamu['wide_12'] = wide_12
+        odds_datamu['wide_13'] = wide_13
+        odds_datamu['wide_23'] = wide_23
+        odds_datamu['trio'] = trio
+        odds_datamu['tierce'] = tierce
+
+        grade_races_odds.append(odds_datamu)
+
+        for place, horse in zip(places, horses):
+            race_datamu = {}
+            race_datamu['race_name'] = race_name
+            race_datamu["place"] = place.text.strip()
+            race_datamu["horse_name"] = horse.text.strip()
+            grade_races.append(race_datamu)
+
+        sleep(1)
+        browser.back()
+
     grade_races_elements_num = len(browser.find_elements(
         By.CLASS_NAME, "race"))  # 取得対象のレース数を取得
 

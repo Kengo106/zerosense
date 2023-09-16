@@ -6,6 +6,8 @@ from django_filters import rest_framework as filters
 from rest_framework import status
 from django.db import transaction
 import traceback
+from datetime import timedelta
+from django.db.models.functions import ExtractMonth
 
 
 def game_score(request):
@@ -15,14 +17,45 @@ def game_score(request):
     game_object = Game.objects.filter(name=game).first()
     game_player_objects = GamePlayer.objects.filter(Game=game_object)
     user_datamu = {}
+    temporary_month_datamu = {}
+    game_infomation = []
+    latest_week_race_score_datamu = {}
+    hit_time_datamu = {}
+    latest_race = Race.objects.filter(
+        is_votable=0).order_by('-race_date').first()
+
+    if latest_race:
+        end_date = latest_race.race_date
+        start_date = end_date - timedelta(days=3)
+        latest_week_race = Race.objects.filter(
+            race_date__range=(start_date, end_date))
+        for rname, date in zip([race.race_name for race in latest_week_race], [race.race_date for race in latest_week_race]):
+            print(rname, date)
     for game_player_object in game_player_objects:  # 各ゲームの参加者を取得
         vote_objects = Vote.objects.filter(
-            game=game_object, user=game_player_object.User)
+            game=game_object, user=game_player_object.User).order_by('-created_at')
         score_datamu = {}
+        month_datamu = {}
+        latest_week_race_score = 0
+        time_datamu = {}
+        tan_time = 0
+        fuku_time = 0
+        umaren_time = 0
+        umatan_time = 0
+        wide_time = 0
+        trio_time = 0
+        tierce_time = 0
+        get_scores = []
         for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
             score = 0
             odds_object = Odds.objects.filter(
                 Race=vote_object.race).first()  # 各レースの払戻金を取得
+            is_latest_week_race = False
+            month = vote_object.race.race_date.month
+            month_datamu[month] = 0
+
+            if latest_week_race.filter(id=vote_object.race.id).exists():
+                is_latest_week_race = True
             if HorsePlace.objects.filter(Horse=vote_object.horse_first).first():
                 vote_1_place = HorsePlace.objects.filter(
                     Horse=vote_object.horse_first).first().place
@@ -33,39 +66,129 @@ def game_score(request):
                 votes = [vote_1_place, vote_2_place, vote_3_place]
                 if vote_1_place == 1:
                     score += sum([odds_object.tan, odds_object.fuku_1])
+                    tan_time += 1
+                    fuku_time += 1
+                    get_scores.append(odds_object.fuku_1)
+                    get_scores.append(odds_object.tan)
+                    if is_latest_week_race:
+                        latest_week_race_score += sum(
+                            [odds_object.tan, odds_object.fuku_1])
                 if vote_1_place == 2:
                     score += odds_object.fuku_2
+                    fuku_time += 1
+                    get_scores.append(odds_object.fuku_2)
+                    if is_latest_week_race:
+                        latest_week_race_score += odds_object.fuku_2
                 if vote_1_place == 3:
                     score += odds_object.fuku_3
+                    fuku_time += 1
+                    get_scores.append(odds_object.fuku_3)
+                    if is_latest_week_race:
+                        latest_week_race_score += odds_object.fuku_3
                 if (vote_1_place*vote_2_place-2)*(vote_1_place*vote_3_place-2)*(vote_2_place*vote_3_place-2) == 0:
                     score += odds_object.umaren
+                    umaren_time += 1
+                    get_scores.append(odds_object.umaren)
+                    if is_latest_week_race:
+                        latest_week_race_score += odds_object.umaren
                 if vote_1_place == 1 and vote_2_place == 2:
                     score += odds_object.umatan
+                    umatan_time += 1
+                    get_scores.append(odds_object.umatan)
+                    if is_latest_week_race:
+                        latest_week_race_score += odds_object.umatan
                 if sum([1 for v in votes if v in [1, 2]]) >= 2:
                     score += odds_object.wide_12
+                    wide_time += 1
+                    get_scores.append(odds_object.wide_12)
+                    if is_latest_week_race:
+                        latest_week_race_score += odds_object.wide_12
                 if sum([1 for v in votes if v in [1, 3]]) >= 2:
                     score += odds_object.wide_13
+                    get_scores.append(odds_object.wide_13)
+                    wide_time += 1
+                    if is_latest_week_race:
+                        latest_week_race_score += odds_object.wide_13
                 if sum([1 for v in votes if v in [2, 3]]) >= 2:
                     score += odds_object.wide_23
+                    wide_time += 1
+                    get_scores.append(odds_object.wide_23)
+                    if is_latest_week_race:
+                        latest_week_race_score += odds_object.wide_23
                 if sum(votes) == 6:
                     score += odds_object.trio
+                    trio_time += 1
+                    get_scores.append(odds_object.trio)
+                    if is_latest_week_race:
+                        latest_week_race_score += odds_object.trio
                 if [1, 2, 3] == votes:
                     score += odds_object.tierce
+                    tierce_time += 1
+                    get_scores.append(odds_object.tierce)
+                    if is_latest_week_race:
+                        latest_week_race_score += odds_object.tierce
                 score_datamu[f'{vote_object.race.race_name}'] = score
-        user_datamu[f'{game_player_object.User.username}'] = score_datamu
-    game_infomation = []
-    for game_player_object in game_player_objects:
-        name = f'{game_player_object.User.username}'
-        temporary_datamu = {}
-        score = sum(
-            user_datamu[f'{game_player_object.User.username}'].values())
+                month_datamu[month] = month_datamu[month]+score
+        time_datamu['tan_time'] = tan_time
+        time_datamu['fuku_time'] = fuku_time
+        time_datamu['umaren_time'] = umaren_time
+        time_datamu['umatan_time'] = umatan_time
+        time_datamu['wide_time'] = wide_time
+        time_datamu['trio_time'] = trio_time
+        time_datamu['tierce_time'] = tierce_time
+        time_datamu['million_time'] = sum(
+            1 for ticket in get_scores if int(ticket) >= 10000)
+        latest_week_race_score_datamu[game_player_object.User.username] = latest_week_race_score
+        hit_time_datamu[game_player_object.User.username] = time_datamu
+        user_datamu[game_player_object.User.username] = score_datamu
+        temporary_month_datamu[game_player_object.User.username] = month_datamu
+    print(temporary_month_datamu)
 
-        recovery_rate = int(score*100 /
-                            (1100*len(user_datamu[name])))
-        temporary_datamu["name"] = name
-        temporary_datamu["nowscore"] = score
-        temporary_datamu["recovery_rate"] = recovery_rate
-        print(recovery_rate)
+    month_score_datamu = {}
+    for name, scores in temporary_month_datamu.items():
+        for key, score in scores.items():
+            if type(key) == int:
+                if key not in month_score_datamu.keys():
+                    month_score_datamu[key] = {}
+                month_score_datamu[key][name] = score
+    calculate_get_month_top = []
+    for key, player_score in month_score_datamu.items():
+        max_score = max(player_score.values())
+        for name, score in player_score.items():
+            if score == max_score:
+                calculate_get_month_top.append(name)
+
+    print(calculate_get_month_top.count("Kengo"))
+
+    for game_player_object in game_player_objects:
+        name = game_player_object.User.username
+        temporary_datamu = {}
+        print(user_datamu)
+        score = sum(
+            user_datamu[name].values())
+        vote_time = len(user_datamu[name])
+        print(user_datamu)
+
+        recovery_rate = int(score / (11*vote_time))
+        player_hit_info = hit_time_datamu[name]
+        temporary_datamu.update({
+            'name': name,
+            'vote_time': vote_time,
+            'nowscore': score,
+            'recovery_rate': recovery_rate,
+            'latest_week_race_score': latest_week_race_score_datamu[name],
+            "tan_time": player_hit_info['tan_time'],
+            "fuku_time": player_hit_info['fuku_time'],
+            "umaren_time": player_hit_info['umaren_time'],
+            "umatan_time": player_hit_info['umatan_time'],
+            "wide_time": player_hit_info['wide_time'],
+            "trio_time": player_hit_info['trio_time'],
+            "tierce_time": player_hit_info['tierce_time'],
+            "million_time": player_hit_info['million_time'],
+            'get_top_in_month': calculate_get_month_top.count(name)
+
+        })
+
         game_infomation.append(temporary_datamu)
     game_infomation = sorted(
         game_infomation, key=lambda x: x["nowscore"], reverse=True)
@@ -289,6 +412,20 @@ class APIScoreView(APIView):
             _, response_data = game_score(request=request)
 
             return Response(response_data, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error occurred: {e}")  # エラーメッセージを表示
+            traceback.print_exc()
+            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class APIUserNameView(APIView):
+    def put(self, request, format=None):
+        try:
+            update_name = request.data.get('name')
+            UID = request.data.get('uid')
+            User.objects.filter(UID=UID).update(username=update_name)
+            return Response({"message": f'変更しました： {update_name}'}, status=status.HTTP_200_OK)
+
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()
