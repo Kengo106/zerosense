@@ -9,6 +9,7 @@ import { VoteComponent } from './vote/vote.component';
 import { GamemainComponent } from './gamemain/gamemain.component';
 import { TestComponent } from './test/test.component';
 import { UpdatenameComponent } from './updatename/updatename.component';
+import { PastracesComponent } from './pastraces/pastraces.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -21,6 +22,7 @@ const routes: Routes = [
     { path: 'gamemain', component: GamemainComponent },
     { path: 'test', component: TestComponent },
     { path: 'updatename', component: UpdatenameComponent },
+    { path: 'pastraces', component: PastracesComponent },
 ];
 
 @NgModule({
