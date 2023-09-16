@@ -27,7 +27,10 @@ import { TestComponent } from './test/test.component';
 import { UpdatenameComponent } from './updatename/updatename.component';
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { PastracesComponent } from './pastraces/pastraces.component';
+=======
+>>>>>>> 38da2e003688560449035479b4887324e37a10d6
 =======
 >>>>>>> 38da2e003688560449035479b4887324e37a10d6
 =======
@@ -48,7 +51,10 @@ import { PastracesComponent } from './pastraces/pastraces.component';
         UpdatenameComponent,
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         PastracesComponent,
+=======
+>>>>>>> 38da2e003688560449035479b4887324e37a10d6
 =======
 >>>>>>> 38da2e003688560449035479b4887324e37a10d6
 =======
