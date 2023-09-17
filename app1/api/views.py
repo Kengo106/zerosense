@@ -331,7 +331,7 @@ class ApiVoteView(APIView):
             race = Race.objects.filter(
                 rank=grade, race_date=date, race_name=race_name).first()
             horses = [{'id': horse.id, 'name': horse.horse_name}
-                      for horse in Horse.objects.filter(Race_id=race)]
+                      for horse in Horse.objects.filter(Race=race)]
             user = User.objects.filter(UID=uid).first()
             game = Game.objects.filter(name=game_name).first()
             my_vote = Vote.objects.filter(
@@ -426,6 +426,89 @@ class APIUserNameView(APIView):
             User.objects.filter(UID=UID).update(username=update_name)
             return Response({"message": f'変更しました： {update_name}'}, status=status.HTTP_200_OK)
 
+        except Exception as e:
+            print(f"Error occurred: {e}")  # エラーメッセージを表示
+            traceback.print_exc()
+            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class APIRaceResultView(APIView):
+    def get(self, request, format=None):
+        try:
+            race_name = request.query_params.get('racename')
+            game_name = request.query_params.get('gamename')
+            race = Race.objects.filter(race_name=race_name).first()
+            horses = [{'id': horse.id, 'place': HorsePlace.objects.filter(Horse=horse).first().place, 'name': horse.horse_name}
+                      for horse in Horse.objects.filter(Race=race)]
+            horses = sorted(horses, key=lambda x: x["place"])
+            game = Game.objects.filter(name=game_name).first()
+
+            odds = Odds.objects.filter(Race=race).first()
+            odds_datamu = {
+                'tan': odds.tan,
+                'fuku1': odds.fuku_1,
+                'fuku2': odds.fuku_2,
+                'fuku3': odds.fuku_3,
+                'umaren': odds.umaren,
+                'umatan': odds.umatan,
+                'wide12': odds.wide_12,
+                'wide13': odds.wide_13,
+                'wide23': odds.wide_23,
+                'trio': odds.trio,
+                'tierce': odds.tierce
+            }
+
+            vote_list = []
+            for vote in Vote.objects.filter(game=game, race=race):
+                # user_name = User.objects.filter(id=vote.user).first()
+                score = 0
+                user_name = vote.user.username
+                vote_1_place = HorsePlace.objects.filter(
+                    Horse=vote.horse_first).first().place
+                vote_2_place = HorsePlace.objects.filter(
+                    Horse=vote.horse_second).first().place
+                vote_3_place = HorsePlace.objects.filter(
+                    Horse=vote.horse_third).first().place
+                votes = [vote_1_place, vote_2_place, vote_3_place]
+                if vote_1_place == 1:
+                    score += sum([odds_datamu['tan'], odds_datamu['fuku1']])
+                if vote_1_place == 2:
+                    score += odds_datamu['fuku2']
+
+                if vote_1_place == 3:
+                    score += odds_datamu['fuku3']
+                if (vote_1_place*vote_2_place-2)*(vote_1_place*vote_3_place-2)*(vote_2_place*vote_3_place-2) == 0:
+                    score += odds_datamu['umaren']
+                if vote_1_place == 1 and vote_2_place == 2:
+                    score += odds_datamu['umatan']
+                if sum([1 for v in votes if v in [1, 2]]) >= 2:
+                    score += odds_datamu['wide12']
+                if sum([1 for v in votes if v in [1, 3]]) >= 2:
+                    score += odds_datamu['wide13']
+                if sum([1 for v in votes if v in [2, 3]]) >= 2:
+                    score += odds_datamu['wide23']
+                if sum(votes) == 6:
+                    score += odds_datamu['trio']
+                if [1, 2, 3] == votes:
+                    score += odds_datamu['tierce']
+                UID = vote.user.UID
+                votes = {"name": user_name,
+                         "UID": UID,
+                         "first": {'place':  HorsePlace.objects.filter(Horse=vote.horse_first).first().place, 'name': vote.horse_first.horse_name},
+                         'second': {'place':  HorsePlace.objects.filter(Horse=vote.horse_second).first().place, 'name': vote.horse_second.horse_name},
+                         "third": {'place':  HorsePlace.objects.filter(Horse=vote.horse_third).first().place, 'name': vote.horse_third.horse_name},
+                         'comment': vote.comment,
+                         'score': score}
+
+                vote_list.append(votes)
+
+            return Response({
+                'body': {
+                    'horses': horses,
+                    'votes': vote_list,
+                    'odds': odds_datamu,
+                }
+            }, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()

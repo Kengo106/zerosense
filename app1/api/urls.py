@@ -1,6 +1,5 @@
 from django.urls import path
-from app1.api.views import ApiRaceView, ApiUIDView, ApiNewGameView, ApiJoinGameView,  ApiVoteView, APIScoreView, APIUserNameView
-from app1.api.views import ApiRaceView, ApiUIDView, ApiNewGameView, ApiJoinGameView,  ApiVoteView, APIScoreView
+from app1.api.views import ApiRaceView, ApiUIDView, ApiNewGameView, ApiJoinGameView,  ApiVoteView, APIScoreView, APIUserNameView, APIRaceResultView
 urlpatterns = [
     path('race/', ApiRaceView.as_view(), name='api-race'),
     path('UID/', ApiUIDView.as_view(), name='api-uid'),
@@ -8,5 +7,6 @@ urlpatterns = [
     path('joingame/', ApiJoinGameView.as_view(), name='api-newgame'),
     path('vote/', ApiVoteView.as_view(), name='api-vote'),
     path('score/', APIScoreView.as_view(), name='api-score'),
-    path('username/', APIUserNameView.as_view(), name='api=username'),
+    path('username/', APIUserNameView.as_view(), name='api-username'),
+    path('raceresult/', APIRaceResultView.as_view(), name='api-raceresult')
 ]

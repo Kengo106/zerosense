@@ -1,0 +1,37 @@
+table {
+    width: 100%; // テーブルの幅を全体に合わせる
+    border-collapse: collapse; // セルのボーダーを一つにまとめる
+  
+    th, td {
+      border: 1px solid #ddd; // セルのボーダーを設定
+      padding: 0px 0px; // セルの内側の余白を設定
+      text-align: center; // テキストを中央に配置
+  
+      &:nth-child(1) { // 順位の列
+        width: 10%;
+      }
+  
+      &:nth-child(2) { // 出走馬の列
+        width: 50%;
+      }
+  
+      // 必要に応じて他の列にも幅を設定できます
+    }
+  
+    thead {
+      background-color: #f5f5f5; // ヘッダーの背景色を設定
+  
+      th {
+        font-weight: bold; // ヘッダーのテキストを太字にする
+      }
+    }
+  
+    tbody {
+      tr {
+        &:hover {
+          background-color: #f0f0f0; // ホバー時の背景色を設定
+        }
+      }
+    }
+  }
+  

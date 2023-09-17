@@ -70,6 +70,11 @@ export class RaceService {
         return this.http.put(this.userNameUrl, { name: name, uid: uid });
     }
 
+    getRaceResult(race: string, gamename: string) {
+        let params = new HttpParams().set('racename', race).set('gamename', gamename);
+        return this.http.get(this.raceResult, { params });
+    }
+
     private raceUrl: string = 'http://127.0.0.1:8000/api/race/';
 
     private gameUrl: string = 'http://127.0.0.1:8000/api/joingame/';
@@ -83,4 +88,6 @@ export class RaceService {
     private scoreUrl: string = 'http://127.0.0.1:8000/api/score/';
 
     private userNameUrl: string = 'http://127.0.0.1:8000/api/username/';
+
+    private raceResult: string = 'http://127.0.0.1:8000/api/raceresult/';
 }
