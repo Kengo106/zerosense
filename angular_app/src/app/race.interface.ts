@@ -18,3 +18,8 @@ export interface VoteForm {
     third: number | null;
     comment: string | null;
 }
+
+export interface Game {
+    id: string;
+    gamename: string;
+}

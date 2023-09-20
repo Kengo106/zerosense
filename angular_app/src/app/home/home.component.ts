@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
-import { Race } from '../race.interface';
+import { Game, Race } from '../race.interface';
 import { Router } from '@angular/router';
 import { GameService } from '../service/game.service';
 import { async } from 'rxjs';
@@ -13,7 +13,7 @@ import { async } from 'rxjs';
 })
 export class HomeComponent implements OnInit {
     public uid: string = '';
-    public games: string[] = [];
+    public games: Game[] = [];
     public isVotableRace: Race[] = [];
     isLogin: boolean = false;
     constructor(
@@ -33,13 +33,14 @@ export class HomeComponent implements OnInit {
             this.uid = currentUid;
             this.raceService.getCurrentGames(this.uid).subscribe((response) => {
                 this.games = [];
-                response.map((game: string) => this.games.push(game));
+                response.map((game: Game) => this.games.push(game));
+                console.log(this.games);
                 this.gameNumber = this.games.length;
             });
         });
     }
 
-    moveGameMain(game: string) {
-        this.router.navigate(['/gamemain'], { queryParams: { gamename: game } });
+    moveGameMain(game: Game) {
+        this.router.navigate(['/gamemain'], { queryParams: game });
     }
 }

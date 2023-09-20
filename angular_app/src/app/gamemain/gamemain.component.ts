@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Race } from '../race.interface';
+import { Game, Race } from '../race.interface';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, reduce } from 'rxjs';
+import { query } from '@angular/animations';
 
 interface CompetitorData {
     name: string;
@@ -30,7 +31,10 @@ interface CompetitorData {
 })
 export class GamemainComponent implements OnInit {
     public uid: string = '';
-    game: string = '';
+    game: Game = {
+        id: '',
+        gamename: '',
+    };
     isVotableRace: Race[] = [];
     competitorDatas: CompetitorData[] = [];
     competitors: string[] = [];
@@ -46,19 +50,19 @@ export class GamemainComponent implements OnInit {
     ngOnInit() {
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
-            console.log(this.uid);
-
             this.raceService.getVotableRaces(this.uid).subscribe((response) => {
                 this.isVotableRace = [];
                 response.map((responce) => {
                     this.isVotableRace.push(responce);
                 });
-                console.log(this.isVotableRace);
             });
         });
         this.route.queryParams.subscribe((params) => {
-            this.game = params['gamename'];
-            this.raceService.getScore(this.game).subscribe((response: any) => {
+            this.game = {
+                id: params['id'],
+                gamename: params['gamename'],
+            };
+            this.raceService.getScore(this.game.id).subscribe((response: any) => {
                 console.log(response);
                 this.competitorDatas = [];
                 response.forEach((elem: any) => this.competitorDatas.push(elem));
@@ -68,12 +72,23 @@ export class GamemainComponent implements OnInit {
         });
     }
 
-    moveVote(race: Race, game: string) {
-        this.router.navigate(['/vote'], { queryParams: { ...race, gamename: game } });
+    moveVote(race: Race) {
+        this.router.navigate(['/vote'], {
+            queryParams: {
+                date: race.date,
+                racename: race.name,
+                grade: race.grade,
+                gamename: this.game.gamename,
+                id: this.game.id,
+            },
+        });
+        console.log(this.game);
     }
 
     moveResult() {
-        this.router.navigate(['/pastraces/'], { queryParams: { gamename: this.game } });
+        this.router.navigate(['/pastraces/'], {
+            queryParams: { gamename: this.game.gamename, id: this.game.id },
+        });
     }
 
     toggleTime() {

@@ -13,8 +13,8 @@ from django.db.models.functions import ExtractMonth
 def game_score(request):
     # return{username:{racename:score}}
 
-    game = request.query_params.get("game")
-    game_object = Game.objects.filter(name=game).first()
+    game = request.query_params.get("gameid")
+    game_object = Game.objects.filter(id_for_serch=game).first()
     game_player_objects = GamePlayer.objects.filter(game=game_object)
     user_datamu = {}
     temporary_month_datamu = {}
@@ -29,8 +29,7 @@ def game_score(request):
         start_date = end_date - timedelta(days=3)
         latest_week_race = Race.objects.filter(
             race_date__range=(start_date, end_date))
-        for rname, date in zip([race.race_name for race in latest_week_race], [race.race_date for race in latest_week_race]):
-            print(rname, date)
+
     for game_player_object in game_player_objects:  # 各ゲームの参加者を取得
         vote_objects = Vote.objects.filter(
             game=game_object, user=game_player_object.user).order_by('-created_at')
@@ -199,6 +198,7 @@ def game_score(request):
     for index, info in enumerate(game_infomation):
         info["place"] = index + 1
         response_data.append(info)
+        print(user_datamu, 'UUUUUUUUUUUUUUUUUUU')
     return user_datamu, response_data
 
 
@@ -256,20 +256,24 @@ class ApiJoinGameView(APIView):
             uid = request.query_params.get("uid")
             user = User.objects.filter(uid=uid).first()
             gameplayers = GamePlayer.objects.filter(user=user)
-            gamenames = []
+            games = []
             for gameplayer in gameplayers:
-                gamenames.append(gameplayer.game.name)
+                game_datamu = {
+                    'id': gameplayer.game.id_for_serch,
+                    'gamename': gameplayer.game.name}
 
-            return Response(gamenames, status=status.HTTP_200_OK)
+                games.append(game_datamu)
+
+            return Response(games, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, format=None):
-        gamename = request.data.get("gamename")
+        game_id = request.data.get("gameid")
         uid = request.data.get("uid")
-        game = Game.objects.filter(name=gamename).first()
+        game = Game.objects.filter(id_for_serch=game_id).first()
         try:
             user = User.objects.filter(uid=uid).first()
             if game:
@@ -328,15 +332,17 @@ class ApiVoteView(APIView):
         try:
             grade = request.query_params.get('grade')
             date = request.query_params.get('date')
-            race_name = request.query_params.get('name')
+            race_name = request.query_params.get('racename')
             uid = request.query_params.get("uid")
-            game_name = request.query_params.get('gamename')
+            game_id = request.query_params.get('gameid')
+
             race = Race.objects.filter(
                 rank=grade, race_date=date, race_name=race_name).first()
+
             horses = [{'id': horse.id, 'name': horse.horse_name}
                       for horse in Horse.objects.filter(race=race)]
             user = User.objects.filter(uid=uid).first()
-            game = Game.objects.filter(name=game_name).first()
+            game = Game.objects.filter(id_for_serch=game_id).first()
             my_vote = Vote.objects.filter(
                 user=user,
                 race=race,
@@ -345,6 +351,7 @@ class ApiVoteView(APIView):
             vote_list = []
 
             for vote in Vote.objects.filter(game=game, race=race):
+
                 user_name = vote.user.username
                 votes = {"name": user_name,
                          "first": {'id': vote.horse_first.id, 'name': vote.horse_first.horse_name},
@@ -382,10 +389,10 @@ class ApiVoteView(APIView):
             uid = request.data.get("uid")
             user = User.objects.filter(uid=uid).first()
             race_name = request.data.get("racename")
-            game_name = request.data.get('game')
+            game_id = request.data.get('gameid')
             race = Race.objects.filter(
                 rank=race_name['grade'], race_date=race_name['date'], race_name=race_name['name']).first()
-            game = Game.objects.filter(name=game_name).first()
+            game = Game.objects.filter(id_for_serch=game_id).first()
 
             _, created = Vote.objects.update_or_create(
                 game=game,
@@ -438,12 +445,12 @@ class APIRaceResultView(APIView):
     def get(self, request, format=None):
         try:
             race_name = request.query_params.get('racename')
-            game_name = request.query_params.get('gamename')
+            game_id = request.query_params.get('gameid')
             race = Race.objects.filter(race_name=race_name).first()
             horses = [{'id': horse.id, 'place': HorsePlace.objects.filter(horse=horse).first().place, 'name': horse.horse_name}
                       for horse in Horse.objects.filter(race=race)]
             horses = sorted(horses, key=lambda x: x["place"])
-            game = Game.objects.filter(name=game_name).first()
+            game = Game.objects.filter(id_for_serch=game_id).first()
 
             odds = Odds.objects.filter(race=race).first()
             odds_datamu = {
@@ -529,6 +536,23 @@ class APIAccountView(APIView):
                 RaceComment.objects.filter(user=user).delete()
                 user.delete()
             return Response({"Success"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error occurred: {e}")  # エラーメッセージを表示
+            traceback.print_exc()
+            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class APISarchGameView(APIView):
+    def get(self, request, format=None):
+        try:
+            serch_game_id = request.query_params.get('gameserchid')
+            game = Game.objects.filter(id_for_serch=serch_game_id).first()
+            response = {
+                'id': game.id_for_serch,
+                "gamename": game.name
+            }
+
+            return Response({'message': response}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()

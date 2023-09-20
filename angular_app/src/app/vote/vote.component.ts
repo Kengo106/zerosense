@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Race, VoteForm } from '../race.interface';
+import { Game, Race, VoteForm } from '../race.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
@@ -25,7 +25,10 @@ export class VoteComponent implements OnInit {
         third: null,
         comment: '',
     };
-    gameName: string = '';
+    game: Game = {
+        id: '',
+        gamename: '',
+    };
     public uid: string = '';
     public horseList: {
         id: number;
@@ -41,21 +44,27 @@ export class VoteComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        this.route.queryParams.subscribe((params) => (this.gameName = params['gamename']));
-        console.log(this.gameName);
+        this.route.queryParams.subscribe(
+            (params) =>
+                (this.game = {
+                    id: params['id'],
+                    gamename: params['gamename'],
+                }),
+        );
+        console.log(this.game);
         this.sessionService.username$.subscribe((myName) => (this.userName = myName));
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
             this.route.queryParams.subscribe((params) => {
                 this.race = {
                     grade: params['grade'] as string,
-                    name: params['name'] as string,
+                    name: params['racename'] as string,
                     date: params['date'] as string,
                     voted: null,
                 };
             });
             this.raceService
-                .getVote(this.race, this.uid, this.gameName)
+                .getVote(this.race, this.uid, this.game.id)
                 .subscribe((response: any) => {
                     this.myVote = {
                         first: response.vote.first as number | null,
@@ -86,11 +95,11 @@ export class VoteComponent implements OnInit {
             this.myVote.first !== this.myVote.third &&
             this.myVote.second !== this.myVote.third
         ) {
-            this.raceService.submitVote(this.myVote, this.uid, this.race, this.gameName).subscribe({
+            this.raceService.submitVote(this.myVote, this.uid, this.race, this.game.id).subscribe({
                 next: (responce: any) => {
                     alert(responce.sucsess);
                     this.router.navigate(['/gamemain'], {
-                        queryParams: { gamename: this.gameName },
+                        queryParams: { gamename: this.game.gamename, id: this.game.id },
                     });
                 },
                 error: (error: any) => {

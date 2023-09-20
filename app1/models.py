@@ -1,6 +1,7 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from datetime import date
+import uuid
 
 
 class User(models.Model):
@@ -19,6 +20,8 @@ class Game(models.Model):
         GameRule, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255)
     start_datetime = models.DateTimeField(auto_now_add=True)
+    id_for_serch = models.UUIDField(
+        default=uuid.uuid4,  editable=False)
 
 
 class Race(models.Model):

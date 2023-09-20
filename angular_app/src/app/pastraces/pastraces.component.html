@@ -1,12 +1,12 @@
 <h1>結果</h1>
 <h3>レース一覧</h3>
-        <table>
-            <tbody>
-                <tr *ngFor="let race of AllRace" (click)="moveResult(race,game)">
-                        <td>{{race.date}}</td>
-                        <td>{{race.name}}</td>
-                        <td>{{race.grade}}</td>
-                </tr>
-            </tbody>
-        </table>
-        <button (click)="goBack()">戻る</button>
+<table>
+  <tbody>
+    <tr *ngFor="let race of AllRace" (click)="moveResult(race)">
+      <td>{{ race.date }}</td>
+      <td>{{ race.name }}</td>
+      <td>{{ race.grade }}</td>
+    </tr>
+  </tbody>
+</table>
+<button (click)="goBack()">戻る</button>

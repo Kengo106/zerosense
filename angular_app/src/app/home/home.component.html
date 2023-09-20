@@ -4,7 +4,7 @@
   <div *ngIf="gameNumber; then game; else noGame"></div>
   <ng-template #game>
     <p *ngFor="let game of games" (click)="moveGameMain(game)">
-      {{ game }}
+      {{ game.gamename }}
     </p>
   </ng-template>
   <ng-template #noGame>

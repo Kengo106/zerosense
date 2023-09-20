@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Race } from '../race.interface';
+import { Game, Race } from '../race.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
@@ -47,7 +47,10 @@ export class RaceresultComponent {
         voted: null,
     };
     userName: string = '';
-    gameName: string = '';
+    game: Game = {
+        gamename: '',
+        id: '',
+    };
     uid: string = '';
     voteList: VoteForm[] = [];
     horseList: Horse[] = [];
@@ -74,21 +77,24 @@ export class RaceresultComponent {
     ) {}
 
     ngOnInit() {
-        this.route.queryParams.subscribe((params) => (this.gameName = params['gamename']));
-        console.log(this.gameName);
+        this.route.queryParams.subscribe(
+            (params) => (this.game = { gamename: params['gamename'], id: params['id'] }),
+        );
+        console.log(this.game);
         this.sessionService.username$.subscribe((myName) => (this.userName = myName));
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
             this.route.queryParams.subscribe((params) => {
                 this.race = {
                     grade: params['grade'] as string,
-                    name: params['name'] as string,
+                    name: params['racename'] as string,
                     date: params['date'] as string,
                     voted: null,
                 };
+                console.log(this.race);
             });
             this.raceService
-                .getRaceResult(this.race.name, this.gameName)
+                .getRaceResult(this.race.name, this.game.id)
 
                 .subscribe((response: any) => {
                     this.voteList = response.body.votes;

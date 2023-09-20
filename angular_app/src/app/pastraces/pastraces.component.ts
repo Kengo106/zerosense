@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Race } from '../race.interface';
+import { Game, Race } from '../race.interface';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,7 +12,10 @@ import { Location } from '@angular/common';
 })
 export class PastracesComponent {
     public uid: string = '';
-    game: string = '';
+    game: Game = {
+        gamename: '',
+        id: '',
+    };
     AllRace: Race[] = [];
     constructor(
         private raceService: RaceService,
@@ -36,12 +39,23 @@ export class PastracesComponent {
             });
         });
         this.route.queryParams.subscribe((params) => {
-            this.game = params['gamename'];
+            this.game = {
+                gamename: params['gamename'],
+                id: params['id'],
+            };
         });
     }
 
-    moveResult(race: Race, game: string) {
-        this.router.navigate(['/raceresult'], { queryParams: { ...race, gamename: game } });
+    moveResult(race: Race) {
+        this.router.navigate(['/raceresult'], {
+            queryParams: {
+                date: race.date,
+                racename: race.name,
+                grade: race.grade,
+                gamename: this.game.gamename,
+                id: this.game.id,
+            },
+        });
     }
 
     goBack() {
