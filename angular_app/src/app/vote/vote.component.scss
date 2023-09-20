@@ -22,3 +22,69 @@ form {
     }
   }
   
+  /* レース名とグレードのスタイル */
+h2 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+/* フレックスコンテナのスタイル */
+div {
+  &.flex-container {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+/* テーブルのスタイル */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  thead {
+    background-color: #f2f2f2;
+  }
+  td {
+    border: 1px solid #e0e0e0;
+    padding: 8px 12px;
+    text-align: center;
+  }
+}
+
+/* 投票のフォームのスタイル */
+form {
+  margin-top: 20px;
+  label {
+    display: block;
+    margin-bottom: 10px;
+  }
+  select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+  }
+  textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  button {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+}
+
+/* コメントの部分 */
+div.comment-section {
+  margin-top: 20px;
+}

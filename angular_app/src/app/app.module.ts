@@ -28,6 +28,7 @@ import { UpdatenameComponent } from './updatename/updatename.component';
 
 import { PastracesComponent } from './pastraces/pastraces.component';
 import { RaceresultComponent } from './raceresult/raceresult.component';
+import { DeleteaccountComponent } from './deleteaccount/deleteaccount.component';
 
 @NgModule({
     declarations: [
@@ -44,6 +45,7 @@ import { RaceresultComponent } from './raceresult/raceresult.component';
         UpdatenameComponent,
         PastracesComponent,
         RaceresultComponent,
+        DeleteaccountComponent,
     ],
     imports: [
         BrowserModule,

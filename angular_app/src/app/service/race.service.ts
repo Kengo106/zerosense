@@ -75,6 +75,11 @@ export class RaceService {
         return this.http.get(this.raceResult, { params });
     }
 
+    deleteAccount(uid: string) {
+        let params = new HttpParams().set('uid', uid);
+        return this.http.delete(this.accountUrl, { params });
+    }
+
     private raceUrl: string = 'http://127.0.0.1:8000/api/race/';
 
     private gameUrl: string = 'http://127.0.0.1:8000/api/joingame/';
@@ -90,4 +95,6 @@ export class RaceService {
     private userNameUrl: string = 'http://127.0.0.1:8000/api/username/';
 
     private raceResult: string = 'http://127.0.0.1:8000/api/raceresult/';
+
+    private accountUrl: string = 'http://127.0.0.1:8000/api/account/';
 }

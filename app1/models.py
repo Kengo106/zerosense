@@ -4,7 +4,7 @@ from datetime import date
 
 
 class User(models.Model):
-    UID = models.CharField(max_length=255)
+    uid = models.CharField(max_length=255)
     username = models.CharField(max_length=255)
 
 
@@ -15,7 +15,8 @@ class GameRule(models.Model):
 
 
 class Game(models.Model):
-    GameRule = models.ForeignKey(GameRule, on_delete=models.CASCADE, null=True)
+    game_rule = models.ForeignKey(
+        GameRule, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255)
     start_datetime = models.DateTimeField(auto_now_add=True)
 
@@ -28,30 +29,30 @@ class Race(models.Model):
 
 
 class GamePlayer(models.Model):
-    Game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    User = models.ForeignKey(User, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Horse(models.Model):
-    Race = models.ForeignKey(Race, on_delete=models.CASCADE, null=True)
+    race = models.ForeignKey(Race, on_delete=models.CASCADE, null=True)
     horse_name = models.CharField(max_length=255)
 
 
 class HorsePlace(models.Model):
-    Horse = models.ForeignKey(Horse, on_delete=models.CASCADE)
+    horse = models.ForeignKey(Horse, on_delete=models.CASCADE)
     place = models.IntegerField(null=True)
 
 
 class GameComment(models.Model):
-    Game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    UID = models.ForeignKey(User, on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class RaceComment(models.Model):
-    Race = models.ForeignKey(Race, on_delete=models.CASCADE)
-    UID = models.ForeignKey(User, on_delete=models.CASCADE)
+    race = models.ForeignKey(Race, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -71,7 +72,7 @@ class Vote(models.Model):
 
 
 class Odds(models.Model):
-    Race = models.ForeignKey(Race, on_delete=models.CASCADE)
+    race = models.ForeignKey(Race, on_delete=models.CASCADE)
     tan = models.IntegerField(default=0)
     fuku_1 = models.IntegerField(default=0)
     fuku_2 = models.IntegerField(default=0)

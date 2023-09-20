@@ -68,6 +68,7 @@ export class VoteComponent implements OnInit {
                     response.horses.map((horse: any) => this.horseList.push(horse));
                     this.voteList = [];
                     response.votelist.map((vote: any) => {
+                        console.log(vote);
                         this.voteList.push(vote);
                     });
                     console.log(this.voteList);

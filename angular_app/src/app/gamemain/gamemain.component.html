@@ -1,82 +1,96 @@
 <table>
-    <thead >
-        <th>順位</th><th *ngFor="let competitorData of competitorDatas">{{competitorData.place}}位</th>
-    </thead>
-    <tbody>
+  <thead>
+    <th>順位</th>
+    <th *ngFor="let competitorData of competitorDatas">{{ competitorData.place }}位</th>
+  </thead>
+  <tbody>
+    <tr>
+      <th>プレイヤー</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.name }}</td>
+    </tr>
 
-        <tr>
-            <th>プレイヤー</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.name}}</td>
-        </tr>
+    <tr>
+      <th>合計ポイント</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.nowscore }}</td>
+    </tr>
 
-        <tr>
-            <th>合計ポイント</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.nowscore}}</td>
-        </tr>
+    <tr>
+      <th>投票回数</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.vote_time }}回</td>
+    </tr>
+    <tr>
+      <th>回収率</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.recovery_rate }}％</td>
+    </tr>
+    <tr>
+      <th>先週のポイント</th>
+      <td *ngFor="let competitorData of competitorDatas">
+        {{ competitorData.latest_week_race_score }}
+      </td>
+    </tr>
+    <tr>
+      <th>月間勝利数</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.get_top_in_month }}</td>
+    </tr>
+    <tr>
+      <th>万馬券的中回数</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.million_time }}</td>
+    </tr>
+    <tr (click)="toggleTime()">
+      <th>{{ showTime ? '▽' : '▷' }}的中回数</th>
+    </tr>
 
-        <tr>
-            <th>投票回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.vote_time}}回</td>
-        </tr>
-        <tr>
-            <th>回収率</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.recovery_rate}}％</td>
-        </tr>
-        <tr>
-            <th>先週のポイント</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.latest_week_race_score}}</td>
-        </tr>
-        <tr>
-            <th>月間勝利数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.get_top_in_month}}</td>
-        </tr>
-        <tr>
-            <th>万馬券的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.million_time}}</td>
-        </tr>
-        <tr (click)="toggleTime()">
-            <th>{{showTime ? '▽':'▷'}}的中回数</th>
-        </tr>
-
-        <tr *ngIf="showTime">
-            <th>単的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.tan_time}}回</td>
-        </tr>
-        <tr  *ngIf="showTime">
-            <th>複的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.fuku_time}}回</td>
-        </tr>
-        <tr *ngIf="showTime">
-            <th>馬連的中数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.umaren_time}}回</td>
-        </tr>
-        <tr *ngIf="showTime">
-            <th>馬単的中数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.umatan_time}}回</td>
-        </tr>
-        <tr *ngIf="showTime">
-            <th>ワイド的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.wide_time}}回</td>
-        </tr>
-        <tr *ngIf="showTime">
-            <th>三連複的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.trio_time}}回</td>
-        </tr>
-        <tr *ngIf="showTime">
-            <th>三連単的中回数</th><td *ngFor="let competitorData of competitorDatas">{{competitorData.tierce_time}}回</td>
-        </tr>
-    </tbody>
+    <tr *ngIf="showTime">
+      <th>単的中回数</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.tan_time }}</td>
+    </tr>
+    <tr *ngIf="showTime">
+      <th>複的中回数</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.fuku_time }}</td>
+    </tr>
+    <tr *ngIf="showTime">
+      <th>馬連的中数</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.umaren_time }}</td>
+    </tr>
+    <tr *ngIf="showTime">
+      <th>馬単的中数</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.umatan_time }}</td>
+    </tr>
+    <tr *ngIf="showTime">
+      <th>ワイド的中回数</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.wide_time }}</td>
+    </tr>
+    <tr *ngIf="showTime">
+      <th>三連複的中回数</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.trio_time }}</td>
+    </tr>
+    <tr *ngIf="showTime">
+      <th>三連単的中回数</th>
+      <td *ngFor="let competitorData of competitorDatas">{{ competitorData.tierce_time }}</td>
+    </tr>
+  </tbody>
 </table>
 
 <h3>投票受付中のレース一覧</h3>
-<div *ngIf="isVotableRace; then votableBlock else noVotable"></div>
-    <ng-template #votableBlock>
-        <table>
-            <tbody>
-                <tr *ngFor="let race of isVotableRace" (click)="moveVote(race,game)">
-                        <td>{{race.date}}</td>
-                        <td>{{race.name}}</td>
-                        <td>{{race.grade}}</td>
-                        <div *ngIf="race.voted;then votedBlock else noVoted"></div>
-                        <ng-template #votedBlock>
-                        <td><button>更新する</button></td>
-                    </ng-template>
-                    <ng-template #noVoted>
-                        <td><button class="no-voted">投票する</button></td>
-                    </ng-template>
-                </tr>
-            </tbody>
-        </table>
-    </ng-template>
-    <ng-template #noVotable>
-        投票対象のレースがありません        
-   </ng-template>   
+<div *ngIf="isVotableRace; then votableBlock; else noVotable"></div>
+<ng-template #votableBlock>
+  <table>
+    <tbody>
+      <tr *ngFor="let race of isVotableRace" (click)="moveVote(race, game)">
+        <td>{{ race.date }}</td>
+        <td>{{ race.name }}</td>
+        <td>{{ race.grade }}</td>
+        <div *ngIf="race.voted; then votedBlock; else noVoted"></div>
+        <ng-template #votedBlock>
+          <td><button>更新する</button></td>
+        </ng-template>
+        <ng-template #noVoted>
+          <td><button class="no-voted">投票する</button></td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+<ng-template #noVotable> 投票対象のレースがありません </ng-template>
 <a (click)="moveResult()"><h3>過去のレース結果</h3></a>
 <h3>サイトポリシー</h3>

@@ -1,17 +1,17 @@
-<div *ngIf="isLogin; then login else nologin"></div>
-    <ng-template #login>
-<h3>参加中の大会</h3>
-<div *ngIf="games; then game else noGame"></div>
-    <ng-template #game>
-         <p *ngFor="let game of games" (click)="moveGameMain(game)">
-            {{game}}
-        </p>          
-    </ng-template>
-    <ng-template #noGame>
-        参加中の大会がありません        
-   </ng-template>
+<div *ngIf="isLogin; then login; else nologin"></div>
+<ng-template #login>
+  <h3>参加中の大会</h3>
+  <div *ngIf="gameNumber; then game; else noGame"></div>
+  <ng-template #game>
+    <p *ngFor="let game of games" (click)="moveGameMain(game)">
+      {{ game }}
+    </p>
+  </ng-template>
+  <ng-template #noGame>
+    参加中の大会がありません
+    <a routerLink="/joingame">大会に参加する</a>
+  </ng-template>
 </ng-template>
 <ng-template #nologin>
-    <h2><a routerLink="/account/login"></a></h2>
+  <h2><a routerLink="/account/login"></a></h2>
 </ng-template>
-

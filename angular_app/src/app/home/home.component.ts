@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit {
         private router: Router,
         private gameService: GameService,
     ) {}
+    gameNumber: number = 0;
 
     ngOnInit() {
         this.sessionService.loginState$.subscribe((login) => {
@@ -33,6 +34,7 @@ export class HomeComponent implements OnInit {
             this.raceService.getCurrentGames(this.uid).subscribe((response) => {
                 this.games = [];
                 response.map((game: string) => this.games.push(game));
+                this.gameNumber = this.games.length;
             });
         });
     }

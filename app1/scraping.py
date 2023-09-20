@@ -107,7 +107,7 @@ def scrape_grade_race(browser):
             try:
 
                 Horse.objects.update_or_create(
-                    Race=game_race,
+                    race=game_race,
                     horse_name=grade_race["horse_name"],
                 )
 
@@ -265,7 +265,7 @@ def scrape_grade_race_result(browser):
                 print(update_count)
                 race = Race.objects.get(race_name=grade_race_odds["race_name"])
                 Odds.objects.update_or_create(
-                    Race=race,
+                    race=race,
                     defaults={
                         'tan': int(grade_race_odds["tan"]),
                         'fuku_1': int(grade_race_odds["fuku_1"]),
@@ -291,11 +291,11 @@ def scrape_grade_race_result(browser):
             try:
                 race = Race.objects.get(race_name=grade_race["race_name"])
                 horse, _ = Horse.objects.get_or_create(
-                    Race=race, horse_name=grade_race["horse_name"])
+                    race=race, horse_name=grade_race["horse_name"])
                 if grade_race["place"].isdigit():
                     place = int(grade_race["place"])
                     HorsePlace.objects.update_or_create(
-                        Horse=horse,  # フィルタリングキーの指定　ない場合はHorse=horseでcreateされる
+                        horse=horse,  # フィルタリングキーの指定　ない場合はHorse=horseでcreateされる
                         defaults={
                             "place": place
                         }
@@ -303,7 +303,7 @@ def scrape_grade_race_result(browser):
                 else:
                     place = 999
                     HorsePlace.objects.update_or_create(
-                        Horse=horse,
+                        horse=horse,
                         defaults={
                             "place": place
                         }

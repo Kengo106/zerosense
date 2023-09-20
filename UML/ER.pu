@@ -1,10 +1,10 @@
-@startuml 20230911_ER図
+@startuml 20230920_ER図
 
 
 entity HorsePlace {
   + id [PK]
   --
-  # Horse_id [FK]
+  # horse [FK]
   place
   ==
   レース結果
@@ -13,7 +13,7 @@ entity HorsePlace {
 entity User {
   + id [PK]
   --
-  # UID [FK]
+  # uid [FK]
   username
   ==
   ゼロセンスユーザー
@@ -32,7 +32,7 @@ entity FirebaseUser {
 entity Game {
   + id [PK]
   --
-  # GameRule_id [FK] NULL=TRUE
+  # game_rule [FK] NULL=TRUE
   name
   start_datetime
   ==
@@ -52,12 +52,12 @@ entity GameRule {
 entity Vote {
   + id [PK]
   --
-  # User_id [FK]
-  # Race_id [FK]
-  # Game_id [FK]
-  # Horse_id_first [FK]
-  # Horse_id_second [FK]
-  # Horse_id_third [FK]
+  # user [FK]
+  # race [FK]
+  # game [FK]
+  # horse_first [FK]
+  # horse_second [FK]
+  # horse_third [FK]
   created_at
   comment
   ==
@@ -70,7 +70,7 @@ entity Race{
   + id [PK]
   --
   race_name
-  grade
+  rank
   race_date
   is_votable
   ==
@@ -83,7 +83,7 @@ entity Race{
 entity Horse {
   + id [PK]
   --
-  # Race_id [FK] 
+  # race [FK] 
   horse_name NULL=TRUE
   ==
   大会の出走馬
@@ -92,7 +92,7 @@ entity Horse {
 entity Odds {
   + id [PK]
   --
-  # Race_id [FK]
+  # race [FK]
   tan
   fuku_1
   fuku_2
@@ -102,8 +102,8 @@ entity Odds {
   wide_12
   wide_13
   wide_23
-  renfuku_3
-  rentan_3
+  trio
+  tierce
   ==
   払い戻し金を取得する
 }
@@ -111,9 +111,9 @@ entity Odds {
 entity GameComment {
   + id [PK]
   --
-  # Game_id [FK]
-  # User_id [FK]
-  coment_text
+  # game [FK]
+  # user [FK]
+  comment_text
   created_at
   ==
   大会に対するコメント
@@ -122,8 +122,8 @@ entity GameComment {
 entity GamePlayers {
   + id [PK]
   --
-  # Game_id [FK]
-  # User_id [FK]
+  # game [FK]
+  # user [FK]
   ==
   大会の参加者を登録する
 }
@@ -131,9 +131,9 @@ entity GamePlayers {
 entity RaceComment {
   + id [PK]
   --
-  # Race_id [FK]
-  # User_id [FK]
-  coment_text
+  # race [FK]
+  # user [FK]
+  comment_text
   created_at
   ==
   大会に対するコメント

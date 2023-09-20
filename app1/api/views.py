@@ -1,4 +1,4 @@
-from ..models import User, Game, GameRule, GamePlayer, GameComment, Race, Horse, Vote, Odds, HorsePlace
+from ..models import User, Game, GameRule, GamePlayer, GameComment, Race, Horse, Vote, Odds, HorsePlace, RaceComment
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Subquery, OuterRef
@@ -15,7 +15,7 @@ def game_score(request):
 
     game = request.query_params.get("game")
     game_object = Game.objects.filter(name=game).first()
-    game_player_objects = GamePlayer.objects.filter(Game=game_object)
+    game_player_objects = GamePlayer.objects.filter(game=game_object)
     user_datamu = {}
     temporary_month_datamu = {}
     game_infomation = []
@@ -33,7 +33,7 @@ def game_score(request):
             print(rname, date)
     for game_player_object in game_player_objects:  # 各ゲームの参加者を取得
         vote_objects = Vote.objects.filter(
-            game=game_object, user=game_player_object.User).order_by('-created_at')
+            game=game_object, user=game_player_object.user).order_by('-created_at')
         score_datamu = {}
         month_datamu = {}
         latest_week_race_score = 0
@@ -49,20 +49,20 @@ def game_score(request):
         for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
             score = 0
             odds_object = Odds.objects.filter(
-                Race=vote_object.race).first()  # 各レースの払戻金を取得
+                race=vote_object.race).first()  # 各レースの払戻金を取得
             is_latest_week_race = False
             month = vote_object.race.race_date.month
             month_datamu[month] = 0
 
             if latest_week_race.filter(id=vote_object.race.id).exists():
                 is_latest_week_race = True
-            if HorsePlace.objects.filter(Horse=vote_object.horse_first).first():
+            if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
                 vote_1_place = HorsePlace.objects.filter(
-                    Horse=vote_object.horse_first).first().place
+                    horse=vote_object.horse_first).first().place
                 vote_2_place = HorsePlace.objects.filter(
-                    Horse=vote_object.horse_second).first().place
+                    horse=vote_object.horse_second).first().place
                 vote_3_place = HorsePlace.objects.filter(
-                    Horse=vote_object.horse_third).first().place
+                    horse=vote_object.horse_third).first().place
                 votes = [vote_1_place, vote_2_place, vote_3_place]
                 if vote_1_place == 1:
                     score += sum([odds_object.tan, odds_object.fuku_1])
@@ -138,10 +138,10 @@ def game_score(request):
         time_datamu['tierce_time'] = tierce_time
         time_datamu['million_time'] = sum(
             1 for ticket in get_scores if int(ticket) >= 10000)
-        latest_week_race_score_datamu[game_player_object.User.username] = latest_week_race_score
-        hit_time_datamu[game_player_object.User.username] = time_datamu
-        user_datamu[game_player_object.User.username] = score_datamu
-        temporary_month_datamu[game_player_object.User.username] = month_datamu
+        latest_week_race_score_datamu[game_player_object.user.username] = latest_week_race_score
+        hit_time_datamu[game_player_object.user.username] = time_datamu
+        user_datamu[game_player_object.user.username] = score_datamu
+        temporary_month_datamu[game_player_object.user.username] = month_datamu
     print(temporary_month_datamu)
 
     month_score_datamu = {}
@@ -161,15 +161,18 @@ def game_score(request):
     print(calculate_get_month_top.count("Kengo"))
 
     for game_player_object in game_player_objects:
-        name = game_player_object.User.username
+        name = game_player_object.user.username
         temporary_datamu = {}
         print(user_datamu)
         score = sum(
             user_datamu[name].values())
         vote_time = len(user_datamu[name])
-        print(user_datamu)
 
-        recovery_rate = int(score / (11*vote_time))
+        print(user_datamu)
+        if vote_time:
+            recovery_rate = int(score / (11*vote_time))
+        else:
+            recovery_rate = 0
         player_hit_info = hit_time_datamu[name]
         temporary_datamu.update({
             'name': name,
@@ -205,7 +208,7 @@ class ApiUIDView(APIView):
         username = request.data.get('username')
         try:
             User.objects.create(
-                UID=uid,
+                uid=uid,
                 username=username
             )
             response = Response(
@@ -232,13 +235,13 @@ class ApiNewGameView(APIView):
                 )
 
                 game = Game.objects.create(
-                    GameRule=game_rule,
+                    game_rule=game_rule,
                     name=gamename,
                 )
 
                 GamePlayer.objects.create(
-                    Game=game,
-                    User=User.objects.filter(UID=uid).first()
+                    game=game,
+                    user=User.objects.filter(uid=uid).first()
                 )
             return Response("Sucsess", status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -251,11 +254,11 @@ class ApiJoinGameView(APIView):
     def get(self, request, format=None):
         try:
             uid = request.query_params.get("uid")
-            user = User.objects.filter(UID=uid).first()
-            gameplayers = GamePlayer.objects.filter(User=user)
+            user = User.objects.filter(uid=uid).first()
+            gameplayers = GamePlayer.objects.filter(user=user)
             gamenames = []
             for gameplayer in gameplayers:
-                gamenames.append(gameplayer.Game.name)
+                gamenames.append(gameplayer.game.name)
 
             return Response(gamenames, status=status.HTTP_200_OK)
         except Exception as e:
@@ -268,16 +271,16 @@ class ApiJoinGameView(APIView):
         uid = request.data.get("uid")
         game = Game.objects.filter(name=gamename).first()
         try:
-            user = User.objects.filter(UID=uid).first()
+            user = User.objects.filter(uid=uid).first()
             if game:
                 game_player = GamePlayer.objects.filter(
-                    Game=game, User=user).first()
+                    game=game, user=user).first()
                 if game_player:
                     return Response({"message": "既に参加しています"}, status=status.HTTP_200_OK)
                 else:
                     GamePlayer.objects.create(
-                        Game=game,
-                        User=user,
+                        game=game,
+                        user=user,
                     )
                     return Response({"message": "大会に参加しました"}, status=status.HTTP_200_OK)
             else:
@@ -297,7 +300,7 @@ class ApiRaceView(APIView):
             elif flag_before == "2":
                 flags = [0, 1]
             uid = request.query_params.get('uid')
-            user = User.objects.filter(UID=uid).first()
+            user = User.objects.filter(uid=uid).first()
             voted_races = [
                 vote.race for vote in Vote.objects.filter(user=user)]
             races = []
@@ -331,8 +334,8 @@ class ApiVoteView(APIView):
             race = Race.objects.filter(
                 rank=grade, race_date=date, race_name=race_name).first()
             horses = [{'id': horse.id, 'name': horse.horse_name}
-                      for horse in Horse.objects.filter(Race=race)]
-            user = User.objects.filter(UID=uid).first()
+                      for horse in Horse.objects.filter(race=race)]
+            user = User.objects.filter(uid=uid).first()
             game = Game.objects.filter(name=game_name).first()
             my_vote = Vote.objects.filter(
                 user=user,
@@ -342,7 +345,6 @@ class ApiVoteView(APIView):
             vote_list = []
 
             for vote in Vote.objects.filter(game=game, race=race):
-                # user_name = User.objects.filter(id=vote.user).first()
                 user_name = vote.user.username
                 votes = {"name": user_name,
                          "first": {'id': vote.horse_first.id, 'name': vote.horse_first.horse_name},
@@ -378,7 +380,7 @@ class ApiVoteView(APIView):
         try:
             vote_form = request.data.get('voteForm')
             uid = request.data.get("uid")
-            user = User.objects.filter(UID=uid).first()
+            user = User.objects.filter(uid=uid).first()
             race_name = request.data.get("racename")
             game_name = request.data.get('game')
             race = Race.objects.filter(
@@ -422,8 +424,8 @@ class APIUserNameView(APIView):
     def put(self, request, format=None):
         try:
             update_name = request.data.get('name')
-            UID = request.data.get('uid')
-            User.objects.filter(UID=UID).update(username=update_name)
+            uid = request.data.get('uid')
+            User.objects.filter(uid=uid).update(username=update_name)
             return Response({"message": f'変更しました： {update_name}'}, status=status.HTTP_200_OK)
 
         except Exception as e:
@@ -438,12 +440,12 @@ class APIRaceResultView(APIView):
             race_name = request.query_params.get('racename')
             game_name = request.query_params.get('gamename')
             race = Race.objects.filter(race_name=race_name).first()
-            horses = [{'id': horse.id, 'place': HorsePlace.objects.filter(Horse=horse).first().place, 'name': horse.horse_name}
-                      for horse in Horse.objects.filter(Race=race)]
+            horses = [{'id': horse.id, 'place': HorsePlace.objects.filter(horse=horse).first().place, 'name': horse.horse_name}
+                      for horse in Horse.objects.filter(race=race)]
             horses = sorted(horses, key=lambda x: x["place"])
             game = Game.objects.filter(name=game_name).first()
 
-            odds = Odds.objects.filter(Race=race).first()
+            odds = Odds.objects.filter(race=race).first()
             odds_datamu = {
                 'tan': odds.tan,
                 'fuku1': odds.fuku_1,
@@ -464,11 +466,11 @@ class APIRaceResultView(APIView):
                 score = 0
                 user_name = vote.user.username
                 vote_1_place = HorsePlace.objects.filter(
-                    Horse=vote.horse_first).first().place
+                    horse=vote.horse_first).first().place
                 vote_2_place = HorsePlace.objects.filter(
-                    Horse=vote.horse_second).first().place
+                    horse=vote.horse_second).first().place
                 vote_3_place = HorsePlace.objects.filter(
-                    Horse=vote.horse_third).first().place
+                    horse=vote.horse_third).first().place
                 votes = [vote_1_place, vote_2_place, vote_3_place]
                 if vote_1_place == 1:
                     score += sum([odds_datamu['tan'], odds_datamu['fuku1']])
@@ -491,12 +493,12 @@ class APIRaceResultView(APIView):
                     score += odds_datamu['trio']
                 if [1, 2, 3] == votes:
                     score += odds_datamu['tierce']
-                UID = vote.user.UID
+                uid = vote.user.uid
                 votes = {"name": user_name,
-                         "UID": UID,
-                         "first": {'place':  HorsePlace.objects.filter(Horse=vote.horse_first).first().place, 'name': vote.horse_first.horse_name},
-                         'second': {'place':  HorsePlace.objects.filter(Horse=vote.horse_second).first().place, 'name': vote.horse_second.horse_name},
-                         "third": {'place':  HorsePlace.objects.filter(Horse=vote.horse_third).first().place, 'name': vote.horse_third.horse_name},
+                         "UID": uid,
+                         "first": {'place':  HorsePlace.objects.filter(horse=vote.horse_first).first().place, 'name': vote.horse_first.horse_name},
+                         'second': {'place':  HorsePlace.objects.filter(horse=vote.horse_second).first().place, 'name': vote.horse_second.horse_name},
+                         "third": {'place':  HorsePlace.objects.filter(horse=vote.horse_third).first().place, 'name': vote.horse_third.horse_name},
                          'comment': vote.comment,
                          'score': score}
 
@@ -509,6 +511,24 @@ class APIRaceResultView(APIView):
                     'odds': odds_datamu,
                 }
             }, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error occurred: {e}")  # エラーメッセージを表示
+            traceback.print_exc()
+            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class APIAccountView(APIView):
+    def delete(self, request, format=None):
+        try:
+            uid = request.query_params.get('uid')
+            with transaction.atomic():
+                user = User.objects.filter(uid=uid).first()
+                GamePlayer.objects.filter(user=user).delete()
+                GameComment.objects.filter(user=user).delete()
+                Vote.objects.filter(user=user).delete()
+                RaceComment.objects.filter(user=user).delete()
+                user.delete()
+            return Response({"Success"}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()
