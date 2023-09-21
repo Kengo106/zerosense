@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { Game, Race } from '../race.interface';

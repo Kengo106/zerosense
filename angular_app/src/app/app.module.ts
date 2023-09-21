@@ -29,6 +29,7 @@ import { UpdatenameComponent } from './updatename/updatename.component';
 import { PastracesComponent } from './pastraces/pastraces.component';
 import { RaceresultComponent } from './raceresult/raceresult.component';
 import { DeleteaccountComponent } from './deleteaccount/deleteaccount.component';
+import { ClipboardModule } from 'ngx-clipboard';
 
 @NgModule({
     declarations: [
@@ -48,6 +49,7 @@ import { DeleteaccountComponent } from './deleteaccount/deleteaccount.component'
         DeleteaccountComponent,
     ],
     imports: [
+        ClipboardModule,
         BrowserModule,
         AppRoutingModule,
         HttpClientModule,

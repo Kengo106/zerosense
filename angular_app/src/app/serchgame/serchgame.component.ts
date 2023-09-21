@@ -24,8 +24,12 @@ export class SerchgameComponent {
     Serch() {
         this.gameName = [];
         this.raceService.gameSerch(this.gameId).subscribe((responce: any) => {
-            this.gameName.push(responce.message.gamename);
-            this.gameNumber = this.gameName.length;
+            if (responce.message == '大会が存在しません') {
+                alert(responce.message);
+            } else {
+                this.gameName.push(responce.message.gamename);
+                this.gameNumber = this.gameName.length;
+            }
         });
     }
 
@@ -36,6 +40,8 @@ export class SerchgameComponent {
                 alert(`${response.message}`);
                 if (response.message !== '大会が存在しません') {
                     this.router.navigate(['home/']);
+                } else {
+                    alert(response.message);
                 }
             });
         }

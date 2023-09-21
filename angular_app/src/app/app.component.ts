@@ -24,7 +24,6 @@ export class AppComponent implements OnInit {
             };
         });
     }
-
     moveGameMain(game: Game) {
         this.router.navigate(['/gamemain'], { queryParams: game });
     }

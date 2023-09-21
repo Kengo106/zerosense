@@ -8,6 +8,7 @@ from django.db import transaction
 import traceback
 from datetime import timedelta
 from django.db.models.functions import ExtractMonth
+import uuid
 
 
 def game_score(request):
@@ -546,14 +547,28 @@ class APISarchGameView(APIView):
     def get(self, request, format=None):
         try:
             serch_game_id = request.query_params.get('gameserchid')
-            game = Game.objects.filter(id_for_serch=serch_game_id).first()
-            response = {
-                'id': game.id_for_serch,
-                "gamename": game.name
-            }
+
+            def is_valid_uuid(val):
+                try:
+                    uuid.UUID(str(val))
+                    return True
+                except:
+                    return False
+
+            if is_valid_uuid(serch_game_id):
+                game = Game.objects.filter(id_for_serch=serch_game_id).first()
+                if game:
+                    response = {
+                        'id': game.id_for_serch,
+                        "gamename": game.name
+                    }
+                else:
+                    response = '大会が存在しません'
+            else:
+                response = '大会が存在しません'
 
             return Response({'message': response}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()
-            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": '大会が存在しません'}, status=status.HTTP_400_BAD_REQUEST)

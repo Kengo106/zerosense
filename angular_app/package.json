@@ -24,6 +24,7 @@
     "angular-in-memory-web-api": "^0.16.0",
     "firebase": "^9.23.0",
     "firebaseui": "^6.0.2",
+    "ngx-clipboard": "^16.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.13.0"
