@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { EmailAuthProvider } from 'firebase/auth';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-deleteaccount',
@@ -18,6 +19,7 @@ export class DeleteaccountComponent implements OnInit {
         private Afauth: AngularFireAuth,
         private raceService: RaceService,
         private sessinoService: SessionService,
+        private router: Router,
     ) {}
 
     ngOnInit(): void {
@@ -36,6 +38,7 @@ export class DeleteaccountComponent implements OnInit {
                         console.log(responce);
                         await user.delete();
                         alert('アカウントを削除しました');
+                        this.router.navigate(['account/login']);
                     });
                 }
             } catch {

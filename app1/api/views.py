@@ -155,10 +155,10 @@ def game_score(request):
     for key, player_score in month_score_datamu.items():
         max_score = max(player_score.values())
         for name, score in player_score.items():
+            if max_score != 0:
+                continue
             if score == max_score:
                 calculate_get_month_top.append(name)
-
-    print(calculate_get_month_top.count("Kengo"))
 
     for game_player_object in game_player_objects:
         name = game_player_object.user.username

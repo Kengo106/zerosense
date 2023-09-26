@@ -71,11 +71,11 @@ export class SessionService {
     }
 
     async signup(account: Password): Promise<void> {
-        const userCredential = await this.afAuth.createUserWithEmailAndPassword(
-            account.email,
-            account.password,
-        );
         try {
+            const userCredential = await this.afAuth.createUserWithEmailAndPassword(
+                account.email,
+                account.password,
+            );
             if (userCredential.user) {
                 await userCredential.user.updateProfile({
                     displayName: account.username,
@@ -89,8 +89,16 @@ export class SessionService {
             } else {
                 alert('userCredential.userが空');
             }
-        } catch (error) {
-            alert('エラー');
+        } catch (error: any) {
+            console.log(error.code);
+            console.log(error.message);
+            if (error.code == 'auth/email-already-in-use') {
+                alert('そのメールアドレスは既に使用されています。');
+            } else if (error.code == 'auth/weak-password') {
+                alert('パスワードは6文字以上で設定してください。');
+            } else {
+                alert('エラーが発生しました。');
+            }
         }
     }
 }
