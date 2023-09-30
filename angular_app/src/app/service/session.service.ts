@@ -48,7 +48,7 @@ export class SessionService {
             if (!auth.user?.emailVerified) {
                 await this.afAuth.signOut();
                 console.log(account.email);
-                throw new Error('emailVerifiedが空');
+                throw new Error('メールアドレスの確認を実行してください');
             } else {
                 alert('ログインしました');
                 this.router.navigate(['/']);
@@ -83,8 +83,11 @@ export class SessionService {
                 const uid = userCredential.user.uid;
                 const username = account.username;
                 this.raceService.postUID(uid, username).subscribe(async (response) => {
+                    await this.afAuth.signOut();
                     await userCredential.user!.sendEmailVerification();
+
                     alert('メールアドレス確認メールを送信しました。');
+                    this.router.navigate(['account/login']);
                 });
             } else {
                 alert('userCredential.userが空');

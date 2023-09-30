@@ -23,6 +23,5 @@ export class SignUpComponent implements OnInit {
             return;
         }
         await this.session.signup(this.account);
-        await this.account.reset();
     }
 }

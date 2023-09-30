@@ -1,3 +1,58 @@
-.no-voted{
-    color: rgb(172, 32, 32);
-}
+ .first-column{
+        width: 120px;
+        min-width: 120px;
+
+ }
+.gameresult-place {
+     // 3番目以降の列
+     width: 70px;
+     min-width: 70px;
+ }
+
+ .detail{
+                // ヘッダーの背景色を設定
+                text-align: left;
+                    
+                        font-weight: bold; // ヘッダーのテキストを太字にする
+
+                        padding: 2px;
+
+                background-color: #E9E9E9;
+
+                .show{
+                                background-color: white;
+                                    border-radius: 10px;
+                                    
+                                    margin: 7px;
+                                padding: 5px;
+                                margin: 10px;
+                                &.yes{
+box-shadow: 1px 1px rgba(0, 0, 0, 0.1);
+                                .icon {
+                                
+
+                                  color:#188542 ;
+                                
+                                    
+                                
+                                    }
+                                }
+                                &.no{
+                              .icon{
+                                          color: #0066AA;
+                                  
+                                
+                                
+                                }
+                                }
+
+  
+                              
+
+
+                }
+
+                
+                    
+ }
+

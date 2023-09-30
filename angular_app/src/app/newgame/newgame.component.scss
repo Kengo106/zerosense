@@ -1,0 +1,13 @@
+/* my-component.component.css */
+::ng-deep mat-form-field.mat-focused .mat-form-field-label {
+    color: red;
+}
+
+::ng-deep mat-form-field .mat-form-field-flex {
+    background-color: lightgrey;
+}
+
+::ng-deep input[matStartDate],
+::ng-deep input[matEndDate] {
+    width: 150px;
+}

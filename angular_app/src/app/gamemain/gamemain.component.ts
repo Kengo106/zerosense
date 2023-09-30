@@ -3,8 +3,6 @@ import { Game, Race } from '../race.interface';
 import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, reduce } from 'rxjs';
-import { query } from '@angular/animations';
 
 interface CompetitorData {
     name: string;
@@ -39,7 +37,6 @@ export class GamemainComponent implements OnInit {
     competitorDatas: CompetitorData[] = [];
     competitors: string[] = [];
     showTime: boolean = false;
-
     constructor(
         private raceService: RaceService,
         private sessionService: SessionService,
@@ -50,24 +47,29 @@ export class GamemainComponent implements OnInit {
     ngOnInit() {
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
-            this.raceService.getVotableRaces(this.uid).subscribe((response) => {
-                this.isVotableRace = [];
-                response.map((responce) => {
-                    this.isVotableRace.push(responce);
-                });
-            });
-        });
-        this.route.queryParams.subscribe((params) => {
-            this.game = {
-                id: params['id'],
-                gamename: params['gamename'],
-            };
-            this.raceService.getScore(this.game.id).subscribe((response: any) => {
-                console.log(response);
-                this.competitorDatas = [];
-                response.forEach((elem: any) => this.competitorDatas.push(elem));
-                this.competitorDatas.sort((a, b) => a.place - b.place);
-                console.log(this.competitorDatas);
+            this.route.queryParams.subscribe((params) => {
+                this.game = {
+                    id: params['id'],
+                    gamename: params['gamename'],
+                };
+                if (this.uid.trim().length * this.game.id.trim().length) {
+                    this.raceService
+                        .getVotableRaces(this.uid, this.game.id)
+                        .subscribe((response) => {
+                            this.isVotableRace = [];
+                            response.map((responce) => {
+                                console.log(responce);
+                                this.isVotableRace.push(responce);
+                            });
+                        });
+                    this.raceService.getScore(this.game.id).subscribe((response: any) => {
+                        console.log(response);
+                        this.competitorDatas = [];
+                        response.forEach((elem: any) => this.competitorDatas.push(elem));
+                        this.competitorDatas.sort((a, b) => a.place - b.place);
+                        console.log(this.competitorDatas);
+                    });
+                }
             });
         });
     }

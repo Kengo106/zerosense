@@ -45,6 +45,8 @@ export class RaceresultComponent {
         name: '',
         date: '',
         voted: null,
+        vote_num: 999,
+        isdisplay: null,
     };
     userName: string = '';
     game: Game = {
@@ -67,6 +69,7 @@ export class RaceresultComponent {
         trio: null,
         tierce: null,
     };
+    participantWidth: string = '';
 
     constructor(
         private route: ActivatedRoute,
@@ -80,7 +83,6 @@ export class RaceresultComponent {
         this.route.queryParams.subscribe(
             (params) => (this.game = { gamename: params['gamename'], id: params['id'] }),
         );
-        console.log(this.game);
         this.sessionService.username$.subscribe((myName) => (this.userName = myName));
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
@@ -90,8 +92,9 @@ export class RaceresultComponent {
                     name: params['racename'] as string,
                     date: params['date'] as string,
                     voted: null,
+                    vote_num: 999,
+                    isdisplay: null,
                 };
-                console.log(this.race);
             });
             this.raceService
                 .getRaceResult(this.race.name, this.game.id)
@@ -108,10 +111,10 @@ export class RaceresultComponent {
                         }
                         return 0;
                     });
-
-                    console.log(this.voteList, this.horseList, this.odds);
                 });
         });
+
+        console.log(this.voteList.length);
     }
 
     goBack() {

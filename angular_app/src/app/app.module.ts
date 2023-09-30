@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -8,7 +9,7 @@ import { Location } from '@angular/common';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { JPDateAdapter } from './calender/jpdate-adapter';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { environment } from '../environments/environment';
@@ -30,6 +31,8 @@ import { PastracesComponent } from './pastraces/pastraces.component';
 import { RaceresultComponent } from './raceresult/raceresult.component';
 import { DeleteaccountComponent } from './deleteaccount/deleteaccount.component';
 import { ClipboardModule } from 'ngx-clipboard';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
     declarations: [
@@ -54,8 +57,11 @@ import { ClipboardModule } from 'ngx-clipboard';
         AppRoutingModule,
         HttpClientModule,
         BrowserAnimationsModule,
+        MatFormFieldModule,
+        MatInputModule,
         MatDatepickerModule,
         MatNativeDateModule,
+        MatProgressSpinnerModule,
         FormsModule,
         provideFirebaseApp(() => initializeApp(environment.firebase)),
         provideAuth(() => getAuth()),
@@ -65,6 +71,7 @@ import { ClipboardModule } from 'ngx-clipboard';
             cookieName: 'csrftoken', // Djangoのデフォルトと一致
             headerName: 'X-CSRFToken', // Djangoのデフォルトと一致
         }),
+        ReactiveFormsModule,
     ],
     providers: [
         Location,

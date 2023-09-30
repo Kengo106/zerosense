@@ -151,11 +151,12 @@ def game_score(request):
                 if key not in month_score_datamu.keys():
                     month_score_datamu[key] = {}
                 month_score_datamu[key][name] = score
+    print(month_score_datamu)
     calculate_get_month_top = []
     for key, player_score in month_score_datamu.items():
         max_score = max(player_score.values())
         for name, score in player_score.items():
-            if max_score != 0:
+            if max_score == 0:
                 continue
             if score == max_score:
                 calculate_get_month_top.append(name)
@@ -163,12 +164,10 @@ def game_score(request):
     for game_player_object in game_player_objects:
         name = game_player_object.user.username
         temporary_datamu = {}
-        print(user_datamu)
         score = sum(
             user_datamu[name].values())
         vote_time = len(user_datamu[name])
 
-        print(user_datamu)
         if vote_time:
             recovery_rate = int(score / (11*vote_time))
         else:
@@ -199,7 +198,6 @@ def game_score(request):
     for index, info in enumerate(game_infomation):
         info["place"] = index + 1
         response_data.append(info)
-        print(user_datamu, 'UUUUUUUUUUUUUUUUUUU')
     return user_datamu, response_data
 
 
@@ -228,9 +226,11 @@ class ApiNewGameView(APIView):
         public = request.data.get("open")
         span = request.data.get("span")
         try:
+            print(span)
             with transaction.atomic():
                 game_rule = GameRule.objects.create(
-                    span=span,
+                    start=span['start'],
+                    end=span['end'],
                     open=public,
                     logic_id=999
                 )
@@ -305,21 +305,41 @@ class ApiRaceView(APIView):
             elif flag_before == "2":
                 flags = [0, 1]
             uid = request.query_params.get('uid')
+            gameid = request.query_params.get('gameid')
+            start_date = Game.objects.filter(
+                id_for_serch=gameid).first().game_rule.start
+            end_date = Game.objects.filter(
+                id_for_serch=gameid).first().game_rule.end
+            print(start_date, end_date)
+            game = Game.objects.filter(id_for_serch=gameid).first()
             user = User.objects.filter(uid=uid).first()
             voted_races = [
-                vote.race for vote in Vote.objects.filter(user=user)]
+                vote.race for vote in Vote.objects.filter(user=user, game=game)]
             races = []
             for flag in flags:
-                for race in Race.objects.filter(is_votable=flag):
+                for race in Race.objects.filter(is_votable=flag, race_date__range=(start_date, end_date)):
                     datum = {}
                     if race in voted_races:
                         datum = {"grade": race.rank,
-                                 "name": race.race_name, "date": race.race_date, 'voted': True}
+                                 "name": race.race_name, "date": race.race_date, 'voted': True, "vote_num": race.vote_set.count()}
                     else:
                         datum = {"grade": race.rank,
-                                 "name": race.race_name, "date": race.race_date, 'voted': False}
+                                 "name": race.race_name, "date": race.race_date, 'voted': False, "vote_num": race.vote_set.count()}
 
                     races.append(datum)
+
+        #         game_infomation = sorted(
+        # game_infomation, key=lambda x: x["nowscore"], reverse=True)
+
+            races = sorted(races, key=lambda x: x["date"], reverse=True)
+            compare_date = ''
+            for race in races:
+                if compare_date == race['date']:
+                    race["isdisplay"] = False
+                else:
+                    race["isdisplay"] = True
+                compare_date = race['date']
+                print(races)
 
             return Response(races, status=status.HTTP_200_OK)
         except Exception as e:

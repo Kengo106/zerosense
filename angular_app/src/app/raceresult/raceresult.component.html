@@ -1,13 +1,19 @@
-<h2>{{ race.name }}{{ race.grade }}</h2>
-<div>
-  <h3>レース結果</h3>
-  <div>
-    <table>
+<div class="center-text container big">
+  <span class="racename">{{ race.name }}</span
+  ><span class="grade"> {{ race.grade }}</span>
+</div>
+
+<div class="raceresult container">
+  <div class="title">レース結果</div>
+  <div class="table">
+    <table class="result">
       <thead>
         <tr>
-          <th>順位</th>
-          <th>出走馬</th>
-          <th *ngFor="let vote of voteList">{{ vote.name }}</th>
+          <th class="place">順位</th>
+          <th class="horse">出走馬</th>
+          <th *ngFor="let vote of voteList" class="participant">
+            {{ vote.name }}
+          </th>
         </tr>
       </thead>
 
@@ -37,177 +43,186 @@
     </table>
   </div>
 </div>
-<div>払戻金</div>
-<table>
-  <thead>
-    <tr>
-      <th>馬券</th>
-      <th>金額</th>
-      <th *ngFor="let vote of voteList">{{ vote.name }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>単勝</td>
-      <td>{{ odds.tan }}</td>
-      <td *ngFor="let vote of voteList">
-        <div *ngIf="1 === vote.first.place; then thenFirstBlock; else elseFirstBlock"></div>
-        <ng-template #thenFirstBlock> 当 </ng-template>
-        <ng-template #elseFirstBlock> </ng-template>
-      </td>
-    </tr>
+<div class="payout container">
+  <div class="title">払戻金</div>
+  <div class="table">
+    <table class="payout">
+      <thead>
+        <tr>
+          <th class="ticket">馬券</th>
+          <th class="price">金額</th>
+          <th *ngFor="let vote of voteList" class="participant">{{ vote.name }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>単勝</td>
+          <td>{{ odds.tan }}</td>
+          <td *ngFor="let vote of voteList">
+            <div *ngIf="1 === vote.first.place; then thenFirstBlock; else elseFirstBlock"></div>
+            <ng-template #thenFirstBlock> 当 </ng-template>
+            <ng-template #elseFirstBlock> </ng-template>
+          </td>
+        </tr>
 
-    <tr>
-      <td>複勝1</td>
-      <td>{{ odds.fuku1 }}</td>
-      <td *ngFor="let vote of voteList">
-        <div *ngIf="1 === vote.first.place; then thenBlock; else elseBlock"></div>
-        <ng-template #thenBlock> 当 </ng-template>
-        <ng-template #elseBlock> </ng-template>
-      </td>
-    </tr>
-    <tr>
-      <td>複勝2</td>
-      <td>{{ odds.fuku2 }}</td>
-      <td *ngFor="let vote of voteList">
-        <div *ngIf="2 === vote.first.place; then thenBlock; else elseBlock"></div>
-        <ng-template #thenBlock> 当 </ng-template>
-        <ng-template #elseBlock> </ng-template>
-      </td>
-    </tr>
-    <tr>
-      <td>複勝3</td>
-      <td>{{ odds.fuku3 }}</td>
-      <td *ngFor="let vote of voteList">
-        <div *ngIf="3 === vote.first.place; then thenBlock; else elseBlock"></div>
-        <ng-template #thenBlock> 当 </ng-template>
-        <ng-template #elseBlock> </ng-template>
-      </td>
-    </tr>
-    <tr>
-      <td>馬連</td>
-      <td>{{ odds.umaren }}</td>
-      <td *ngFor="let vote of voteList">
-        <div
-          *ngIf="
-            (2 - vote.first.place * vote.second.place) *
-              (2 - vote.third.place * vote.second.place) *
-              (2 - vote.third.place * vote.second.place) ==
-              0;
-            then thenBlock;
-            else elseBlock
-          "
-        ></div>
-        <ng-template #thenBlock> 当 </ng-template>
-        <ng-template #elseBlock> </ng-template>
-      </td>
-    </tr>
-    <tr>
-      <td>馬単</td>
-      <td>{{ odds.umatan }}</td>
-      <td *ngFor="let vote of voteList">
-        <div
-          *ngIf="1 === vote.first.place && 2 === vote.second.place; then thenBlock; else elseBlock"
-        ></div>
-        <ng-template #thenBlock> 当 </ng-template>
-        <ng-template #elseBlock> </ng-template>
-      </td>
-    </tr>
-    <tr>
-      <td>W1-2</td>
-      <td>{{ odds.wide12 }}</td>
-      <td *ngFor="let vote of voteList">
-        <div
-          *ngIf="
-            (2 - vote.first.place * vote.second.place) *
-              (2 - vote.second.place * vote.third.place) *
-              (2 - vote.first.place * vote.third.place) ==
-              0;
-            then thenBlock;
-            else elseBlock
-          "
-        ></div>
-        <ng-template #thenBlock> 当 </ng-template>
-        <ng-template #elseBlock> </ng-template>
-      </td>
-    </tr>
-    <tr>
-      <td>W1-3</td>
-      <td>{{ odds.wide13 }}</td>
-      <td *ngFor="let vote of voteList">
-        <div
-          *ngIf="
-            (3 - vote.first.place * vote.second.place) *
-              (3 - vote.second.place * vote.third.place) *
-              (3 - vote.first.place * vote.third.place) ==
-              0;
-            then thenBlock;
-            else elseBlock
-          "
-        ></div>
-        <ng-template #thenBlock> 当 </ng-template>
-        <ng-template #elseBlock> </ng-template>
-      </td>
-    </tr>
-    <tr>
-      <td>W2-3</td>
-      <td>{{ odds.wide23 }}</td>
-      <td *ngFor="let vote of voteList">
-        <div
-          *ngIf="
-            (vote.first.place === 2 || vote.second.place === 2 || vote.third.place === 2) &&
-              (vote.first.place === 3 || vote.second.place === 3 || vote.third.place === 3);
-            then thenBlock;
-            else elseBlock
-          "
-        ></div>
-        <ng-template #thenBlock> 当 </ng-template>
-        <ng-template #elseBlock> </ng-template>
-      </td>
-    </tr>
-    <tr>
-      <td>3連複</td>
-      <td>{{ odds.trio }}</td>
-      <td *ngFor="let vote of voteList">
-        <div
-          *ngIf="
-            vote.first.place * vote.second.place * vote.third.place === 6;
-            then thenBlock;
-            else elseBlock
-          "
-        ></div>
-        <ng-template #thenBlock> 当 </ng-template>
-        <ng-template #elseBlock> </ng-template>
-      </td>
-    </tr>
-    <tr>
-      <td>3連単</td>
-      <td>{{ odds.tierce }}</td>
-      <td *ngFor="let vote of voteList">
-        <div
-          *ngIf="
-            vote.first.place === 1 && vote.second.place === 2 && vote.third.place === 3;
-            then thenBlock;
-            else elseBlock
-          "
-        ></div>
-        <ng-template #thenBlock> 当 </ng-template>
-        <ng-template #elseBlock> </ng-template>
-      </td>
-    </tr>
+        <tr>
+          <td>複勝1</td>
+          <td>{{ odds.fuku1 }}</td>
+          <td *ngFor="let vote of voteList">
+            <div *ngIf="1 === vote.first.place; then thenBlock; else elseBlock"></div>
+            <ng-template #thenBlock> 当 </ng-template>
+            <ng-template #elseBlock> </ng-template>
+          </td>
+        </tr>
+        <tr>
+          <td>複勝2</td>
+          <td>{{ odds.fuku2 }}</td>
+          <td *ngFor="let vote of voteList">
+            <div *ngIf="2 === vote.first.place; then thenBlock; else elseBlock"></div>
+            <ng-template #thenBlock> 当 </ng-template>
+            <ng-template #elseBlock> </ng-template>
+          </td>
+        </tr>
+        <tr>
+          <td>複勝3</td>
+          <td>{{ odds.fuku3 }}</td>
+          <td *ngFor="let vote of voteList">
+            <div *ngIf="3 === vote.first.place; then thenBlock; else elseBlock"></div>
+            <ng-template #thenBlock> 当 </ng-template>
+            <ng-template #elseBlock> </ng-template>
+          </td>
+        </tr>
+        <tr>
+          <td>馬連</td>
+          <td>{{ odds.umaren }}</td>
+          <td *ngFor="let vote of voteList">
+            <div
+              *ngIf="
+                (2 - vote.first.place * vote.second.place) *
+                  (2 - vote.third.place * vote.second.place) *
+                  (2 - vote.third.place * vote.second.place) ==
+                  0;
+                then thenBlock;
+                else elseBlock
+              "
+            ></div>
+            <ng-template #thenBlock> 当 </ng-template>
+            <ng-template #elseBlock> </ng-template>
+          </td>
+        </tr>
+        <tr>
+          <td>馬単</td>
+          <td>{{ odds.umatan }}</td>
+          <td *ngFor="let vote of voteList">
+            <div
+              *ngIf="
+                1 === vote.first.place && 2 === vote.second.place;
+                then thenBlock;
+                else elseBlock
+              "
+            ></div>
+            <ng-template #thenBlock> 当 </ng-template>
+            <ng-template #elseBlock> </ng-template>
+          </td>
+        </tr>
+        <tr>
+          <td>W1-2</td>
+          <td>{{ odds.wide12 }}</td>
+          <td *ngFor="let vote of voteList">
+            <div
+              *ngIf="
+                (2 - vote.first.place * vote.second.place) *
+                  (2 - vote.second.place * vote.third.place) *
+                  (2 - vote.first.place * vote.third.place) ==
+                  0;
+                then thenBlock;
+                else elseBlock
+              "
+            ></div>
+            <ng-template #thenBlock> 当 </ng-template>
+            <ng-template #elseBlock> </ng-template>
+          </td>
+        </tr>
+        <tr>
+          <td>W1-3</td>
+          <td>{{ odds.wide13 }}</td>
+          <td *ngFor="let vote of voteList">
+            <div
+              *ngIf="
+                (3 - vote.first.place * vote.second.place) *
+                  (3 - vote.second.place * vote.third.place) *
+                  (3 - vote.first.place * vote.third.place) ==
+                  0;
+                then thenBlock;
+                else elseBlock
+              "
+            ></div>
+            <ng-template #thenBlock> 当 </ng-template>
+            <ng-template #elseBlock> </ng-template>
+          </td>
+        </tr>
+        <tr>
+          <td>W2-3</td>
+          <td>{{ odds.wide23 }}</td>
+          <td *ngFor="let vote of voteList">
+            <div
+              *ngIf="
+                (vote.first.place === 2 || vote.second.place === 2 || vote.third.place === 2) &&
+                  (vote.first.place === 3 || vote.second.place === 3 || vote.third.place === 3);
+                then thenBlock;
+                else elseBlock
+              "
+            ></div>
+            <ng-template #thenBlock> 当 </ng-template>
+            <ng-template #elseBlock> </ng-template>
+          </td>
+        </tr>
+        <tr>
+          <td>3連複</td>
+          <td>{{ odds.trio }}</td>
+          <td *ngFor="let vote of voteList">
+            <div
+              *ngIf="
+                vote.first.place * vote.second.place * vote.third.place === 6;
+                then thenBlock;
+                else elseBlock
+              "
+            ></div>
+            <ng-template #thenBlock> 当 </ng-template>
+            <ng-template #elseBlock> </ng-template>
+          </td>
+        </tr>
+        <tr>
+          <td>3連単</td>
+          <td>{{ odds.tierce }}</td>
+          <td *ngFor="let vote of voteList">
+            <div
+              *ngIf="
+                vote.first.place === 1 && vote.second.place === 2 && vote.third.place === 3;
+                then thenBlock;
+                else elseBlock
+              "
+            ></div>
+            <ng-template #thenBlock> 当 </ng-template>
+            <ng-template #elseBlock> </ng-template>
+          </td>
+        </tr>
 
-    <tr>
-      <td colspan="2">獲得金額</td>
-      <td *ngFor="let vote of voteList">
-        {{ vote.score }}
-      </td>
-    </tr>
-  </tbody>
-</table>
-<div>コメント</div>
-<div *ngFor="let vote of voteList">
-  <span>{{ vote.name }}</span
-  ><span>{{ vote.comment }}</span>
+        <tr>
+          <td colspan="2">獲得金額</td>
+          <td *ngFor="let vote of voteList">
+            {{ vote.score }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="comment container">
+  <div class="title">コメント</div>
+  <div *ngFor="let vote of voteList">
+    <span>{{ vote.name }}：</span><span>{{ vote.comment }}</span>
+  </div>
 </div>
 <div>
   <button (click)="goBack()">戻る</button>

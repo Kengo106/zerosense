@@ -1,12 +1,26 @@
-<h1>結果</h1>
-<h3>レース一覧</h3>
-<table>
-  <tbody>
-    <tr *ngFor="let race of AllRace" (click)="moveResult(race)">
-      <td>{{ race.date }}</td>
-      <td>{{ race.name }}</td>
-      <td>{{ race.grade }}</td>
-    </tr>
-  </tbody>
-</table>
+<div class="racelist container">
+  <div class="title">過去のレース結果</div>
+
+  <div
+    *ngFor="let race of AllRaces"
+    (click)="race.vote_num != 0 && moveResult(race)"
+    class="race-date"
+  >
+    <div *ngIf="race.isdisplay; then displayBlock; else nodisplay"></div>
+    <ng-template #displayBlock>
+      <div class="date">{{ race.date }}</div> </ng-template
+    ><ng-template #nodisplay></ng-template>
+    <div class="flex-box">
+      <div class="race-item">
+        <span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i></span
+        ><span class="racename vote{{ race.vote_num }}">{{ race.name }}</span>
+      </div>
+      <span class="grade _{{ race.grade }}">{{ race.grade }}</span
+      ><span class="votetime">{{ race.vote_num }}votes</span>
+    </div>
+  </div>
+</div>
 <button (click)="goBack()">戻る</button>
+<div class="container">
+  <div class="flex-box"></div>
+</div>

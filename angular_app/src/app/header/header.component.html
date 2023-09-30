@@ -1,14 +1,15 @@
 <nav class="navbar fixed-top navbar-dark bg-primary">
-    <!-- ログイン状態で分岐 -->
-    <span class="navbar-text" *ngIf="!login">
-            <a routerLink="/account/login">Login</a> 
-    </span>
-    <span class="navbar-text" *ngIf="login">
-        <a routerLink="/updatename"><h2> {{userName}} </h2></a>
-          <span (click)="logout()">Logout</span> 
-          <a routerLink="newgame">新規大会作成</a>
-          <a routerLink="joingame">大会検索</a>
-    </span>
-    <!-- 分岐ここまで -->
-
-  </nav>
+  <!-- ログイン状態で分岐 -->
+  <span class="navbar-text" *ngIf="!login">
+    <a routerLink="/account/login">Login</a>
+  </span>
+  <span class="navbar-text" *ngIf="login">
+    <a routerLink="/updatename"
+      ><h2>{{ userName }}</h2></a
+    >
+    <span (click)="logout()" class="underbar">Logout</span>
+    <a routerLink="newgame">新規大会作成</a>
+    <a routerLink="joingame">大会検索</a>
+  </span>
+  <!-- 分岐ここまで -->
+</nav>

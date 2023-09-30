@@ -3,8 +3,6 @@ import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { Game, Race } from '../race.interface';
 import { Router } from '@angular/router';
-import { GameService } from '../service/game.service';
-import { async } from 'rxjs';
 
 @Component({
     selector: 'app-home',
@@ -20,7 +18,6 @@ export class HomeComponent implements OnInit {
         private raceService: RaceService,
         private sessionService: SessionService,
         private router: Router,
-        private gameService: GameService,
     ) {}
     gameNumber: number = 0;
 
@@ -42,5 +39,9 @@ export class HomeComponent implements OnInit {
 
     moveGameMain(game: Game) {
         this.router.navigate(['/gamemain'], { queryParams: game });
+    }
+
+    copyID(gameId: string) {
+        alert(`大会IDをクリップボードにコピーしました。\n${gameId}`);
     }
 }

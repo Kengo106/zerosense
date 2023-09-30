@@ -16,6 +16,8 @@ export class VoteComponent implements OnInit {
         name: '',
         date: '',
         voted: null,
+        vote_num: 999,
+        isdisplay: null,
     };
     userName: string = '';
     voteList: any[] = [];
@@ -61,6 +63,8 @@ export class VoteComponent implements OnInit {
                     name: params['racename'] as string,
                     date: params['date'] as string,
                     voted: null,
+                    vote_num: 999,
+                    isdisplay: null,
                 };
             });
             this.raceService

@@ -16,7 +16,7 @@ export class PastracesComponent {
         gamename: '',
         id: '',
     };
-    AllRace: Race[] = [];
+    AllRaces: Race[] = [];
     constructor(
         private raceService: RaceService,
         private sessionService: SessionService,
@@ -28,21 +28,23 @@ export class PastracesComponent {
     ngOnInit() {
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
-            console.log(this.uid);
-
-            this.raceService.getAllRaces(this.uid).subscribe((response) => {
-                this.AllRace = [];
-                response.map((responce) => {
-                    this.AllRace.push(responce);
-                });
-                console.log(this.AllRace);
+            // console.log(this.uid);
+            this.route.queryParams.subscribe((params) => {
+                this.game = {
+                    gamename: params['gamename'],
+                    id: params['id'],
+                };
+                if (this.game.id != '') {
+                    console.log(this.game.id);
+                    this.raceService.getAllRaces(this.uid, this.game.id).subscribe((response) => {
+                        this.AllRaces = [];
+                        response.map((responce) => {
+                            this.AllRaces.push(responce);
+                        });
+                        console.log(this.AllRaces);
+                    });
+                }
             });
-        });
-        this.route.queryParams.subscribe((params) => {
-            this.game = {
-                gamename: params['gamename'],
-                id: params['id'],
-            };
         });
     }
 

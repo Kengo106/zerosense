@@ -1,17 +1,28 @@
-<div *ngIf="isLogin; then login; else nologin"></div>
-<ng-template #login>
-  <h3>参加中の大会</h3>
-  <div *ngIf="gameNumber; then game; else noGame"></div>
-  <ng-template #game>
-    <p *ngFor="let game of games" (click)="moveGameMain(game)">
-      {{ game.gamename }}
-    </p>
+<div class="container">
+  <div *ngIf="isLogin; then login; else nologin"></div>
+  <ng-template #login>
+    <span class="title">参加中の大会</span>
+
+    <div *ngIf="gameNumber; then game; else noGame"></div>
+    <ng-template #game>
+      <span *ngFor="let game of games"
+        ><span class="flex-box"
+          ><div class="item game" (click)="moveGameMain(game)">
+            <span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i></span>
+            <span class="name">{{ game.gamename }}</span>
+          </div>
+          <div class="item copyid">
+            <span ngxClipboard [cbContent]="game.id" (click)="copyID(game.id)"> Copy ID </span>
+          </div>
+        </span>
+      </span>
+    </ng-template>
+    <ng-template #noGame>
+      参加中の大会がありません
+      <a routerLink="/joingame">大会に参加する</a>
+    </ng-template>
   </ng-template>
-  <ng-template #noGame>
-    参加中の大会がありません
-    <a routerLink="/joingame">大会に参加する</a>
+  <ng-template #nologin>
+    <h2><a routerLink="/account/login"></a></h2>
   </ng-template>
-</ng-template>
-<ng-template #nologin>
-  <h2><a routerLink="/account/login"></a></h2>
-</ng-template>
+</div>

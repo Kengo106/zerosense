@@ -10,7 +10,8 @@ class User(models.Model):
 
 
 class GameRule(models.Model):
-    span = models.CharField(max_length=255)
+    start = models.DateField(default=date.today)
+    end = models.DateField(default=date.today)
     open = models.BooleanField()
     logic_id = models.IntegerField()
 

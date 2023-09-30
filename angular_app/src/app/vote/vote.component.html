@@ -1,67 +1,109 @@
-<h2>{{ race.name }}{{ race.grade }}</h2>
-<div style="display: flex">
-  <table>
-    <thead>
-      <tr>
-        <td>出走馬</td>
-        <td *ngFor="let vote of voteList">{{ vote.name }}</td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let horse of horseList">
-        <td>{{ horse.name }}</td>
-        <td *ngFor="let vote of voteList">
-          <div
-            *ngIf="horse.name === vote.first.name; then thenFirstBlock; else elseFirstBlock"
-          ></div>
-          <ng-template #thenFirstBlock> ◎ </ng-template>
-          <ng-template #elseFirstBlock> </ng-template>
-          <div
-            *ngIf="horse.name === vote.second.name; then thenSecondBlock; else elseSecondBlock"
-          ></div>
-          <ng-template #thenSecondBlock> ○ </ng-template>
-          <ng-template #elseSecondBlock> </ng-template>
-          <div
-            *ngIf="horse.name === vote.third.name; then thenThirdBlock; else elseThirdBlock"
-          ></div>
-          <ng-template #thenThirdBlock> ▲ </ng-template>
-          <ng-template #elseThirdBlock> </ng-template>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+<div class="center-text container big">
+  <span class="racename">{{ race.name }}</span
+  ><span class="grade"> {{ race.grade }}</span>
 </div>
-<div>コメント</div>
-<div class="comment-section" *ngFor="let vote of voteList">{{ vote.name }}: {{ vote.comment }}</div>
-<div>投票</div>
-<form (ngSubmit)="onSubmit()">
-  <label for="first">◎：</label>
-  <select name="firsthorse" id="first" [(ngModel)]="myVote.first" required>
-    <option value="null" disabled>選択してください</option>
-    <option [value]="horse.id" *ngFor="let horse of horseList">
-      {{ horse.name }}
-    </option>
-  </select>
-  <label for="second">○：</label>
-  <select name="secondhorse" id="second" [(ngModel)]="myVote.second" required>
-    <option value="null" disabled>選択してください</option>
-    <option [value]="horse.id" *ngFor="let horse of horseList">
-      {{ horse.name }}
-    </option>
-  </select>
-  <label for="third">▲：</label>
-  <select name="thirdhorse" id="third" [(ngModel)]="myVote.third" required>
-    <option value="null" disabled>選択してください</option>
-    <option [value]="horse.id" *ngFor="let horse of horseList">
-      {{ horse.name }}
-    </option>
-  </select>
-  コメント：<textarea
-    name="comment"
-    [(ngModel)]="myVote.comment"
-    id="comment"
-    cols="30"
-    rows="10"
-  ></textarea>
-  <button type="submit">投票する</button>
-</form>
+<div class="horselist container">
+  <div class="title">出走馬表</div>
+  <div class="table">
+    <table>
+      <thead>
+        <tr>
+          <th class="horse">出走馬</th>
+          <th *ngFor="let vote of voteList" class="participant">{{ vote.name }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let horse of horseList">
+          <td>{{ horse.name }}</td>
+          <td *ngFor="let vote of voteList">
+            <div
+              *ngIf="horse.name === vote.first.name; then thenFirstBlock; else elseFirstBlock"
+            ></div>
+            <ng-template #thenFirstBlock> ◎ </ng-template>
+            <ng-template #elseFirstBlock> </ng-template>
+            <div
+              *ngIf="horse.name === vote.second.name; then thenSecondBlock; else elseSecondBlock"
+            ></div>
+            <ng-template #thenSecondBlock> ○ </ng-template>
+            <ng-template #elseSecondBlock> </ng-template>
+            <div
+              *ngIf="horse.name === vote.third.name; then thenThirdBlock; else elseThirdBlock"
+            ></div>
+            <ng-template #thenThirdBlock> ▲ </ng-template>
+            <ng-template #elseThirdBlock> </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="comment container">
+  <div class="title">投票者のコメント</div>
+  <div class="flex-box" *ngFor="let vote of voteList">
+    <span class="name">{{ vote.name }}</span
+    ><span class="content">{{ vote.comment }}</span>
+  </div>
+</div>
+<div class="vote container">
+  <form (ngSubmit)="onSubmit()">
+    <div class="title">投票</div>
+    <div class="forms">
+      <div for="first" class="first flex-box">
+        <span class="item left">◎</span>
+        <span class="item right">
+          <select name="firsthorse" id="first" [(ngModel)]="myVote.first" required>
+            <option value="null" disabled>選択してください</option>
+            <option [value]="horse.id" *ngFor="let horse of horseList">
+              {{ horse.name }}
+            </option>
+          </select></span
+        >
+      </div>
+      <div for="second" class="second flex-box">
+        <span class="item left">○</span>
+        <span class="item right">
+          <select name="secondhorse" id="second" [(ngModel)]="myVote.second" required>
+            <option value="null" disabled>選択してください</option>
+            <option [value]="horse.id" *ngFor="let horse of horseList">
+              {{ horse.name }}
+            </option>
+          </select></span
+        >
+      </div>
+      <div for="third" class="third flex-box">
+        <span class="item left">▲</span>
+        <span class="item right">
+          <select name="thirdhorse" id="third" [(ngModel)]="myVote.third" required>
+            <option value="null" disabled>選択してください</option>
+            <option [value]="horse.id" *ngFor="let horse of horseList">
+              {{ horse.name }}
+            </option>
+          </select></span
+        >
+      </div>
+      <div class="commentform flex-box">
+        <span class="item left comment">コメント</span>
+        <span class="item right comment">
+          <textarea
+            name="comment"
+            [(ngModel)]="myVote.comment"
+            id="comment"
+            cols="25"
+            rows="5"
+          ></textarea>
+        </span>
+      </div>
+    </div>
+
+    <div *ngIf=""></div>
+    <button type="submit">投票する</button>
+  </form>
+</div>
+
+<div class="goback container">
+  <div class="flex-box" (click)="goBack()">
+    <span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i></span
+    ><span class="text">大会へ戻る</span>
+  </div>
+</div>

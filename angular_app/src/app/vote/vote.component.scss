@@ -1,80 +1,137 @@
 form {
-    width: 600px;  // フォーム全体の横幅を固定
-    margin: left;   // 中央寄せ
-  
+  &.vote {
+    width: 100%; // フォーム全体の横幅を固定
+    margin: left; // 中央寄せ
+
     label {
       font-weight: bold;
       margin: 10px 0;
     }
-  
+
     select {
       margin: 5px 0;
-      width: 100%;  // select要素の横幅をフォームに合わせる
+      width: 100%; // select要素の横幅をフォームに合わせる
     }
-  
+
     textarea#comment {
-      width: 100%;  // コメントのテキストエリアの横幅をフォームに合わせる
+      width: 100%; // コメントのテキストエリアの横幅をフォームに合わせる
       height: 200px; // コメントのテキストエリアの縦幅を固定
     }
-  
+
     button {
-      width: 100px;  // ボタンの横幅を固定
+      width: 100px; // ボタンの横幅を固定
     }
   }
-  
-  /* レース名とグレードのスタイル */
+}
+
+/* レース名とグレードのスタイル */
 h2 {
   font-size: 1.5em;
   margin-bottom: 20px;
 }
 
-/* フレックスコンテナのスタイル */
-div {
-  &.flex-container {
+.goback.container {
+  .flex-box {
     display: flex;
-    justify-content: space-between;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 1px 3px rgba(0, 0, 0, 0.1);
+    margin: 7px;
+    height: 50px;
+    align-items: center;
+    justify-content: flex-start;
+
+    .icon {
+      color: #188542;
+      margin-left: 5px;
+    }
+
+    .text {
+      color: #0066aa;
+      font-weight: 700;
+    }
   }
 }
+.vote.container {
+  display: flex;
+  flex-direction: column;
 
-/* テーブルのスタイル */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  thead {
-    background-color: #f2f2f2;
+  .forms {
+    background-color: #dfdfd3 !important;
+    border: 4px solid #dfdfd3 !important;
   }
-  td {
-    border: 1px solid #e0e0e0;
-    padding: 8px 12px;
-    text-align: center;
-  }
-}
+  .flex-box {
+    display: flex;
+    flex-direction: row; // 縦並びに設定
+    align-items: center;
 
-/* 投票のフォームのスタイル */
-form {
-  margin-top: 20px;
-  label {
-    display: block;
-    margin-bottom: 10px;
+    .item {
+      // 以下は必要に応じてスタイルを追加・変更してください
+      display: inline-block; // 横並びに設定
+      margin: 1px; // アイテム間の間隔を調整
+      justify-content: center;
+      &.left {
+        display: flex;
+        width: 65px;
+        background-color: #eaeade;
+        height: 50px;
+        font-size: large;
+
+        align-items: center;
+        &.comment {
+          height: 100px;
+          font-size: small;
+        }
+      }
+      &.right {
+        display: flex;
+        width: 100%;
+        background-color: #f7f7f7;
+        // background-color: red;
+        height: 50px;
+        align-items: center;
+        &.comment {
+          height: 100px;
+        }
+      }
+    }
+
+    &.first,
+    &.second,
+    &.third,
+    &.commentform {
+      margin: 0px; // 各 .flex-box 要素の間に余白を設定
+    }
   }
+
+  // 追加で、テキストエリアとセレクトボックスのスタイリングも考慮する場合
+  textarea,
   select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
+    width: calc(100% - 5px); // 全幅に設定
+    box-sizing: border-box; // パディングとボーダーを含めて全幅にする
+    margin: 0; // マージンをリセット
   }
-  textarea {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    margin-bottom: 20px;
+
+  .first,
+  .second,
+  .third {
+    select {
+      padding: 10px; // セレクトボックス内のパディングを設定
+      border: 1px solid #ccc; // ボーダーを設定
+    }
   }
+
+  .commentform {
+    textarea {
+      padding: 10px; // テキストエリア内のパディングを設定
+      border: 1px solid #ccc; // ボーダーを設定
+    }
+  }
+
   button {
     background-color: #007bff;
     color: #ffffff;
-    padding: 10px 20px;
+    // padding: 10px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -82,9 +139,4 @@ form {
       background-color: #0056b3;
     }
   }
-}
-
-/* コメントの部分 */
-div.comment-section {
-  margin-top: 20px;
 }

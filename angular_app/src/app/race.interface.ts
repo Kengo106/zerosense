@@ -10,6 +10,9 @@ export interface Race {
     name: string;
     date: string;
     voted: boolean | null;
+    vote_num: number;
+    // 日付表示するか
+    isdisplay: boolean | null;
 }
 
 export interface VoteForm {

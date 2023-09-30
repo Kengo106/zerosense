@@ -13,7 +13,7 @@ export class RaceService {
         return this.http.post<any>(this.UIDUrl, { uid: uid, username: username });
     }
 
-    createNewGame(gameName: string, open: boolean, uid: string, span: string) {
+    createNewGame(gameName: string, open: boolean, uid: string, span: any) {
         return this.http.post(this.newGameUrl, {
             gamename: gameName,
             open: open,
@@ -36,13 +36,14 @@ export class RaceService {
         return this.http.get<any>(this.gameUrl, { params: params });
     }
 
-    getVotableRaces(uid: string): Observable<Race[]> {
-        let params = new HttpParams().set('flag', 1).set('uid', uid);
+    getVotableRaces(uid: string, gameId: string): Observable<Race[]> {
+        let params = new HttpParams().set('flag', 1).set('uid', uid).set('gameid', gameId);
+        console.log(gameId);
         return this.http.get<Race[]>(this.raceUrl, { params });
     }
 
-    getAllRaces(uid: string): Observable<Race[]> {
-        let params = new HttpParams().set('flag', 2).set('uid', uid);
+    getAllRaces(uid: string, gameId: string): Observable<Race[]> {
+        let params = new HttpParams().set('flag', 0).set('uid', uid).set('gameid', gameId);
         return this.http.get<Race[]>(this.raceUrl, { params });
     }
 
