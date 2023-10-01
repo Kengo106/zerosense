@@ -1,0 +1,18 @@
+.flex-box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 1px 3px rgba(0, 0, 0, 0.1);
+    height: 40px;
+    padding: 5px;
+    margin: 3px;
+    .icon {
+        color: #188542;
+    }
+    .text {
+        color: #0066aa;
+        font-weight: 700;
+    }
+}

@@ -1,0 +1,78 @@
+.goback.container {
+    .flex-box {
+        display: flex;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 1px 3px rgba(0, 0, 0, 0.1);
+        margin: 7px;
+        height: 50px;
+        align-items: center;
+        justify-content: flex-start;
+        color: #0066aa;
+        font-weight: 700;
+        .icon {
+            color: #188542;
+            margin-left: 5px;
+            &.delete {
+                color: red;
+            }
+        }
+        .delete {
+            color: red;
+        }
+    }
+}
+
+.delete.container {
+    .flex-box {
+        display: flex;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 1px 3px rgba(0, 0, 0, 0.1);
+        margin: 7px;
+        height: 50px;
+        align-items: center;
+        justify-content: flex-start;
+        color: #0066aa;
+        font-weight: 700;
+        .icon {
+            color: #188542;
+            margin-left: 5px;
+            &.delete {
+                color: red;
+            }
+        }
+        .delete {
+            color: red;
+        }
+    }
+}
+.rename {
+    .flex-box {
+        background-color: #dfdfd3;
+        padding: 5px;
+        margin: 5px;
+    }
+}
+.item.rename {
+    display: block;
+    input {
+        padding: 0;
+        margin: 0;
+        width: calc(100% - 10px);
+        height: 30px;
+        font-size: large;
+    }
+}
+button {
+    margin-top: 3px;
+    background-color: #007bff;
+    color: #ffffff;
+    // padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    &:hover {
+        background-color: #0056b3;
+    }
+}

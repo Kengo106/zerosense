@@ -3,6 +3,12 @@ import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { Game, Race } from '../race.interface';
 import { Router } from '@angular/router';
+import { GameService } from '../service/game.service';
+
+interface GameMain extends Game {
+    start: string;
+    end: string;
+}
 
 @Component({
     selector: 'app-home',
@@ -18,6 +24,7 @@ export class HomeComponent implements OnInit {
         private raceService: RaceService,
         private sessionService: SessionService,
         private router: Router,
+        private gameService: GameService,
     ) {}
     gameNumber: number = 0;
 
@@ -34,6 +41,18 @@ export class HomeComponent implements OnInit {
                 console.log(this.games);
                 this.gameNumber = this.games.length;
             });
+            // this.afAuth.authState.subscribe((user) => {
+            // console.log(user);
+            // if (user) {
+            //     this.usernameSubject.next(user.displayName || '');
+            //     this.loginSubject.next(true);
+            //     this.uidSubject.next(user.uid);
+            // } else {
+            //     this.usernameSubject.next('');
+            //     this.loginSubject.next(false);
+            //     this.uidSubject.next('');
+            // }
+            // });
         });
     }
 

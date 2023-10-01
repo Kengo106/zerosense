@@ -30,28 +30,6 @@ h2 {
   margin-bottom: 20px;
 }
 
-.goback.container {
-  .flex-box {
-    display: flex;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 1px 3px rgba(0, 0, 0, 0.1);
-    margin: 7px;
-    height: 50px;
-    align-items: center;
-    justify-content: flex-start;
-
-    .icon {
-      color: #188542;
-      margin-left: 5px;
-    }
-
-    .text {
-      color: #0066aa;
-      font-weight: 700;
-    }
-  }
-}
 .vote.container {
   display: flex;
   flex-direction: column;
@@ -66,7 +44,6 @@ h2 {
     align-items: center;
 
     .item {
-      // 以下は必要に応じてスタイルを追加・変更してください
       display: inline-block; // 横並びに設定
       margin: 1px; // アイテム間の間隔を調整
       justify-content: center;
