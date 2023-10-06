@@ -12,6 +12,7 @@ import { UpdatenameComponent } from './updatename/updatename.component';
 import { PastracesComponent } from './pastraces/pastraces.component';
 import { RaceresultComponent } from './raceresult/raceresult.component';
 import { DeleteaccountComponent } from './deleteaccount/deleteaccount.component';
+import { ExitgameComponent } from './exitgame/exitgame.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -27,6 +28,7 @@ const routes: Routes = [
     { path: 'pastraces', component: PastracesComponent },
     { path: 'raceresult', component: RaceresultComponent },
     { path: 'deleteacount', component: DeleteaccountComponent },
+    { path: 'exitgame', component: ExitgameComponent },
 ];
 
 @NgModule({

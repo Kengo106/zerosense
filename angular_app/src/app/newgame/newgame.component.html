@@ -1,28 +1,48 @@
-<h1>新規大会作成</h1>
-<form (ngSubmit)="onSubmit()">
-  <div>
-    <label for="group">大会名</label>
-    <input type="text" id="group" name="gameName" [(ngModel)]="gameName" required />
-  </div>
-  <div>
-    <label for="private">公開</label>
-    <input type="radio" name="open" id="private" value="true" [(ngModel)]="strOpen" required />
-    <label for="close">非公開</label>
-    <input type="radio" name="open" id="close" value="false" [(ngModel)]="strOpen" required />
-  </div>
-  <div>
-    <form [formGroup]="range">
-      <mat-form-field class="example-form-field">
-        <mat-label>開催期間</mat-label>
-        <mat-date-range-input [rangePicker]="picker">
-          <input matStartDate matInput placeholder="Start date" formControlName="start" />
-          <input matEndDate matInput placeholder="End date" formControlName="end" />
-        </mat-date-range-input>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-date-range-picker #picker></mat-date-range-picker>
-      </mat-form-field>
-    </form>
-  </div>
-
-  <button type="submit">作成</button>
-</form>
+<div class="container">
+  <div class="title">新規大会作成</div>
+  <form (ngSubmit)="onSubmit()" class="flex">
+    <div class="item flex">
+      <label for="group" class="left">大会名</label>
+      <span class="rightitem text">
+        <input class="text" type="text" id="group" name="gameName" [(ngModel)]="gameName" required
+      /></span>
+    </div>
+    <div class="item flex">
+      <label class="left">ルール</label>
+      <span class="rightitem">
+        <label for="private" class="right">公開</label>
+        <input
+          type="radio"
+          class="right"
+          name="open"
+          id="private"
+          value="true"
+          [(ngModel)]="strOpen"
+          required />
+        <label for="close" class="right">非公開</label>
+        <input
+          type="radio"
+          class="right"
+          name="open"
+          id="close"
+          value="false"
+          [(ngModel)]="strOpen"
+          required
+      /></span>
+    </div>
+    <div class="item flex calender">
+      <form [formGroup]="range">
+        <mat-form-field class="example-form-field">
+          <mat-label>開催期間</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input matStartDate matInput placeholder="Start date" formControlName="start" />
+            <input matEndDate matInput placeholder="End date" formControlName="end" />
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+      </form>
+    </div>
+    <button type="submit">作成</button>
+  </form>
+</div>

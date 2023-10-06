@@ -5,11 +5,6 @@ import { Game, Race } from '../race.interface';
 import { Router } from '@angular/router';
 import { GameService } from '../service/game.service';
 
-interface GameMain extends Game {
-    start: string;
-    end: string;
-}
-
 @Component({
     selector: 'app-home',
     templateUrl: './home.component.html',
@@ -27,11 +22,16 @@ export class HomeComponent implements OnInit {
         private gameService: GameService,
     ) {}
     gameNumber: number = 0;
+    currentGame: Game = {
+        id: '',
+        gamename: '',
+        start: '',
+        end: '',
+    };
 
     ngOnInit() {
         this.sessionService.loginState$.subscribe((login) => {
             this.isLogin = login;
-            console.log(this.isLogin);
         });
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
@@ -41,23 +41,13 @@ export class HomeComponent implements OnInit {
                 console.log(this.games);
                 this.gameNumber = this.games.length;
             });
-            // this.afAuth.authState.subscribe((user) => {
-            // console.log(user);
-            // if (user) {
-            //     this.usernameSubject.next(user.displayName || '');
-            //     this.loginSubject.next(true);
-            //     this.uidSubject.next(user.uid);
-            // } else {
-            //     this.usernameSubject.next('');
-            //     this.loginSubject.next(false);
-            //     this.uidSubject.next('');
-            // }
-            // });
+            this.gameService.gameSubject.next(this.currentGame);
         });
     }
 
     moveGameMain(game: Game) {
         this.router.navigate(['/gamemain'], { queryParams: game });
+        console.log(game);
     }
 
     copyID(gameId: string) {

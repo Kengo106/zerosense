@@ -15,6 +15,8 @@ export class PastracesComponent {
     game: Game = {
         gamename: '',
         id: '',
+        start: '',
+        end: '',
     };
     AllRaces: Race[] = [];
     constructor(
@@ -33,6 +35,8 @@ export class PastracesComponent {
                 this.game = {
                     gamename: params['gamename'],
                     id: params['id'],
+                    start: params['start'],
+                    end: params['end'],
                 };
                 if (this.game.id != '') {
                     console.log(this.game.id);

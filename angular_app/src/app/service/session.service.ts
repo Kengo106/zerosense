@@ -7,6 +7,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
 import { RaceService } from './race.service';
+import { GameService } from './game.service';
 
 @Injectable({
     providedIn: 'root',
@@ -23,6 +24,7 @@ export class SessionService {
         private router: Router,
         private afAuth: AngularFireAuth,
         private raceService: RaceService,
+        private gameService: GameService,
     ) {
         this.afAuth.authState.subscribe((user) => {
             // console.log(user);
@@ -63,7 +65,16 @@ export class SessionService {
         try {
             await this.afAuth.signOut();
             alert('ログアウトしました');
+
+            console.log(this.gameService.currentGame);
+
             await this.router.navigate(['account/login']);
+            this.gameService.gameSubject.next({
+                id: '',
+                gamename: '',
+                start: '',
+                end: '',
+            });
         } catch (err) {
             console.log(err);
             alert('ログアウトに失敗しました /n' + err);

@@ -52,6 +52,8 @@ export class RaceresultComponent {
     game: Game = {
         gamename: '',
         id: '',
+        start: '',
+        end: '',
     };
     uid: string = '';
     voteList: VoteForm[] = [];
@@ -81,7 +83,13 @@ export class RaceresultComponent {
 
     ngOnInit() {
         this.route.queryParams.subscribe(
-            (params) => (this.game = { gamename: params['gamename'], id: params['id'] }),
+            (params) =>
+                (this.game = {
+                    gamename: params['gamename'],
+                    id: params['id'],
+                    start: params['start'],
+                    end: params['end'],
+                }),
         );
         this.sessionService.username$.subscribe((myName) => (this.userName = myName));
         this.sessionService.uid$.subscribe((currentUid) => {

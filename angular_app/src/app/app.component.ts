@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Route, Router } from '@angular/router';
 import { Game } from './race.interface';
+import { GameService } from './service/game.service';
+import { SessionService } from './service/session.service';
 
 @Component({
     selector: 'app-root',
@@ -10,21 +12,39 @@ import { Game } from './race.interface';
 export class AppComponent implements OnInit {
     title = 'zerosense';
     date: any;
-    game: Game = {
+    currentGame: Game = {
         id: '',
         gamename: '',
+        start: '',
+        end: '',
     };
 
-    constructor(private route: ActivatedRoute, private router: Router) {}
+    // existGame: number = 0;
+
+    constructor(
+        private route: ActivatedRoute,
+        private router: Router,
+        private gameService: GameService,
+        private sessionService: SessionService,
+    ) {}
     ngOnInit(): void {
-        this.route.queryParams.subscribe((param) => {
-            this.game = {
-                id: param['id'],
-                gamename: param['gamename'],
-            };
+        console.log(this.currentGame);
+        this.gameService.gameSubject.subscribe((game) => {
+            this.currentGame = game;
+            console.log(this.currentGame);
         });
     }
     moveGameMain(game: Game) {
         this.router.navigate(['/gamemain'], { queryParams: game });
+    }
+
+    switchRoute() {
+        this.sessionService.loginState$.subscribe((islogin) => {
+            if (islogin) {
+                this.router.navigate(['']);
+            } else {
+                this.router.navigate(['/account/login/']);
+            }
+        });
     }
 }

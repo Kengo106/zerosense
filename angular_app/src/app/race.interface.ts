@@ -25,4 +25,6 @@ export interface VoteForm {
 export interface Game {
     id: string;
     gamename: string;
+    start: string;
+    end: string;
 }

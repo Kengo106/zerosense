@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { SessionService } from '../service/session.service';
 import { Password } from '../class/user';
+import { GameService } from '../service/game.service';
 
 @Component({
     selector: 'app-login',
@@ -11,9 +12,16 @@ import { Password } from '../class/user';
 export class LoginComponent implements OnInit {
     public account = new Password();
 
-    constructor(private sessionservise: SessionService) {}
+    constructor(private sessionservise: SessionService, private gameService: GameService) {}
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.gameService.gameSubject.next({
+            id: '',
+            gamename: '',
+            start: '',
+            end: '',
+        });
+    }
 
     submitLogin(e: Event) {
         e.preventDefault();

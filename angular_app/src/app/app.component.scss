@@ -1,5 +1,5 @@
 // @import '../styles.scss';
-a {
+.zerosense {
   // background-color: rgb(37, 138, 37); // 深緑の背景
   background-color: #268300;
   color: white; // 文字色を白に設定
@@ -14,12 +14,28 @@ a {
 }
 
 .container {
-  &.gamename {
-    border-color: #004d40;
-    background-color: #004d40;
-    padding: 10px 0;
-    height: 50px;
-    width: 100%;
-    margin: 2px;
+  color: white;
+  display: flex;
+  border-color: #004d40;
+  background-color: #004d40;
+  justify-content: center;
+
+  .gamespan {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    .date {
+      display: flex;
+      justify-content: center;
+      font-size: medium;
+      padding-top: 2px;
+      background-color: #004d40;
+    }
+    .gamename {
+      display: flex;
+      justify-content: center;
+      font-size: xx-large;
+      padding: 5px 10px;
+    }
   }
 }

@@ -261,7 +261,9 @@ class ApiJoinGameView(APIView):
             for gameplayer in gameplayers:
                 game_datamu = {
                     'id': gameplayer.game.id_for_serch,
-                    'gamename': gameplayer.game.name}
+                    'gamename': gameplayer.game.name,
+                    'start': gameplayer.game.game_rule.start,
+                    'end': gameplayer.game.game_rule.end, }
 
                 games.append(game_datamu)
 

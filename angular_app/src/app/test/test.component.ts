@@ -24,14 +24,6 @@ export class TestComponent {
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
             console.log(this.uid);
-
-            // this.raceService.getAllRaces(this.uid,).subscribe((response) => {
-            //     this.AllRace = [];
-            //     response.map((responce) => {
-            //         this.AllRace.push(responce);
-            //     });
-            //     console.log(this.AllRace);
-            // });
         });
         this.route.queryParams.subscribe((params) => {
             this.game = params['gamename'];

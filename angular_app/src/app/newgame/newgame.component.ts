@@ -3,6 +3,8 @@ import { RaceService } from '../service/race.service';
 import { SessionService } from '../service/session.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { Game } from '../race.interface';
+import { GameService } from '../service/game.service';
 
 @Component({
     selector: 'app-newgame',
@@ -10,11 +12,17 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
     styleUrls: ['./newgame.component.scss'],
 })
 export class NewgameComponent implements OnInit {
-    public gameName: string = '';
-    public strOpen: string = 'false';
-    public open: boolean = false;
-    public uid: string = '';
-    public span: {} = {
+    gameName: string = '';
+    strOpen: string = 'false';
+    open: boolean = false;
+    uid: string = '';
+    span: {} = {
+        start: '',
+        end: '',
+    };
+    gameClear: Game = {
+        id: '',
+        gamename: '',
         start: '',
         end: '',
     };
@@ -27,9 +35,11 @@ export class NewgameComponent implements OnInit {
         private sessionService: SessionService,
         private router: Router,
         private fb: FormBuilder,
+        private gameService: GameService,
     ) {}
 
     ngOnInit(): void {
+        this.gameService.gameSubject.next(this.gameClear);
         this.sessionService.uid$.subscribe((UID) => (this.uid = UID));
     }
 

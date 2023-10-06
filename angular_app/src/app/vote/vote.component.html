@@ -40,7 +40,7 @@
 
 <div class="comment container">
   <div class="title">投票者のコメント</div>
-  <div class="flex-box" *ngFor="let vote of voteList">
+  <div class="vote-box" *ngFor="let vote of voteList">
     <span class="name">{{ vote.name }}</span
     ><span class="content">{{ vote.comment }}</span>
   </div>
@@ -49,7 +49,7 @@
   <form (ngSubmit)="onSubmit()">
     <div class="title">投票</div>
     <div class="forms">
-      <div for="first" class="first flex-box">
+      <div for="first" class="first vote-box">
         <span class="item left">◎</span>
         <span class="item right">
           <select name="firsthorse" id="first" [(ngModel)]="myVote.first" required>
@@ -60,7 +60,7 @@
           </select></span
         >
       </div>
-      <div for="second" class="second flex-box">
+      <div for="second" class="second vote-box">
         <span class="item left">○</span>
         <span class="item right">
           <select name="secondhorse" id="second" [(ngModel)]="myVote.second" required>
@@ -71,7 +71,7 @@
           </select></span
         >
       </div>
-      <div for="third" class="third flex-box">
+      <div for="third" class="third vote-box">
         <span class="item left">▲</span>
         <span class="item right">
           <select name="thirdhorse" id="third" [(ngModel)]="myVote.third" required>
@@ -82,7 +82,7 @@
           </select></span
         >
       </div>
-      <div class="commentform flex-box">
+      <div class="commentform vote-box">
         <span class="item left comment">コメント</span>
         <span class="item right comment">
           <textarea

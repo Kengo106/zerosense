@@ -1,13 +1,19 @@
-<h2>大会検索</h2>
-<div>
-  <form (ngSubmit)="Serch()">
-    <label for="name">大会IDを入力</label>
-    <input type="text" name="gameID" id="name" [(ngModel)]="gameId" required />
-    <button type="submit">検索する</button>
+<div class="container">
+  <span class="title">大会検索</span>
+  <form (ngSubmit)="Serch()" class="forms">
+    <span class="serch-box">
+      <label for="name" class="left">大会ID</label>
+      <span class="text-box">
+        <input class="text" type="text" name="gameID" id="name" [(ngModel)]="gameId" required />
+      </span>
+    </span>
+    <button type="submit">検索</button>
   </form>
-  <div *ngIf="gameNumber !== 0">
-    <h3>大会名</h3>
-    <div (click)="join()">{{ gameName }}</div>
-    <button (click)="join()">参加する</button>
+  <div *ngIf="gameNumber !== 0" class="container">
+    <span class="title">検索結果</span>
+    <div (click)="join()" class="game">
+      <span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i></span
+      >{{ gameName }}
+    </div>
   </div>
 </div>

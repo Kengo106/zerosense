@@ -5,23 +5,18 @@ import { Router } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { RaceService } from './race.service';
 
-interface GameMain extends Game {
-    start: string;
-    end: string;
-}
-
 @Injectable({
     providedIn: 'root',
 })
 export class GameService implements OnInit {
-    gameSubject = new BehaviorSubject<GameMain>({
+    gameSubject = new BehaviorSubject<Game>({
         id: '',
         gamename: '大会未選択',
         start: '',
         end: '',
     });
 
-    currentGame: GameMain = {
+    currentGame: Game = {
         id: '',
         gamename: '大会未選択',
         start: '',

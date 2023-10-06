@@ -1,26 +1,39 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SessionService } from '../service/session.service';
 import { RaceService } from '../service/race.service';
 import { Router } from '@angular/router';
+import { Game } from '../race.interface';
+import { GameService } from '../service/game.service';
 
 @Component({
     selector: 'app-serchgame',
     templateUrl: './serchgame.component.html',
     styleUrls: ['./serchgame.component.scss'],
 })
-export class SerchgameComponent {
+export class SerchgameComponent implements OnInit {
     public gameName: string[] = [];
     public uid: string = '';
     gameId: string = '';
     gameNumber: number = 0;
+    gameClear: Game = {
+        id: '',
+        gamename: '',
+        start: '',
+        end: '',
+    };
 
     constructor(
         private sessionService: SessionService,
         private raceService: RaceService,
         private router: Router,
-    ) {
+        private gameService: GameService,
+    ) {}
+
+    ngOnInit(): void {
+        this.gameService.gameSubject.next(this.gameClear);
         this.sessionService.uid$.subscribe((currentUid) => (this.uid = currentUid));
     }
+
     Serch() {
         this.gameName = [];
         this.raceService.gameSerch(this.gameId).subscribe((responce: any) => {

@@ -19,6 +19,9 @@ export class HeaderComponent implements OnInit {
     }
 
     logout(): void {
-        this.sessionService.logout();
+        const yesNoFlag = window.confirm('ログアウトしますか');
+        if (yesNoFlag) {
+            this.sessionService.logout();
+        }
     }
 }

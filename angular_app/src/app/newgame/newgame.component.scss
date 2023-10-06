@@ -1,13 +1,63 @@
-/* my-component.component.css */
-::ng-deep mat-form-field.mat-focused .mat-form-field-label {
-    color: red;
-}
-
-::ng-deep mat-form-field .mat-form-field-flex {
-    background-color: lightgrey;
-}
-
-::ng-deep input[matStartDate],
-::ng-deep input[matEndDate] {
-    width: 150px;
+.flex {
+    display: flex;
+    flex-direction: column;
+    background-color: #dfdfd3;
+    padding: 0px;
+    margin: 0px;
+    .item {
+        display: flex;
+        flex-direction: row;
+        height: 45px;
+        .left {
+            display: flex;
+            background-color: #eaeade;
+            width: 100px;
+            margin: 2px 4px;
+            padding: 2px;
+            border: 0px;
+            align-items: center;
+            justify-content: center;
+        }
+        .rightitem {
+            width: calc(100% - 104px - 10px - 4px);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            background-color: #f7f7f7;
+            margin: 2px 5px 2px 0px;
+            &.text {
+                .text {
+                    display: flex;
+                    width: 100%;
+                    margin: 5px;
+                    height: calc(100% - 18px);
+                    border-width: 2px;
+                }
+            }
+            .right {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+        &.flex {
+            justify-content: center;
+            &.calender {
+                margin: 4px;
+            }
+        }
+    }
+    button {
+        margin-top: 30px;
+        background-color: #007bff;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        width: 50px;
+        cursor: pointer;
+        margin: 15px 0px 5px 10px;
+        &:hover {
+            background-color: #0056b3;
+        }
+    }
 }

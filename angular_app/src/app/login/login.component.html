@@ -1,37 +1,53 @@
-<div class="page">
-  <section class="card">
-    <form class="form-login" (ngSubmit)="submitLogin($event)" #loginForm="ngForm">
-      <h2>ログイン</h2>
-      <label for="email">Email address </label>
-      <input
-        type="email"
-        id="email"
-        name="email"
-        placeholder="Email address"
-        [(ngModel)]="account.email"
-        #email="ngModel"
-        autocomplete="username email"
-        required
-        autofocus
-      />
-      <label for="password">Password</label>
-      <input
-        type="password"
-        id="password"
-        name="password"
-        class="form-control"
-        [(ngModel)]="account.password"
-        #password="ngModel"
-        required
-      />
+<div class="container">
+  <span class="title">ログイン</span>
+  <form class="form-login" (ngSubmit)="submitLogin($event)" #loginForm="ngForm">
+    <span class="forms">
+      <span class="form"
+        ><div class="item">
+          <span class="left">メールアドレス</span>
+          <span class="textbox">
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Email address"
+              [(ngModel)]="account.email"
+              #email="ngModel"
+              autocomplete="username email"
+              required
+              autofocus
+          /></span>
+        </div>
+
+        <div class="item">
+          <span class="left">パスワード</span>
+          <span class="textbox">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="form-control"
+              [(ngModel)]="account.password"
+              #password="ngModel"
+              required
+              placeholder="password"
+          /></span>
+        </div>
+      </span>
       <button
         class="btn btn-lg btn-info btn-block"
         type="submit"
         [disabled]="!loginForm.form.valid"
       >
-        LOGIN</button
-      ><!-- submitLogin()を追加 -->
-    </form>
-    <a routerLink="/account/signup">新規登録</a>
-  </section>
+        LOGIN
+      </button>
+    </span>
+  </form>
+</div>
+
+<div class="container">
+  <div class="box">
+    <span class="icon"><i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </span
+    ><span routerLink="/account/signup">新規登録</span>
+  </div>
 </div>

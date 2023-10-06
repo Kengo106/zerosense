@@ -33,6 +33,7 @@ import { DeleteaccountComponent } from './deleteaccount/deleteaccount.component'
 import { ClipboardModule } from 'ngx-clipboard';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ExitgameComponent } from './exitgame/exitgame.component';
 
 @NgModule({
     declarations: [
@@ -50,6 +51,7 @@ import { MatInputModule } from '@angular/material/input';
         PastracesComponent,
         RaceresultComponent,
         DeleteaccountComponent,
+        ExitgameComponent,
     ],
     imports: [
         ClipboardModule,

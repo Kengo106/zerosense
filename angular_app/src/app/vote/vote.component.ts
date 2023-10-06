@@ -30,6 +30,8 @@ export class VoteComponent implements OnInit {
     game: Game = {
         id: '',
         gamename: '',
+        start: '',
+        end: '',
     };
     public uid: string = '';
     public horseList: {
@@ -51,6 +53,8 @@ export class VoteComponent implements OnInit {
                 (this.game = {
                     id: params['id'],
                     gamename: params['gamename'],
+                    start: params['start'],
+                    end: params['end'],
                 }),
         );
         console.log(this.game);
