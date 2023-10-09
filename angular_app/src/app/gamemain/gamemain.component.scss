@@ -103,6 +103,7 @@ $date: #1b521f;
     padding: 10px;
     border-collapse: collapse; // セルのボーダーを一つにまとめる
     background-color: white;
+    margin-right: 140px; //スクールしたときに左端まで行き切るように二行分のマージンを取る
     .detail {
       display: flex;
       flex-direction: row;
@@ -237,4 +238,15 @@ $date: #1b521f;
   background-color: $date;
   color: white;
   width: 100%;
+}
+
+th.first-column {
+  position: sticky;
+  left: 0;
+  // background-color: white; /* 背景色を設定して、他のセルがスクロールしても見えないようにする */
+  z-index: 1; /* z-indexを設定して、他のセルよりも上に表示する */
+  background-color: white;
+  &.place {
+    background-color: #37474f;
+  }
 }

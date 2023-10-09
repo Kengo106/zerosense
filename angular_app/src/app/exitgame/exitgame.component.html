@@ -1,6 +1,20 @@
-<h2>大会の退出</h2>
-<div>パスワードを入力してください</div>
-<form (submit)="exitGame()">
-  <input type="password" [(ngModel)]="password" placeholder="password" name="password" />
-  <button type="submit">退出</button>
-</form>
+<div class="container">
+  <span class="title">大会の退出</span>
+  <form (ngSubmit)="exitGame()" class="forms">
+    <span class="serch-box">
+      <label for="name" class="left">パスワード</label>
+      <span class="text-box">
+        <input
+          class="text"
+          type="text"
+          name="password"
+          id="password"
+          [(ngModel)]="password"
+          placeholder="password"
+          required
+        />
+      </span>
+    </span>
+    <button type="submit">退出</button>
+  </form>
+</div>

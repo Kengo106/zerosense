@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit {
         private router: Router,
         private gameService: GameService,
     ) {}
-    gameNumber: number = 0;
+    gameNumber: number = 999;
     currentGame: Game = {
         id: '',
         gamename: '',
@@ -30,17 +30,21 @@ export class HomeComponent implements OnInit {
     };
 
     ngOnInit() {
+        console.log(this.gameNumber);
         this.sessionService.loginState$.subscribe((login) => {
             this.isLogin = login;
         });
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;
-            this.raceService.getCurrentGames(this.uid).subscribe((response) => {
-                this.games = [];
-                response.map((game: Game) => this.games.push(game));
-                console.log(this.games);
-                this.gameNumber = this.games.length;
-            });
+            if (this.uid.length != 0) {
+                this.raceService.getCurrentGames(this.uid).subscribe((response) => {
+                    this.games = [];
+                    response.map((game: Game) => this.games.push(game));
+                    console.log(this.games);
+                    this.gameNumber = this.games.length;
+                });
+            }
+
             this.gameService.gameSubject.next(this.currentGame);
         });
     }

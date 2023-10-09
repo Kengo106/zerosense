@@ -1,4 +1,4 @@
-from ..models import User, Game, GameRule, GamePlayer, GameComment, Race, Horse, Vote, Odds, HorsePlace, RaceComment
+from ..models import User, Game, GameRule, GamePlayer, GameComment, Race, Horse, Vote, Odds, HorsePlace
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Subquery, OuterRef
@@ -251,7 +251,7 @@ class ApiNewGameView(APIView):
             return Response("Error", status=status.HTTP_400_BAD_REQUEST)
 
 
-class ApiJoinGameView(APIView):
+class ApiGameView(APIView):
     def get(self, request, format=None):
         try:
             uid = request.query_params.get("uid")
@@ -295,17 +295,37 @@ class ApiJoinGameView(APIView):
         except:
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, format=None):
+        try:
+            game_id = request.query_params.get('gameid')
+            uid = request.query_params.get('uid')
+
+            print(game_id, uid)
+
+            game_object = Game.objects.filter(id_for_serch=game_id).first()
+            user_object = User.objects.filter(uid=uid).first()
+            game_player = {'game': game_object, 'user': user_object}
+            with transaction.atomic():
+                GamePlayer.objects.filter(**game_player).delete()
+                GameComment.objects.filter(**game_player).delete()
+                Vote.objects.filter(**game_player).delete()
+            return Response({"complete delete"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error occurred: {e}")  # エラーメッセージを表示
+            traceback.print_exc()
+            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ApiRaceView(APIView):
     def get(self, request, format=None):
         try:
-            flag_before = request.query_params.get('flag')
-            if flag_before == '1':
-                flags = [1]
-            elif flag_before == "0":
-                flags = [0]
-            elif flag_before == "2":
-                flags = [0, 1]
+            flag = request.query_params.get('flag')
+            if flag == '1':
+                is_votables = [1, 2, 3]
+            elif flag == "0":
+                is_votables = [0]
+            elif flag == "2":
+                is_votables = [0, 1]
             uid = request.query_params.get('uid')
             gameid = request.query_params.get('gameid')
             start_date = Game.objects.filter(
@@ -318,20 +338,17 @@ class ApiRaceView(APIView):
             voted_races = [
                 vote.race for vote in Vote.objects.filter(user=user, game=game)]
             races = []
-            for flag in flags:
-                for race in Race.objects.filter(is_votable=flag, race_date__range=(start_date, end_date)):
+            for is_votable in is_votables:
+                for race in Race.objects.filter(is_votable=is_votable, race_date__range=(start_date, end_date)):
                     datum = {}
                     if race in voted_races:
                         datum = {"grade": race.rank,
-                                 "name": race.race_name, "date": race.race_date, 'voted': True, "vote_num": race.vote_set.count()}
+                                 "name": race.race_name, "date": race.race_date, 'voted': True, "vote_num": race.vote_set.count(), "is_votable": is_votable, "start_time": race.start_time}
                     else:
                         datum = {"grade": race.rank,
-                                 "name": race.race_name, "date": race.race_date, 'voted': False, "vote_num": race.vote_set.count()}
+                                 "name": race.race_name, "date": race.race_date, 'voted': False, "vote_num": race.vote_set.count(), "is_votable": is_votable, "start_time": race.start_time}
 
                     races.append(datum)
-
-        #         game_infomation = sorted(
-        # game_infomation, key=lambda x: x["nowscore"], reverse=True)
 
             races = sorted(races, key=lambda x: x["date"], reverse=True)
             compare_date = ''
@@ -556,7 +573,6 @@ class APIAccountView(APIView):
                 GamePlayer.objects.filter(user=user).delete()
                 GameComment.objects.filter(user=user).delete()
                 Vote.objects.filter(user=user).delete()
-                RaceComment.objects.filter(user=user).delete()
                 user.delete()
             return Response({"Success"}, status=status.HTTP_200_OK)
         except Exception as e:

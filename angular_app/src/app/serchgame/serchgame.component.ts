@@ -35,15 +35,18 @@ export class SerchgameComponent implements OnInit {
     }
 
     Serch() {
-        this.gameName = [];
         this.raceService.gameSerch(this.gameId).subscribe((responce: any) => {
+            this.gameName = [];
             if (responce.message == '大会が存在しません') {
                 alert(responce.message);
             } else {
+                console.log(responce.message.gamename);
                 this.gameName.push(responce.message.gamename);
+
                 this.gameNumber = this.gameName.length;
             }
         });
+        console.log(this.gameName);
     }
 
     join() {

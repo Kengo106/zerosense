@@ -11,8 +11,9 @@ export interface Race {
     date: string;
     voted: boolean | null;
     vote_num: number;
-    // 日付表示するか
-    isdisplay: boolean | null;
+    is_votable: boolean | null;
+    start_time: string | null;
+    isdisplay: boolean | null; // 日付表示するか
 }
 
 export interface VoteForm {

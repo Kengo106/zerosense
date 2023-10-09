@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from datetime import date
 import uuid
+from django.utils import timezone
 
 
 class User(models.Model):
@@ -29,6 +30,7 @@ class Race(models.Model):
     race_name = models.CharField(max_length=255)
     rank = models.CharField(max_length=255)
     race_date = models.DateField(default=date.today)
+    start_time = models.TimeField(default=timezone.now())
     is_votable = models.IntegerField(default=0)
 
 
@@ -49,13 +51,6 @@ class HorsePlace(models.Model):
 
 class GameComment(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    comment_text = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class RaceComment(models.Model):
-    race = models.ForeignKey(Race, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     comment_text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

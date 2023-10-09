@@ -65,9 +65,6 @@ export class SessionService {
         try {
             await this.afAuth.signOut();
             alert('ログアウトしました');
-
-            console.log(this.gameService.currentGame);
-
             await this.router.navigate(['account/login']);
             this.gameService.gameSubject.next({
                 id: '',

@@ -47,6 +47,8 @@ export class RaceresultComponent {
         voted: null,
         vote_num: 999,
         isdisplay: null,
+        is_votable: null,
+        start_time: null,
     };
     userName: string = '';
     game: Game = {
@@ -102,6 +104,8 @@ export class RaceresultComponent {
                     voted: null,
                     vote_num: 999,
                     isdisplay: null,
+                    is_votable: null,
+                    start_time: null,
                 };
             });
             this.raceService

@@ -37,7 +37,7 @@ export class GamemainComponent implements OnInit {
         end: '',
     };
     isLogin: boolean = false;
-    isVotableRace: Race[] = [];
+    thisWeekRaces: Race[] = [];
     competitorDatas: CompetitorData[] = [];
     competitors: string[] = [];
     showTime: boolean = false;
@@ -63,8 +63,6 @@ export class GamemainComponent implements OnInit {
                         start: params['start'],
                         end: params['end'],
                     });
-                    console.log(this.gameService.currentGame);
-
                     this.game = {
                         id: params['id'],
                         gamename: params['gamename'],
@@ -73,12 +71,12 @@ export class GamemainComponent implements OnInit {
                     };
                     if (this.uid.trim().length * this.game.id.trim().length) {
                         this.raceService
-                            .getVotableRaces(this.uid, this.game.id)
+                            .getThisWeekRaces(this.uid, this.game.id)
                             .subscribe((response) => {
-                                this.isVotableRace = [];
+                                this.thisWeekRaces = [];
                                 response.map((responce) => {
                                     console.log(responce);
-                                    this.isVotableRace.push(responce);
+                                    this.thisWeekRaces.push(responce);
                                 });
                             });
                         this.raceService.getScore(this.game.id).subscribe((response: any) => {

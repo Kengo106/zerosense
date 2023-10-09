@@ -5,52 +5,52 @@
     <ng-template #roaded>
       <table>
         <thead>
-          <th class="first-column">順位</th>
+          <th class="first-column place">順位</th>
           <th *ngFor="let competitorData of competitorDatas" class="gameresult-place">
             {{ competitorData.place }}位
           </th>
         </thead>
         <tbody>
           <tr>
-            <th>プレイヤー</th>
+            <th class="first-column">プレイヤー</th>
             <td *ngFor="let competitorData of competitorDatas">{{ competitorData.name }}</td>
           </tr>
 
           <tr>
-            <th>合計ポイント</th>
+            <th class="first-column">合計ポイント</th>
             <td *ngFor="let competitorData of competitorDatas">{{ competitorData.nowscore }}</td>
           </tr>
 
           <tr>
-            <th>投票回数</th>
+            <th class="first-column">投票回数</th>
             <td *ngFor="let competitorData of competitorDatas">{{ competitorData.vote_time }}回</td>
           </tr>
           <tr>
-            <th>回収率</th>
+            <th class="first-column">回収率</th>
             <td *ngFor="let competitorData of competitorDatas">
               {{ competitorData.recovery_rate }}％
             </td>
           </tr>
           <tr>
-            <th>先週のポイント</th>
+            <th class="first-column">先週のポイント</th>
             <td *ngFor="let competitorData of competitorDatas">
               {{ competitorData.latest_week_race_score }}
             </td>
           </tr>
           <tr>
-            <th>月間勝利数</th>
+            <th class="first-column">月間勝利数</th>
             <td *ngFor="let competitorData of competitorDatas">
               {{ competitorData.get_top_in_month }}
             </td>
           </tr>
           <tr>
-            <th>万馬券的中回数</th>
+            <th class="first-column">万馬券的中回数</th>
             <td *ngFor="let competitorData of competitorDatas">
               {{ competitorData.million_time }}
             </td>
           </tr>
           <tr (click)="toggleTime()">
-            <th [attr.colspan]="competitorDatas.length + 1" class="detail">
+            <th [attr.colspan]="competitorDatas.length + 1" class="detail first-column">
               <div *ngIf="showTime; then show; else noshow"></div>
               <ng-template #show>
                 <span class="show no"
@@ -70,31 +70,31 @@
           </tr>
 
           <tr *ngIf="showTime">
-            <th>単的中回数</th>
+            <th class="first-column">単的中回数</th>
             <td *ngFor="let competitorData of competitorDatas">{{ competitorData.tan_time }}</td>
           </tr>
           <tr *ngIf="showTime">
-            <th>複的中回数</th>
+            <th class="first-column">複的中回数</th>
             <td *ngFor="let competitorData of competitorDatas">{{ competitorData.fuku_time }}</td>
           </tr>
           <tr *ngIf="showTime">
-            <th>馬連的中数</th>
+            <th class="first-column">馬連的中数</th>
             <td *ngFor="let competitorData of competitorDatas">{{ competitorData.umaren_time }}</td>
           </tr>
           <tr *ngIf="showTime">
-            <th>馬単的中数</th>
+            <th class="first-column">馬単的中数</th>
             <td *ngFor="let competitorData of competitorDatas">{{ competitorData.umatan_time }}</td>
           </tr>
           <tr *ngIf="showTime">
-            <th>ワイド的中回数</th>
+            <th class="first-column">ワイド的中回数</th>
             <td *ngFor="let competitorData of competitorDatas">{{ competitorData.wide_time }}</td>
           </tr>
           <tr *ngIf="showTime">
-            <th>三連複的中回数</th>
+            <th class="first-column">三連複的中回数</th>
             <td *ngFor="let competitorData of competitorDatas">{{ competitorData.trio_time }}</td>
           </tr>
           <tr *ngIf="showTime">
-            <th>三連単的中回数</th>
+            <th class="first-column">三連単的中回数</th>
             <td *ngFor="let competitorData of competitorDatas">{{ competitorData.tierce_time }}</td>
           </tr>
         </tbody>
@@ -113,10 +113,10 @@
 </div>
 
 <div class="racelist container">
-  <div class="title">投票受付中のレース一覧</div>
-  <div *ngIf="isVotableRace; then votableBlock; else noVotable"></div>
+  <div class="title">今週のレース一覧</div>
+  <div *ngIf="thisWeekRaces; then votableBlock; else noVotable"></div>
   <ng-template #votableBlock>
-    <div *ngFor="let race of isVotableRace" (click)="moveVote(race)">
+    <div *ngFor="let race of thisWeekRaces" (click)="moveVote(race)">
       <div *ngIf="race.isdisplay; then displayBlock; else nodisplay"></div>
       <ng-template #displayBlock>
         <div class="date">{{ race.date }}</div>

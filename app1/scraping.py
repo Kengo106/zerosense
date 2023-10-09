@@ -73,6 +73,11 @@ def scrape_grade_race(browser):
         race_grade_imgs[i].click()  # レース出走馬画面に移動
         sleep(1)
         race_name = browser.find_element(By.CLASS_NAME, "race_name")  # レース名を取得
+        race_time = browser.find_element(By.CLASS_NAME, "date_line").find_element(
+            By.CSS_SELECTOR, ".cell.time").find_element(By.TAG_NAME, "strong")
+
+        dt = datetime.strptime(race_time.text, "%H時%M分")
+        race_time_replace = dt.time()
         race_date = browser.find_element(
             By.CSS_SELECTOR, ".cell.date")  # レース日を取得
         # .date()は年月日だけのオブジェクトをかえす
@@ -89,6 +94,7 @@ def scrape_grade_race(browser):
             grade_race_datum["grade"] = race_grade
             grade_race_datum["race_name"] = race_name.text
             grade_race_datum["horse_name"] = horse_name.text
+            grade_race_datum["start_time"] = race_time_replace
             grade_race_datum["race_date"] = race_date_object
             grade_races.append(grade_race_datum)
 
@@ -101,6 +107,7 @@ def scrape_grade_race(browser):
                 defaults={
                     'rank': grade_race["grade"],
                     'race_date': grade_race["race_date"],
+                    'start_time': grade_race["start_time"],
                     'is_votable': 1
                 }
             )
@@ -112,7 +119,6 @@ def scrape_grade_race(browser):
                 )
 
             except:
-                # print(game_race.race_name)
                 print(grade_race["horse_name"])
 
     return browser.quit()  # ブラウザを閉じる

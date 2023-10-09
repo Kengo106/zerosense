@@ -17,10 +17,17 @@
         </span>
       </span>
     </ng-template>
-    <ng-template #noGame>
-      参加中の大会がありません
+    <ng-template #noGame class="noGame">
+      <span class="flex-box noGame"> 参加中の大会がありません </span>
 
-      <a routerLink="/joingame">大会に参加する</a>
+      <span class="flex-box joingame" routerLink="/joingame"
+        ><span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i></span
+        ><span class="text">大会に参加する</span></span
+      >
+      <span class="flex-box newgame" routerLink="/newgame"
+        ><span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i></span
+        ><span class="text">大会を作成する</span></span
+      >
     </ng-template>
   </ng-template>
   <ng-template #nologin>

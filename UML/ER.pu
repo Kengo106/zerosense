@@ -1,4 +1,4 @@
-@startuml 20230928_ER図
+@startuml 20231007_ER図
 
 
 entity HorsePlace {
@@ -74,6 +74,7 @@ entity Race{
   race_name
   rank
   race_date
+  start_time
   is_votable
   ==
   投票対象のレース名
@@ -130,17 +131,6 @@ entity GamePlayers {
   大会の参加者を登録する
 }
 
-entity RaceComment {
-  + id [PK]
-  --
-  # race [FK]
-  # user [FK]
-  comment_text
-  created_at
-  ==
-  大会に対するコメント
-}
-
 Race ||--|| Odds
 User ||--o{ Vote
 Horse }--o{ Vote
@@ -149,8 +139,6 @@ Game ||--o{ Vote
 Race ||--{ Horse
 User ||--o{ GameComment
 Game ||--o{ GameComment
-User ||--o{ RaceComment
-Race ||--o{ RaceComment
 GameRule ||--o{ Game
 HorsePlace ||--|| Horse
 FirebaseUser ||..|| User

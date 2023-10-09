@@ -36,7 +36,7 @@ export class RaceService {
         return this.http.get<any>(this.gameUrl, { params: params });
     }
 
-    getVotableRaces(uid: string, gameId: string): Observable<Race[]> {
+    getThisWeekRaces(uid: string, gameId: string): Observable<Race[]> {
         let params = new HttpParams().set('flag', 1).set('uid', uid).set('gameid', gameId);
         console.log(gameId);
         return this.http.get<Race[]>(this.raceUrl, { params });
@@ -67,8 +67,8 @@ export class RaceService {
         });
     }
 
-    getScore(gameid: string) {
-        let params = new HttpParams().set('gameid', gameid);
+    getScore(gameId: string) {
+        let params = new HttpParams().set('gameid', gameId);
         return this.http.get(this.scoreUrl, { params });
     }
 
@@ -86,9 +86,14 @@ export class RaceService {
         return this.http.delete(this.accountUrl, { params });
     }
 
+    exitGame(gameId: string, uid: string) {
+        let params = new HttpParams().set('gameid', gameId).set('uid', uid);
+        return this.http.delete(this.gameUrl, { params });
+    }
+
     private raceUrl: string = 'http://127.0.0.1:8000/api/race/';
 
-    private gameUrl: string = 'http://127.0.0.1:8000/api/joingame/';
+    private gameUrl: string = 'http://127.0.0.1:8000/api/game/';
 
     private newGameUrl: string = 'http://127.0.0.1:8000/api/newgame/';
 

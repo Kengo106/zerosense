@@ -59,16 +59,21 @@ $date: #1b521f;
 
 .title {
     font-weight: 900;
+    background-color: white;
+    display: block;
+    padding: 10px 0px;
+    border-bottom: 1px solid #e2e2e2;
+    margin-bottom: 5px;
 }
 
+//項目を作る
 .container {
     margin-top: 10px;
     margin-left: 2px;
     border-top: 4px solid $containerline;
-    padding-top: 5px;
     width: calc(100% - 5px);
     background-color: #e9e9e9;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
 }
 
 // ボタンっぽいところを作る
@@ -77,9 +82,9 @@ $date: #1b521f;
     justify-content: flex-start;
     align-items: center;
     background-color: white;
-    border-radius: 10px;
+    border-radius: 5px;
     box-shadow: 1px 3px rgba(0, 0, 0, 0.1);
-    margin: 7px;
+    margin: 10px;
     height: 50px;
     .here {
         color: $canclickblue;

@@ -16,7 +16,7 @@ export class GameService implements OnInit {
         end: '',
     });
 
-    currentGame: Game = {
+    private currentGame: Game = {
         id: '',
         gamename: '大会未選択',
         start: '',
