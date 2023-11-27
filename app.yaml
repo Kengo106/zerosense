@@ -1,0 +1,37 @@
+service: default
+runtime: python311
+env_variables:
+  MODE: production
+  DATABASE_URL: "postgres://kengo:5W69E2yH7X@192.168.11.2:5432/zerosense"
+  DJANGO_DEBUG: "False"
+
+instance_class: F1 # 無料枠のインスタンスクラス
+
+handlers:
+  - url: /staticfile
+    static_dir: staticfile/
+
+  - url: /.*
+    script: auto
+
+# - url: /.*
+#   static_files: staticfile/angular_app/index.html
+#   upload: staticfile/angular_app/index.html
+
+# handlers: # urlにアクセスしたときの処理
+#   - url: /static # setting.pyに指定したurlと同じものを書く
+#     static_dir: staticfile/angular_app/ # staticfileのルートからのパスを設定する
+# #     secure: always
+# #     script: auto
+entrypoint: gunicorn -b :$PORT zerosence.wsgi #wsgiを起動するため
+
+inbound_services:
+  - warmup
+automatic_scaling:
+  target_cpu_utilization: 0.8 ## デフォルト0.6
+  target_throughput_utilization: 0.8 ## デフォルト0.6
+  max_concurrent_requests: 50 ## デフォルト 10
+  max_pending_latency: 500ms
+  min_pending_latency: 10ms
+  max_instances: 5
+  min_instances: 1

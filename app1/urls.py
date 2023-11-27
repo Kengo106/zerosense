@@ -9,5 +9,4 @@ urlpatterns = [
          name="graderaceresult"),
     path('finishvote', FinishVoteView.as_view(), name='finishvote'),
     path('api/', include('app1.api.urls')),
-
 ]

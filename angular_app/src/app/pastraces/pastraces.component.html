@@ -1,11 +1,7 @@
 <div class="racelist container">
   <div class="title">過去のレース結果</div>
 
-  <div
-    *ngFor="let race of AllRaces"
-    (click)="race.vote_num != 0 && moveResult(race)"
-    class="race-date"
-  >
+  <div *ngFor="let race of AllRaces" (click)="moveResult(race)" class="race-date">
     <div *ngIf="race.isdisplay; then displayBlock; else nodisplay"></div>
     <ng-template #displayBlock>
       <div class="date">{{ race.date }}</div> </ng-template

@@ -31,14 +31,12 @@ def initialize_browser():
     chrome_options.binary_location = r'C:\Users\81806\Desktop\python\JRA\zerosence\app1\chrome\win64-114.0.5735.133\chrome-win64\chrome.exe'
 
     # Chromeのヘッドレスオプションを設定する
-    # chrome_options = Options()
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
 
     # Serviceオブジェクトを作成
     service = Service(webdriver_path)
 
     # Chromeを起動
-    # browser = webdriver.Chrome(service=service, options=chrome_options)
     browser = webdriver.Chrome(service=service, options=chrome_options)
 
     return browser

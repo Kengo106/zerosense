@@ -20,6 +20,7 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+print(f'{BASE_DIR}' + 'です')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -28,8 +29,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-gck@t$ta!5w=g+)0qmcxn1ix)=ezk(@-&8=*kcfq7-t!c*$l^r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 DEBUG = True
-
 ALLOWED_HOSTS = ["*"]
 
 
@@ -45,19 +46,22 @@ INSTALLED_APPS = [
     'rest_framework',
     'app1',
     'corsheaders',
-    'django_filters'
+    'django_filters',
+    'django_extensions',
+
 
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
+
 ]
 
 ROOT_URLCONF = 'zerosence.urls'
@@ -124,7 +128,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = 'staticfile/'
+STATICFILES_DIRS = [
+    # Angularのビルドフォルダへのパス(開発用)
+    os.path.join(BASE_DIR, 'dist'),
+]
+# Angularのビルドフォルダへのパス(本番用)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfile')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -136,9 +147,28 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:4200',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'https://develop-matsushima.an.r.appspot.com',
 ]
 
 
 # settings.py
 CSRF_COOKIE_NAME = 'csrftoken'  # デフォルト
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # デフォルト
+
+
+def list_directories(startpath, max_depth=2):
+    startpath = startpath.rstrip(os.sep)
+    start_depth = startpath.count(os.sep)
+    for root, dirs, files in os.walk(startpath):
+        depth = root.count(os.sep) - start_depth
+        if depth < max_depth:
+            indent = ' ' * 4 * depth
+            print(f'{indent}{os.path.basename(root)}/')
+            subindent = ' ' * 4 * (depth + 1)
+            for f in files:
+                print(f'{subindent}{f}')
+
+
+# 例えば、現在のディレクトリから深さ2までのディレクトリ構造を出力する
+dirs = list_directories('.')
+print(dirs)

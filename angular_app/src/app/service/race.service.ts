@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable, timeInterval } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Game, Race, VoteForm } from '../race.interface';
+import { environment } from 'src/environments/environment';
+
+const apiUrl = environment.apiUrl;
 
 @Injectable({
     providedIn: 'root',
@@ -91,23 +94,23 @@ export class RaceService {
         return this.http.delete(this.gameUrl, { params });
     }
 
-    private raceUrl: string = 'http://127.0.0.1:8000/api/race/';
+    private raceUrl: string = `${apiUrl}/race/`;
 
-    private gameUrl: string = 'http://127.0.0.1:8000/api/game/';
+    private gameUrl: string = `${apiUrl}/game/`;
 
-    private newGameUrl: string = 'http://127.0.0.1:8000/api/newgame/';
+    private newGameUrl: string = `${apiUrl}/newgame/`;
 
-    private UIDUrl: string = 'http://127.0.0.1:8000/api/UID/';
+    private UIDUrl: string = `${apiUrl}/UID/`;
 
-    private voteUrl: string = 'http://127.0.0.1:8000/api/vote/';
+    private voteUrl: string = `${apiUrl}/vote/`;
 
-    private scoreUrl: string = 'http://127.0.0.1:8000/api/score/';
+    private scoreUrl: string = `${apiUrl}/score/`;
 
-    private userNameUrl: string = 'http://127.0.0.1:8000/api/username/';
+    private userNameUrl: string = `${apiUrl}/username/`;
 
-    private raceResult: string = 'http://127.0.0.1:8000/api/raceresult/';
+    private raceResult: string = `${apiUrl}/raceresult/`;
 
-    private accountUrl: string = 'http://127.0.0.1:8000/api/account/';
+    private accountUrl: string = `${apiUrl}/account/`;
 
-    private serchGameUrl: string = 'http://127.0.0.1:8000/api/serchgame/';
+    private serchGameUrl: string = `${apiUrl}/serchgame/`;
 }
