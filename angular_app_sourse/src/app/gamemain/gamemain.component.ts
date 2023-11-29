@@ -100,6 +100,8 @@ export class GamemainComponent implements OnInit {
                 grade: race.grade,
                 gamename: this.game.gamename,
                 id: this.game.id,
+                start: this.game.start,
+                end: this.game.end,
             },
         });
         console.log(this.game);

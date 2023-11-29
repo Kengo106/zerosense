@@ -20,7 +20,6 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-print(f'{BASE_DIR}' + 'です')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -29,8 +28,9 @@ print(f'{BASE_DIR}' + 'です')
 SECRET_KEY = 'django-insecure-gck@t$ta!5w=g+)0qmcxn1ix)=ezk(@-&8=*kcfq7-t!c*$l^r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+
+
 ALLOWED_HOSTS = ["*"]
 
 
@@ -69,7 +69,8 @@ ROOT_URLCONF = 'zerosence.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "templates")],
+        'DIRS': [os.path.join(BASE_DIR, "templates"),
+                 os.path.join(BASE_DIR, 'static', 'angular_app')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -91,6 +92,19 @@ WSGI_APPLICATION = 'zerosence.wsgi.application'
 load_dotenv(find_dotenv())
 DATABASES = {
     'default': dj_database_url.config(conn_max_age=600),
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT'),
+        'CONN_MAX_AGE': 600,
+        'CONN_HEALTH_CHECKS': False,
+    }
 }
 
 
@@ -134,7 +148,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'dist'),
 ]
 # Angularのビルドフォルダへのパス(本番用)
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfile')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 
 # Default primary key field type
@@ -155,20 +169,6 @@ CORS_ORIGIN_WHITELIST = [
 CSRF_COOKIE_NAME = 'csrftoken'  # デフォルト
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # デフォルト
 
-
-def list_directories(startpath, max_depth=2):
-    startpath = startpath.rstrip(os.sep)
-    start_depth = startpath.count(os.sep)
-    for root, dirs, files in os.walk(startpath):
-        depth = root.count(os.sep) - start_depth
-        if depth < max_depth:
-            indent = ' ' * 4 * depth
-            print(f'{indent}{os.path.basename(root)}/')
-            subindent = ' ' * 4 * (depth + 1)
-            for f in files:
-                print(f'{subindent}{f}')
-
-
-# 例えば、現在のディレクトリから深さ2までのディレクトリ構造を出力する
-dirs = list_directories('.')
-print(dirs)
+print("あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ")
+print(DATABASES)
+print("あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ")

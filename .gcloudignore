@@ -33,7 +33,10 @@
 
 /setup.cfg
 
-angular_app/
+.env
+.vscode
+
+angular_app_sourse/
 y/
 UML/
 out/

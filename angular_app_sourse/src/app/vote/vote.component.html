@@ -53,7 +53,7 @@
         <span class="item left">◎</span>
         <span class="item right">
           <select name="firsthorse" id="first" [(ngModel)]="myVote.first" required>
-            <option value="null" disabled>選択してください</option>
+            <option value="" disabled>選択してください</option>
             <option [value]="horse.id" *ngFor="let horse of horseList">
               {{ horse.name }}
             </option>
@@ -64,7 +64,7 @@
         <span class="item left">○</span>
         <span class="item right">
           <select name="secondhorse" id="second" [(ngModel)]="myVote.second" required>
-            <option value="null" disabled>選択してください</option>
+            <option value="" disabled>選択してください</option>
             <option [value]="horse.id" *ngFor="let horse of horseList">
               {{ horse.name }}
             </option>
@@ -75,7 +75,7 @@
         <span class="item left">▲</span>
         <span class="item right">
           <select name="thirdhorse" id="third" [(ngModel)]="myVote.third" required>
-            <option value="null" disabled>選択してください</option>
+            <option value="" disabled>選択してください</option>
             <option [value]="horse.id" *ngFor="let horse of horseList">
               {{ horse.name }}
             </option>

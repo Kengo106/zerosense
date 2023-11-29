@@ -101,27 +101,38 @@ export class VoteComponent implements OnInit {
         if (this.myVote.comment === '' || this.myVote.comment === undefined) {
             this.myVote.comment = null;
         }
+        this.myVote.first = Number(this.myVote.first);
+        this.myVote.second = Number(this.myVote.second);
+        this.myVote.third = Number(this.myVote.third);
         console.log(this.myVote);
-        if (
-            this.myVote.first != this.myVote.second &&
-            this.myVote.first !== this.myVote.third &&
-            this.myVote.second !== this.myVote.third
-        ) {
-            this.raceService.submitVote(this.myVote, this.uid, this.race, this.game.id).subscribe({
-                next: (responce: any) => {
-                    alert(responce.sucsess);
-                    this.router.navigate(['/gamemain'], {
-                        queryParams: { gamename: this.game.gamename, id: this.game.id },
+        if (this.myVote.first && this.myVote.second && this.myVote.third) {
+            console.log(this.myVote, 'です');
+            if (
+                this.myVote.first != this.myVote.second &&
+                this.myVote.first !== this.myVote.third &&
+                this.myVote.second !== this.myVote.third
+            ) {
+                this.raceService
+                    .submitVote(this.myVote, this.uid, this.race, this.game.id)
+                    .subscribe({
+                        next: (responce: any) => {
+                            alert(responce.sucsess);
+                            this.router.navigate(['/gamemain'], {
+                                queryParams: this.game,
+                            });
+                        },
+                        error: (error: any) => {
+                            alert('error');
+                        },
                     });
-                },
-                error: (error: any) => {
-                    alert('error');
-                },
-            });
+            } else {
+                alert('異なる馬を投票してください');
+            }
         } else {
-            alert('異なる馬を投票してください');
+            alert('馬を選択してください');
         }
     }
+
     goBack() {
         this.location.back();
     }

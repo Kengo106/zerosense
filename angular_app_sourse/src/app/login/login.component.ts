@@ -3,6 +3,7 @@ import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { SessionService } from '../service/session.service';
 import { Password } from '../class/user';
 import { GameService } from '../service/game.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-login',
@@ -12,7 +13,11 @@ import { GameService } from '../service/game.service';
 export class LoginComponent implements OnInit {
     public account = new Password();
 
-    constructor(private sessionservise: SessionService, private gameService: GameService) {}
+    constructor(
+        private sessionServise: SessionService,
+        private gameService: GameService,
+        private router: Router,
+    ) {}
 
     ngOnInit(): void {
         this.gameService.gameSubject.next({
@@ -21,10 +26,15 @@ export class LoginComponent implements OnInit {
             start: '',
             end: '',
         });
+        this.sessionServise.loginState$.subscribe((login) => {
+            if (login) {
+                this.router.navigate(['home']);
+            }
+        });
     }
 
     submitLogin(e: Event) {
         e.preventDefault();
-        this.sessionservise.login(this.account);
+        this.sessionServise.login(this.account);
     }
 }

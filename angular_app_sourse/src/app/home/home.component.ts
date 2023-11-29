@@ -33,6 +33,10 @@ export class HomeComponent implements OnInit {
         console.log(this.gameNumber);
         this.sessionService.loginState$.subscribe((login) => {
             this.isLogin = login;
+            if (!this.isLogin) {
+                console.log(!this.isLogin);
+                this.router.navigate(['account/login']);
+            }
         });
         this.sessionService.uid$.subscribe((currentUid) => {
             this.uid = currentUid;

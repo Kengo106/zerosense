@@ -18,10 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from app1.views import MainAppView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('scraping/', include('app1.urls')),
+    path('api/', include('app1.api.urls')),
+    path('', MainAppView.as_view(), name='main-app')
 
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

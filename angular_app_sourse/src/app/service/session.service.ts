@@ -32,10 +32,12 @@ export class SessionService {
                 this.usernameSubject.next(user.displayName || '');
                 this.loginSubject.next(true);
                 this.uidSubject.next(user.uid);
+                console.log('T');
             } else {
                 this.usernameSubject.next('');
                 this.loginSubject.next(false);
                 this.uidSubject.next('');
+                console.log('F');
             }
         });
     }
@@ -53,7 +55,7 @@ export class SessionService {
                 throw new Error('メールアドレスの確認を実行してください');
             } else {
                 alert('ログインしました');
-                this.router.navigate(['/']);
+                this.router.navigate(['/home']);
             }
         } catch (error) {
             console.log(error);
