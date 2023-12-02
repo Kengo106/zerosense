@@ -15,7 +15,10 @@ import time
 import re
 from datetime import datetime
 import traceback
-
+from django.db.models import Q
+from django.utils import timezone
+from datetime import timedelta
+import pytz
 # scraping.pyのディレクトリを取得
 
 
@@ -30,8 +33,10 @@ def initialize_browser():
     chrome_options = Options()
     chrome_options.binary_location = r'C:\Users\81806\Desktop\python\JRA\zerosence\app1\chrome\win64-114.0.5735.133\chrome-win64\chrome.exe'
 
-    # Chromeのヘッドレスオプションを設定する
-    chrome_options.add_argument('--headless')
+    # Chromeのヘッドレスオプションを設定する(GUIなし)
+    print(os.environ.get('DJANGO_DEBUG', 'False'))
+    if os.environ.get('DJANGO_DEBUG', 'False') != 'True':
+        chrome_options.add_argument('--headless')
 
     # Serviceオブジェクトを作成
     service = Service(webdriver_path)
@@ -122,6 +127,58 @@ def scrape_grade_race(browser):
     return browser.quit()  # ブラウザを閉じる
 
 
+def get_data(soup, race_name, grade_races_odds, grade_races):
+    tbody = soup.find('tbody')
+    places = tbody.find_all('td', class_='place')
+    horses = tbody.find_all('td', class_='horse')
+
+    refunds = soup.find('div', class_='refund_unit mt15')
+    tan = refunds.find("li", class_="win").find(
+        'div', class_="yen").text.replace("円", "").replace(",", "")
+    if len([yen.find('div', class_="yen").text.replace(
+            "円", "").replace(",", "") for yen in refunds.find("li", class_="place").find_all("div", "line")]) != 3:
+        print('error')
+        print(race_name)
+        print([yen.find('div', class_="yen").text.replace("円", "").replace(",", "")
+               for yen in refunds.find("li", class_="place").find_all("div", "line")])
+    fuku_1, fuku_2, fuku_3 = [yen.find('div', class_="yen").text.replace(
+        "円", "").replace(",", "") for yen in refunds.find("li", class_="place").find_all("div", "line")][:3]
+    umaren = refunds.find("li", class_="umaren").find(
+        'div', class_="yen").text.replace("円", "").replace(",", "")
+    umatan = refunds.find("li", class_="umatan").find(
+        'div', class_="yen").text.replace("円", "").replace(",", "")
+    wide_12, wide_13, wide_23 = [yen.find('div', class_="yen").text.replace(
+        "円", "").replace(",", "") for yen in refunds.find("li", class_="wide").find_all("div", "line")][:3]
+
+    trio = refunds.find("li", class_="trio").find(
+        'div', class_="yen").text.replace("円", "").replace(",", "")
+    tierce = refunds.find("li", class_="tierce").find(
+        'div', class_="yen").text.replace("円", "").replace(",", "")
+    odds_datamu = {}
+    odds_datamu["race_name"] = race_name
+    odds_datamu['tan'] = tan
+    odds_datamu['fuku_1'] = fuku_1
+    odds_datamu['fuku_2'] = fuku_2
+    odds_datamu['fuku_3'] = fuku_3
+    odds_datamu['umaren'] = umaren
+    odds_datamu['umatan'] = umatan
+    odds_datamu['wide_12'] = wide_12
+    odds_datamu['wide_13'] = wide_13
+    odds_datamu['wide_23'] = wide_23
+    odds_datamu['trio'] = trio
+    odds_datamu['tierce'] = tierce
+
+    grade_races_odds.append(odds_datamu)
+
+    for place, horse in zip(places, horses):
+        race_datamu = {}
+        race_datamu['race_name'] = race_name
+        race_datamu["place"] = place.text.strip()
+        race_datamu["horse_name"] = horse.text.strip()
+        grade_races.append(race_datamu)
+    sleep(1)
+
+
 def scrape_grade_race_result(browser):
 
     # 起動したWebDriverにJRAのURLを入力
@@ -204,68 +261,57 @@ def scrape_grade_race_result(browser):
         By.CLASS_NAME, "race"))  # 取得対象のレース数を取得
 
     for i in range(min(grade_races_elements_num, 10)):  # 過去10レース分を取得
-        grade_races_elements = browser.find_elements(
+        list_grade_races_elements = browser.find_elements(
             By.CLASS_NAME, "race")
 
-        grade_races_elements[i].click()  # 順番にレースページへ
+        list_one_place_races = list_grade_races_elements[i].find_elements(
+            By.TAG_NAME, 'a')
+        print([a.text for a in list_one_place_races])
 
-        soup = BeautifulSoup(browser.page_source,
-                             "html.parser")  # seleniumからbsへ変換
+        if len(list_one_place_races)-1:
+            for num in range(len(list_one_place_races)):
+                print(num)
+                # 順番にレースページへ
+                list_grade_races_elements = browser.find_elements(
+                    By.CLASS_NAME, "race")
 
-        race_name = soup.find('div', id='race_result').find(
-            'span', class_="race_name").text  # ここでレース名を取得しないと短縮形になる
+                list_one_place_races = list_grade_races_elements[i].find_elements(
+                    By.TAG_NAME, 'a')
+                # print([a.text for a in list_one_place_races])
+                # print(len(list_one_place_races), 'です')
+                # sleep(5)
 
-        tbody = soup.find('tbody')
-        places = tbody.find_all('td', class_='place')
-        horses = tbody.find_all('td', class_='horse')
+                list_one_place_races[num].click()
+                soup = BeautifulSoup(browser.page_source,
+                                     "html.parser")
+                race_name = soup.find('div', id='race_result').find(
+                    'span', class_="race_name").text
+                # sleep(5)
+                print(race_name)
+                get_data(soup, race_name, grade_races_odds, grade_races)
+                browser.back()
 
-        refunds = soup.find('div', class_='refund_unit mt15')
-        tan = refunds.find("li", class_="win").find(
-            'div', class_="yen").text.replace("円", "").replace(",", "")
-        fuku_1, fuku_2, fuku_3 = [yen.find('div', class_="yen").text.replace(
-            "円", "").replace(",", "") for yen in refunds.find("li", class_="place").find_all("div", "line")]
-        umaren = refunds.find("li", class_="umaren").find(
-            'div', class_="yen").text.replace("円", "").replace(",", "")
-        umatan = refunds.find("li", class_="umatan").find(
-            'div', class_="yen").text.replace("円", "").replace(",", "")
-        wide_12, wide_13, wide_23 = [yen.find('div', class_="yen").text.replace(
-            "円", "").replace(",", "") for yen in refunds.find("li", class_="wide").find_all("div", "line")]
+        else:
+            list_one_place_races[0].click()
 
-        trio = refunds.find("li", class_="trio").find(
-            'div', class_="yen").text.replace("円", "").replace(",", "")
-        tierce = refunds.find("li", class_="tierce").find(
-            'div', class_="yen").text.replace("円", "").replace(",", "")
-        odds_datamu = {}
-        odds_datamu["race_name"] = race_name
-        odds_datamu['tan'] = tan
-        odds_datamu['fuku_1'] = fuku_1
-        odds_datamu['fuku_2'] = fuku_2
-        odds_datamu['fuku_3'] = fuku_3
-        odds_datamu['umaren'] = umaren
-        odds_datamu['umatan'] = umatan
-        odds_datamu['wide_12'] = wide_12
-        odds_datamu['wide_13'] = wide_13
-        odds_datamu['wide_23'] = wide_23
-        odds_datamu['trio'] = trio
-        odds_datamu['tierce'] = tierce
+            soup = BeautifulSoup(browser.page_source,
+                                 "html.parser")  # seleniumからbsへ変換
 
-        grade_races_odds.append(odds_datamu)
-
-        for place, horse in zip(places, horses):
-            race_datamu = {}
-            race_datamu['race_name'] = race_name
-            race_datamu["place"] = place.text.strip()
-            race_datamu["horse_name"] = horse.text.strip()
-            grade_races.append(race_datamu)
-        sleep(1)
-        browser.back()
+            race_name = soup.find('div', id='race_result').find(
+                'span', class_="race_name").text  # ここでレース名を取得しないと短縮形になる
+            print(race_name)
+            get_data(soup, race_name, grade_races_odds, grade_races)
+            browser.back()
 
     with transaction.atomic():
         for grade_race_odds in grade_races_odds:
             try:
+                utc_now = timezone.now()
+                jst = pytz.timezone('Asia/Tokyo')
+                jst_now = utc_now.astimezone(jst)
+                now_date = jst_now.date()
                 update_count = Race.objects.filter(
-                    race_name=grade_race_odds["race_name"]).update(is_votable=0)
-                print(grade_race_odds["race_name"])
+                    race_name=grade_race_odds["race_name"], race_date__lte=now_date - timedelta(day=4)).update(is_votable=0)
                 print(update_count)
                 race = Race.objects.get(race_name=grade_race_odds["race_name"])
                 Odds.objects.update_or_create(
