@@ -95,3 +95,16 @@ $date: #1b521f;
     margin-left: 5px;
     color: $icon;
 }
+// 画面幅が特定のピクセル(min-widthの値)以上の場合に適用されるスタイル
+@media (min-width: 800px) {
+    body {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+}
+
+.zerosense {
+    span {
+        padding-left: 10px;
+    }
+}

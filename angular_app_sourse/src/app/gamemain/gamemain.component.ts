@@ -102,6 +102,7 @@ export class GamemainComponent implements OnInit {
                 id: this.game.id,
                 start: this.game.start,
                 end: this.game.end,
+                is_votable: race.is_votable,
             },
         });
         console.log(this.game);

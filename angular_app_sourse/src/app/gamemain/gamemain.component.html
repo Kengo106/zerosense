@@ -119,6 +119,7 @@
     <div *ngFor="let race of thisWeekRaces" (click)="moveVote(race)">
       <div *ngIf="race.isdisplay; then displayBlock; else nodisplay"></div>
       <ng-template #displayBlock>
+        <!-- レース日を表示する -->
         <div class="date">{{ race.date }}</div>
       </ng-template>
       <ng-template #nodisplay> </ng-template>
@@ -127,16 +128,25 @@
         ><span class="racename">{{ race.name }}</span
         ><span class="grade">{{ race.grade }}</span>
         <span class="vote-switch">
-          <div *ngIf="race.voted; then votedBlock; else noVoted"></div>
-          <ng-template #votedBlock>
+          <div *ngIf="race.is_votable === 2; then deadlineBlock; else noDedline"></div>
+          <ng-template #deadlineBlock>
             <span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </span
-            ><span class="isvoted small">更新</span>
+            ><span class="deadline small">締切</span>
           </ng-template>
-          <ng-template #noVoted>
-            <span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </span
-            ><span class="novoted small">投票</span>
-          </ng-template></span
-        >
+          <ng-template #noDedline>
+            <div *ngIf="race.voted; then votedBlock; else noVoted"></div>
+            <ng-template #votedBlock>
+              <span class="icon">
+                <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </span
+              ><span class="isvoted small">更新</span>
+            </ng-template>
+            <ng-template #noVoted>
+              <span class="icon">
+                <i class="fa fa-chevron-circle-right" aria-hidden="true"></i> </span
+              ><span class="novoted small">投票</span>
+            </ng-template></ng-template
+          >
+        </span>
       </div>
     </div>
   </ng-template>

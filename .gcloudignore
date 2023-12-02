@@ -33,6 +33,8 @@
 
 /setup.cfg
 
+clrome
+
 .env
 .vscode
 

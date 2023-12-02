@@ -17,10 +17,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "baseHref": "/",
             "outputPath": "../dist/angular_app",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "baseHref": "/static/angular_app/",
             "polyfills": [
               "zone.js"
             ],
@@ -38,6 +38,7 @@
           },
           "configurations": {
             "production": {
+              "deployUrl":"/static/angular_app/",
               "budgets": [
                 {
                   "type": "initial",

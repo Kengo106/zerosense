@@ -51,8 +51,6 @@
   }
 }
 
-// ?????????????????????????????????????
-
 html,
 body {
   height: 100%;
@@ -80,17 +78,12 @@ $date: #1b521f;
   background-color: $grade;
   color: white;
   padding: 5px 5px 4px 5px;
+  width: 50px;
   margin: 10px;
   border-radius: 5px;
-  font-size: small;
+  font-size: 14px;
   letter-spacing: -2px;
-}
-
-.racename {
-  display: inline-block;
-  font-weight: 700;
-  padding: 5px 10px 5px 5px;
-  margin: 0px;
+  text-align: center;
 }
 
 .table {
@@ -182,11 +175,21 @@ $date: #1b521f;
   align-self: stretch;
   display: flex;
   width: 100px;
+  margin-left: auto;
 
   .icon {
     display: flex !important;
     align-items: center;
     color: $icon;
+  }
+
+  .deadline {
+    color: gray;
+    align-items: center;
+    display: flex;
+    margin: 0 5px 0 5px;
+    font-size: small;
+    font-weight: 700;
   }
 
   .isvoted {
@@ -213,8 +216,11 @@ $date: #1b521f;
     font-weight: 700;
     display: inline-block;
     width: 200px;
-    font-size: 3vw;
+    font-size: 12px;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
   }
 }
 

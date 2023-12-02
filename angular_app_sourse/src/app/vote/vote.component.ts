@@ -68,10 +68,10 @@ export class VoteComponent implements OnInit {
                     grade: params['grade'] as string,
                     name: params['racename'] as string,
                     date: params['date'] as string,
+                    is_votable: Number(params['is_votable']) as number,
                     voted: null,
                     vote_num: 999,
                     isdisplay: null,
-                    is_votable: null,
                     start_time: null,
                 };
             });
@@ -95,6 +95,7 @@ export class VoteComponent implements OnInit {
                     console.log(this.voteList);
                 });
         });
+        console.log(typeof this.race.is_votable);
     }
 
     onSubmit() {

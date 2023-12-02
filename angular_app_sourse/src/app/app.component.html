@@ -1,5 +1,7 @@
 <span class="zerosense"
-  ><h1 (click)="switchRoute()" class="superbig">{{ title }}</h1></span
+  ><h1 (click)="switchRoute()" class="superbig">
+    <span>{{ title }}</span>
+  </h1></span
 >
 <app-header></app-header>
 <div *ngIf="currentGame.id !== '' && currentGame.id" class="container">

@@ -45,60 +45,61 @@
     ><span class="content">{{ vote.comment }}</span>
   </div>
 </div>
-<div class="vote container">
-  <form (ngSubmit)="onSubmit()">
-    <div class="title">投票</div>
-    <div class="forms">
-      <div for="first" class="first vote-box">
-        <span class="item left">◎</span>
-        <span class="item right">
-          <select name="firsthorse" id="first" [(ngModel)]="myVote.first" required>
-            <option value="" disabled>選択してください</option>
-            <option [value]="horse.id" *ngFor="let horse of horseList">
-              {{ horse.name }}
-            </option>
-          </select></span
-        >
+<div *ngIf="!(race.is_votable === 2)">
+  <div class="vote container">
+    <form (ngSubmit)="onSubmit()">
+      <div class="title">投票</div>
+      <div class="forms">
+        <div for="first" class="first vote-box">
+          <span class="item left">◎</span>
+          <span class="item right">
+            <select name="firsthorse" id="first" [(ngModel)]="myVote.first" required>
+              <option value="" disabled>選択してください</option>
+              <option [value]="horse.id" *ngFor="let horse of horseList">
+                {{ horse.name }}
+              </option>
+            </select></span
+          >
+        </div>
+        <div for="second" class="second vote-box">
+          <span class="item left">○</span>
+          <span class="item right">
+            <select name="secondhorse" id="second" [(ngModel)]="myVote.second" required>
+              <option value="" disabled>選択してください</option>
+              <option [value]="horse.id" *ngFor="let horse of horseList">
+                {{ horse.name }}
+              </option>
+            </select></span
+          >
+        </div>
+        <div for="third" class="third vote-box">
+          <span class="item left">▲</span>
+          <span class="item right">
+            <select name="thirdhorse" id="third" [(ngModel)]="myVote.third" required>
+              <option value="" disabled>選択してください</option>
+              <option [value]="horse.id" *ngFor="let horse of horseList">
+                {{ horse.name }}
+              </option>
+            </select></span
+          >
+        </div>
+        <div class="commentform vote-box">
+          <span class="item left comment">コメント</span>
+          <span class="item right comment">
+            <textarea
+              name="comment"
+              [(ngModel)]="myVote.comment"
+              id="comment"
+              cols="25"
+              rows="5"
+            ></textarea>
+          </span>
+        </div>
       </div>
-      <div for="second" class="second vote-box">
-        <span class="item left">○</span>
-        <span class="item right">
-          <select name="secondhorse" id="second" [(ngModel)]="myVote.second" required>
-            <option value="" disabled>選択してください</option>
-            <option [value]="horse.id" *ngFor="let horse of horseList">
-              {{ horse.name }}
-            </option>
-          </select></span
-        >
-      </div>
-      <div for="third" class="third vote-box">
-        <span class="item left">▲</span>
-        <span class="item right">
-          <select name="thirdhorse" id="third" [(ngModel)]="myVote.third" required>
-            <option value="" disabled>選択してください</option>
-            <option [value]="horse.id" *ngFor="let horse of horseList">
-              {{ horse.name }}
-            </option>
-          </select></span
-        >
-      </div>
-      <div class="commentform vote-box">
-        <span class="item left comment">コメント</span>
-        <span class="item right comment">
-          <textarea
-            name="comment"
-            [(ngModel)]="myVote.comment"
-            id="comment"
-            cols="25"
-            rows="5"
-          ></textarea>
-        </span>
-      </div>
-    </div>
-
-    <div *ngIf=""></div>
-    <button type="submit">投票する</button>
-  </form>
+      <div *ngIf=""></div>
+      <button type="submit">投票する</button>
+    </form>
+  </div>
 </div>
 
 <div class="goback container">
