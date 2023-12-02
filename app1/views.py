@@ -5,7 +5,8 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
 import pytz
-
+from django.conf import settings
+import os
 # Create your views here.
 from django.shortcuts import render
 
@@ -46,3 +47,8 @@ class FinishVoteView(View):
             race.is_votable = 2
             race.save()
         return render(request, 'finish.html')
+
+
+class MainAppView(View):
+    def get(self, request):
+        return render(request, 'index.html')

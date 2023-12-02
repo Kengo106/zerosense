@@ -341,12 +341,15 @@ class ApiRaceView(APIView):
             for is_votable in is_votables:
                 for race in Race.objects.filter(is_votable=is_votable, race_date__range=(start_date, end_date)):
                     datum = {}
+                    Game.objects.filter
+                    vote_num = race.vote_set.filter(game=game).count()
+
                     if race in voted_races:
                         datum = {"grade": race.rank,
-                                 "name": race.race_name, "date": race.race_date, 'voted': True, "vote_num": race.vote_set.count(), "is_votable": is_votable, "start_time": race.start_time}
+                                 "name": race.race_name, "date": race.race_date, 'voted': True, "vote_num": vote_num, "is_votable": is_votable, "start_time": race.start_time}
                     else:
                         datum = {"grade": race.rank,
-                                 "name": race.race_name, "date": race.race_date, 'voted': False, "vote_num": race.vote_set.count(), "is_votable": is_votable, "start_time": race.start_time}
+                                 "name": race.race_name, "date": race.race_date, 'voted': False, "vote_num": vote_num, "is_votable": is_votable, "start_time": race.start_time}
 
                     races.append(datum)
 
@@ -433,22 +436,25 @@ class ApiVoteView(APIView):
             race = Race.objects.filter(
                 rank=race_name['grade'], race_date=race_name['date'], race_name=race_name['name']).first()
             game = Game.objects.filter(id_for_serch=game_id).first()
+            if race.is_votable == 1:
 
-            _, created = Vote.objects.update_or_create(
-                game=game,
-                race=race,
-                user=user,
-                defaults={
-                    "horse_first": Horse.objects.get(id=vote_form['first']),
-                    'horse_second': Horse.objects.get(id=vote_form['second']),
-                    'horse_third': Horse.objects.get(id=vote_form['third']),
-                    'comment': vote_form['comment'],
-                },
-            )
-            if created:
-                return Response({"sucsess": "投票しました"}, status=status.HTTP_200_OK)
+                _, created = Vote.objects.update_or_create(
+                    game=game,
+                    race=race,
+                    user=user,
+                    defaults={
+                        "horse_first": Horse.objects.get(id=vote_form['first']),
+                        'horse_second': Horse.objects.get(id=vote_form['second']),
+                        'horse_third': Horse.objects.get(id=vote_form['third']),
+                        'comment': vote_form['comment'],
+                    },
+                )
+                if created:
+                    return Response({"sucsess": "投票しました"}, status=status.HTTP_200_OK)
+                else:
+                    return Response({"sucsess": "投票を更新しました"}, status=status.HTTP_200_OK)
             else:
-                return Response({"sucsess": "投票を更新しました"}, status=status.HTTP_200_OK)
+                return Response({"sucsess": "投票は締め切られています"}, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()
