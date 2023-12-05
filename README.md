@@ -14,6 +14,7 @@ url:https://develop-matsushima.an.r.appspot.com/
 - FireBase
 ## インフラ構成図
 
+![pngaaa com-3425432](https://github.com/Kengo106/zerosense/assets/131678198/22d37edf-9a68-4693-98ed-8cc3fa55867e)
 
 
 ## ER図
