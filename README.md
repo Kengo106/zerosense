@@ -14,7 +14,8 @@ url:https://develop-matsushima.an.r.appspot.com/
 - FireBase
 ## インフラ構成図
 
-![インフラ構成図_20231206 drawio](https://github.com/Kengo106/zerosense/assets/131678198/c16404c1-9c07-4244-9d72-aea78d0f44fb)
+![インフラ構成図_20231206 drawio (2)](https://github.com/Kengo106/zerosense/assets/131678198/db4b9c75-0c80-497c-b950-b480db143046)
+
 
 
 ## ER図
@@ -22,5 +23,7 @@ url:https://develop-matsushima.an.r.appspot.com/
 ![20231206_ER図](https://github.com/Kengo106/zerosense/assets/131678198/29443331-19ca-4f19-a4ac-b33c991bcdb7)
 
 ## 機能一覧
+
+
 
 
