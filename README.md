@@ -1,5 +1,6 @@
 # zerosense
 ## サイト概要
+url:https://develop-matsushima.an.r.appspot.com/
 ## 使用技術
 - python 3.1.1
 　- Django 5.2.4
@@ -12,7 +13,13 @@
   - Cloud SQL
 - FireBase
 ## インフラ構成図
+
+
+
 ## ER図
+
+![20231206_ER図](https://github.com/Kengo106/zerosense/assets/131678198/29443331-19ca-4f19-a4ac-b33c991bcdb7)
+
 ## 機能一覧
 
 
