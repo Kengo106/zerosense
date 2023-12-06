@@ -17,7 +17,7 @@ url:https://develop-matsushima.an.r.appspot.com/
 - GCP
   - AppEngine
   - Cloud SQL
-- FireBase
+- Firebase
 ## インフラ構成図
 
 ![インフラ構成図_20231206 drawio (2)](https://github.com/Kengo106/zerosense/assets/131678198/db4b9c75-0c80-497c-b950-b480db143046)
