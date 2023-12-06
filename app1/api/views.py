@@ -9,199 +9,23 @@ import traceback
 from datetime import timedelta
 from django.db.models.functions import ExtractMonth
 import uuid
-
-
-def game_score(request):
-    # return{username:{racename:score}}
-
-    game = request.query_params.get("gameid")
-    game_object = Game.objects.filter(id_for_serch=game).first()
-    game_player_objects = GamePlayer.objects.filter(game=game_object)
-    user_datamu = {}
-    temporary_month_datamu = {}
-    game_infomation = []
-    latest_week_race_score_datamu = {}
-    hit_time_datamu = {}
-    latest_race = Race.objects.filter(
-        is_votable=0).order_by('-race_date').first()
-
-    if latest_race:
-        end_date = latest_race.race_date
-        start_date = end_date - timedelta(days=3)
-        latest_week_race = Race.objects.filter(
-            race_date__range=(start_date, end_date))
-
-    for game_player_object in game_player_objects:  # 各ゲームの参加者を取得
-        vote_objects = Vote.objects.filter(
-            game=game_object, user=game_player_object.user).order_by('-created_at')
-        score_datamu = {}
-        month_datamu = {}
-        latest_week_race_score = 0
-        time_datamu = {}
-        tan_time = 0
-        fuku_time = 0
-        umaren_time = 0
-        umatan_time = 0
-        wide_time = 0
-        trio_time = 0
-        tierce_time = 0
-        get_scores = []
-        for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
-            score = 0
-            odds_object = Odds.objects.filter(
-                race=vote_object.race).first()  # 各レースの払戻金を取得
-            is_latest_week_race = False
-            month = vote_object.race.race_date.month
-            month_datamu[month] = 0
-
-            if latest_week_race.filter(id=vote_object.race.id).exists():
-                is_latest_week_race = True
-            if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
-                vote_1_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_first).first().place
-                vote_2_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_second).first().place
-                vote_3_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_third).first().place
-                votes = [vote_1_place, vote_2_place, vote_3_place]
-                if vote_1_place == 1:
-                    score += sum([odds_object.tan, odds_object.fuku_1])
-                    tan_time += 1
-                    fuku_time += 1
-                    get_scores.append(odds_object.fuku_1)
-                    get_scores.append(odds_object.tan)
-                    if is_latest_week_race:
-                        latest_week_race_score += sum(
-                            [odds_object.tan, odds_object.fuku_1])
-                if vote_1_place == 2:
-                    score += odds_object.fuku_2
-                    fuku_time += 1
-                    get_scores.append(odds_object.fuku_2)
-                    if is_latest_week_race:
-                        latest_week_race_score += odds_object.fuku_2
-                if vote_1_place == 3:
-                    score += odds_object.fuku_3
-                    fuku_time += 1
-                    get_scores.append(odds_object.fuku_3)
-                    if is_latest_week_race:
-                        latest_week_race_score += odds_object.fuku_3
-                if (vote_1_place*vote_2_place-2)*(vote_1_place*vote_3_place-2)*(vote_2_place*vote_3_place-2) == 0:
-                    score += odds_object.umaren
-                    umaren_time += 1
-                    get_scores.append(odds_object.umaren)
-                    if is_latest_week_race:
-                        latest_week_race_score += odds_object.umaren
-                if vote_1_place == 1 and vote_2_place == 2:
-                    score += odds_object.umatan
-                    umatan_time += 1
-                    get_scores.append(odds_object.umatan)
-                    if is_latest_week_race:
-                        latest_week_race_score += odds_object.umatan
-                if sum([1 for v in votes if v in [1, 2]]) >= 2:
-                    score += odds_object.wide_12
-                    wide_time += 1
-                    get_scores.append(odds_object.wide_12)
-                    if is_latest_week_race:
-                        latest_week_race_score += odds_object.wide_12
-                if sum([1 for v in votes if v in [1, 3]]) >= 2:
-                    score += odds_object.wide_13
-                    get_scores.append(odds_object.wide_13)
-                    wide_time += 1
-                    if is_latest_week_race:
-                        latest_week_race_score += odds_object.wide_13
-                if sum([1 for v in votes if v in [2, 3]]) >= 2:
-                    score += odds_object.wide_23
-                    wide_time += 1
-                    get_scores.append(odds_object.wide_23)
-                    if is_latest_week_race:
-                        latest_week_race_score += odds_object.wide_23
-                if sum(votes) == 6:
-                    score += odds_object.trio
-                    trio_time += 1
-                    get_scores.append(odds_object.trio)
-                    if is_latest_week_race:
-                        latest_week_race_score += odds_object.trio
-                if [1, 2, 3] == votes:
-                    score += odds_object.tierce
-                    tierce_time += 1
-                    get_scores.append(odds_object.tierce)
-                    if is_latest_week_race:
-                        latest_week_race_score += odds_object.tierce
-                score_datamu[f'{vote_object.race.race_name}'] = score
-                month_datamu[month] = month_datamu[month]+score
-        time_datamu['tan_time'] = tan_time
-        time_datamu['fuku_time'] = fuku_time
-        time_datamu['umaren_time'] = umaren_time
-        time_datamu['umatan_time'] = umatan_time
-        time_datamu['wide_time'] = wide_time
-        time_datamu['trio_time'] = trio_time
-        time_datamu['tierce_time'] = tierce_time
-        time_datamu['million_time'] = sum(
-            1 for ticket in get_scores if int(ticket) >= 10000)
-        latest_week_race_score_datamu[game_player_object.user.username] = latest_week_race_score
-        hit_time_datamu[game_player_object.user.username] = time_datamu
-        user_datamu[game_player_object.user.username] = score_datamu
-        temporary_month_datamu[game_player_object.user.username] = month_datamu
-    print(temporary_month_datamu)
-
-    month_score_datamu = {}
-    for name, scores in temporary_month_datamu.items():
-        for key, score in scores.items():
-            if type(key) == int:
-                if key not in month_score_datamu.keys():
-                    month_score_datamu[key] = {}
-                month_score_datamu[key][name] = score
-    print(month_score_datamu)
-    calculate_get_month_top = []
-    for key, player_score in month_score_datamu.items():
-        max_score = max(player_score.values())
-        for name, score in player_score.items():
-            if max_score == 0:
-                continue
-            if score == max_score:
-                calculate_get_month_top.append(name)
-
-    for game_player_object in game_player_objects:
-        name = game_player_object.user.username
-        temporary_datamu = {}
-        score = sum(
-            user_datamu[name].values())
-        vote_time = len(user_datamu[name])
-
-        if vote_time:
-            recovery_rate = int(score / (11*vote_time))
-        else:
-            recovery_rate = 0
-        player_hit_info = hit_time_datamu[name]
-        temporary_datamu.update({
-            'name': name,
-            'vote_time': vote_time,
-            'nowscore': score,
-            'recovery_rate': recovery_rate,
-            'latest_week_race_score': latest_week_race_score_datamu[name],
-            "tan_time": player_hit_info['tan_time'],
-            "fuku_time": player_hit_info['fuku_time'],
-            "umaren_time": player_hit_info['umaren_time'],
-            "umatan_time": player_hit_info['umatan_time'],
-            "wide_time": player_hit_info['wide_time'],
-            "trio_time": player_hit_info['trio_time'],
-            "tierce_time": player_hit_info['tierce_time'],
-            "million_time": player_hit_info['million_time'],
-            'get_top_in_month': calculate_get_month_top.count(name)
-
-        })
-
-        game_infomation.append(temporary_datamu)
-    game_infomation = sorted(
-        game_infomation, key=lambda x: x["nowscore"], reverse=True)
-    response_data = []
-    for index, info in enumerate(game_infomation):
-        info["place"] = index + 1
-        response_data.append(info)
-    return user_datamu, response_data
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+from .utils import judge_hit, get_odds, is_latest_week_race, calc_hit_time, calc_monthly_socere, game_info
 
 
 class ApiUIDView(APIView):
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('uid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ユーザーID', required=True),
+            openapi.Parameter('username', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ユーザー名', required=True)
+        ],
+        responses={201: openapi.Response(
+            description="ユーザー作成成功"), 400: openapi.Response(description="不正なリクエスト")}
+    )
     def post(self, request, format=None):
         uid = request.data.get('uid')
         username = request.data.get('username')
@@ -220,6 +44,21 @@ class ApiUIDView(APIView):
 
 
 class ApiNewGameView(APIView):
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('gamename', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ゲーム名', required=True),
+            openapi.Parameter('uid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ユーザーID', required=True),
+            openapi.Parameter('public', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_BOOLEAN, description='公開設定', required=True),
+            openapi.Parameter('span', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_OBJECT, description='ゲーム期間', required=True)
+        ],
+        responses={201: openapi.Response(
+            description="ゲーム作成成功"), 400: openapi.Response(description="不正なリクエスト")}
+    )
     def post(self, request, format=None):
         gamename = request.data.get("gamename")
         uid = request.data.get("uid")
@@ -252,6 +91,15 @@ class ApiNewGameView(APIView):
 
 
 class ApiGameView(APIView):
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('uid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ユーザーID', required=True)
+        ],
+        responses={200: openapi.Response(
+            description="ゲームリストの取得に成功"), 400: openapi.Response(description="不正なリクエスト")}
+    )
     def get(self, request, format=None):
         try:
             uid = request.query_params.get("uid")
@@ -317,6 +165,19 @@ class ApiGameView(APIView):
 
 
 class ApiRaceView(APIView):
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('flag', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='フラグ', required=False),
+            openapi.Parameter('uid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ユーザーID', required=True),
+            openapi.Parameter('gameid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ゲームID', required=True)
+        ],
+        responses={200: openapi.Response(
+            description="レース情報の取得に成功"), 400: openapi.Response(description="不正なリクエスト")}
+    )
     def get(self, request, format=None):
         try:
             flag = request.query_params.get('flag')
@@ -371,6 +232,22 @@ class ApiRaceView(APIView):
 
 
 class ApiVoteView(APIView):
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('grade', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='レースのグレード', required=True),
+            openapi.Parameter('date', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='レース日', required=True),
+            openapi.Parameter('racename', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='レース名', required=True),
+            openapi.Parameter('uid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ユーザーID', required=True),
+            openapi.Parameter('gameid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ゲームID', required=True)
+        ],
+        responses={200: openapi.Response(description="投票データ取得に成功")}
+    )
     def get(self, request, format=None):
         try:
             grade = request.query_params.get('grade')
@@ -462,9 +339,19 @@ class ApiVoteView(APIView):
 
 
 class APIScoreView(APIView):
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('gameid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ゲームID', required=True)
+        ],
+        responses={200: openapi.Response(description="スコアデータ取得に成功")}
+    )
     def get(self, request, format=None):
         try:
-            _, response_data = game_score(request=request)
+            game_id = request.query_params.get("gameid")
+
+            response_data = game_info(game_id=game_id)
 
             return Response(response_data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -474,6 +361,16 @@ class APIScoreView(APIView):
 
 
 class APIUserNameView(APIView):
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('name', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='新しいユーザー名', required=True),
+            openapi.Parameter('uid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ユーザーID', required=True)
+        ],
+        responses={200: openapi.Response(
+            description="ユーザー名更新に成功"), 400: openapi.Response(description="不正なリクエスト")}
+    )
     def put(self, request, format=None):
         try:
             update_name = request.data.get('name')
@@ -488,6 +385,15 @@ class APIUserNameView(APIView):
 
 
 class APIRaceResultView(APIView):
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('racename', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='レース名', required=True),
+            openapi.Parameter('gameid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ゲームID', required=True)
+        ],
+        responses={200: openapi.Response(description="レース結果取得に成功")}
+    )
     def get(self, request, format=None):
         try:
             race_name = request.query_params.get('racename')
@@ -571,6 +477,15 @@ class APIRaceResultView(APIView):
 
 
 class APIAccountView(APIView):
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('uid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ユーザーID', required=True)
+        ],
+        responses={200: openapi.Response(
+            description="アカウント削除に成功"), 400: openapi.Response(description="不正なリクエスト")}
+    )
     def delete(self, request, format=None):
         try:
             uid = request.query_params.get('uid')
