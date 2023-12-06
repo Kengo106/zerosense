@@ -162,6 +162,7 @@ def calc_monthly_socere(player_object):
         month = vote_object.race.race_date.month
 
         odds_list = get_odds(race=vote_object.race)
+        scores = []
         if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
             vote_1_place = HorsePlace.objects.filter(
                 horse=vote_object.horse_first).first().place
