@@ -1,5 +1,7 @@
-from ..models import Race, Horse, HorsePlace, Odds, Vote, Game, GamePlayer
+from ..models import Race, HorsePlace, Odds, Vote, Game, GamePlayer, GameRule
 from datetime import timedelta
+from dateutil.relativedelta import relativedelta
+from django.db.models import Q
 
 # どの馬券が当たったかを判定する
 
@@ -156,66 +158,77 @@ def calc_monthly_socere(player_object):
     vote_objects = Vote.objects.filter(
         game=game_object, user=player_object.user).order_by('-created_at')
 
+    game_span_month = calc_game_span_month(game_object=game_object)
+
     monthly_datam = {}
 
-    for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
-        month = vote_object.race.race_date.month
+    for game_month in game_span_month:
+        month_key = f'{game_month.year}-{game_month.month}'
+        monthly_datam[month_key] = 0  # キーを初期化
+        month_vote_objects = vote_objects.filter(Q(race__race_date__lt=game_month + relativedelta(months=1)) &
+                                                 Q(race__race_date__gte=game_month))
 
-        odds_list = get_odds(race=vote_object.race)
-        scores = []
-        if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
-            vote_1_place = HorsePlace.objects.filter(
-                horse=vote_object.horse_first).first().place
-            vote_2_place = HorsePlace.objects.filter(
-                horse=vote_object.horse_second).first().place
-            vote_3_place = HorsePlace.objects.filter(
-                horse=vote_object.horse_third).first().place
-            votes = [vote_1_place, vote_2_place, vote_3_place]
+        for vote_object in month_vote_objects:  # 各参加者のraceごとの投票を取得
+            odds_list = get_odds(race=vote_object.race)
+            scores = []
+            if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
+                vote_1_place = HorsePlace.objects.filter(
+                    horse=vote_object.horse_first).first().place
+                vote_2_place = HorsePlace.objects.filter(
+                    horse=vote_object.horse_second).first().place
+                vote_3_place = HorsePlace.objects.filter(
+                    horse=vote_object.horse_third).first().place
+                votes = [vote_1_place, vote_2_place, vote_3_place]
 
-            hit_list = judge_hit(votes)
-            scores = [a*b for a, b in zip(hit_list, odds_list)]
+                hit_list = judge_hit(votes)
+                scores = [a*b for a, b in zip(hit_list, odds_list)]
 
-        monthly_datam.setdefault(month, 0)
-        monthly_datam[month] += sum(scores)
+                monthly_datam[month_key] += sum(scores)
 
     return monthly_datam
+
+
+def calc_game_span_month(game_object):
+    start_date = game_object.game_rule.start
+    end_date = game_object.game_rule.end
+    date_tmp = start_date.replace(day=1)
+    game_span_month = []
+
+    while date_tmp <= end_date:
+        game_span_month.append(date_tmp)
+        date_tmp += relativedelta(months=1)
+    print(game_span_month)
+
+    return game_span_month
 
 
 def game_info(game_id):
     game_object = Game.objects.filter(id_for_serch=game_id).first()
     player_objects = GamePlayer.objects.filter(game=game_object)
     game_information = []
+    # game_span_month = calc_game_span_month(game_object=game_object)
+    # month_top_scores = []
+    # for game_month in game_span_month:
+    #     month_key = f'{game_month.year}-{game_month.month}'
+    #     top_scorers = []
+    #     top_score = 0
+    #     for player_object in player_objects:
+    #         tmp_monthly_score_dict = calc_monthly_socere(
+    #             player_object=player_object)
+    #         if top_score < tmp_monthly_score_dict[month_key]:
+    #             top_scorers = [player_object.user.username]
+    #         elif top_score == tmp_monthly_score_dict[month_key]:
+    #             top_scorers.append(player_object.user.username)
+    #     for top_scorer in top_scorers:
+    #         month_top_scores.append(top_scorer)
+
     user_monthly_score_dict = {}
-
-    for player_object in player_objects:
-        monthly_score_dict = calc_monthly_socere(
-            player_object=player_object)
-        user_monthly_score_dict[player_object.user.username] = monthly_score_dict
-
-    month_user_score_dict = {}
-    for user, monthly_score in user_monthly_score_dict.items():
-        for month, score in monthly_score.items():
-            if month not in month_user_score_dict:
-                month_user_score_dict[month] = {}
-            month_user_score_dict[month][user] = score
-
-    get_top_in_month_list = []
-    for month, user_score_dict in month_user_score_dict.items():
-        top_score = max(user_score_dict.values())
-        if top_score != 0:
-            for user, score in user_score_dict.items():
-                if score == top_score:
-                    print(month, score, user)
-                    month
-                    get_top_in_month_list.append(user)
-
     for player_object in player_objects:
         player_data = {}
         hit_time_dict = calc_hit_time(player_object=player_object)
-        monthly_score_dict = calc_monthly_socere(player_object=player_object)
         last_week_score = calc_last_week_score(player_object=player_object)
+        monthly_score_dict = calc_monthly_socere(player_object=player_object)
         user_monthly_score_dict[player_object.user.username] = monthly_score_dict
-        print(monthly_score_dict, player_object.user.username)
 
         player_data = {
             'name': player_object.user.username,
@@ -231,10 +244,28 @@ def game_info(game_id):
             'trio_time': hit_time_dict['trio_time'],
             'tierce_time': hit_time_dict['tierce_time'],
             'million_time': hit_time_dict['million_time'],
-            'get_top_in_month': sum([1 for i in get_top_in_month_list if i == player_object.user.username]),
+
         }
 
         game_information.append(player_data)
+
+    game_span_month = calc_game_span_month(game_object=game_object)
+    month_top_scores = []
+    for game_month in game_span_month:
+        month_key = f'{game_month.year}-{game_month.month}'
+        top_scorers = []
+        top_score = 0
+        for player_object in player_objects:
+            player_score = user_monthly_score_dict[player_object.user.username][month_key]
+            if top_score < player_score:
+                top_scorers = [player_object.user.username]
+                top_score = player_score
+            elif top_score == player_score and player_score != 0:
+                top_scorers.append(player_object.user.username)
+            print(month_key, top_scorers, top_score)
+        for top_scorer in top_scorers:
+            month_top_scores.append(top_scorer)
+    print(month_top_scores)
 
     game_information = sorted(
         game_information, key=lambda x: x['nowscore'], reverse=True)
@@ -242,5 +273,7 @@ def game_info(game_id):
     # ランキング位置を更新
     for index, info in enumerate(game_information):
         info['place'] = index + 1
+        info['get_top_in_month'] = sum(
+            [1 for i in month_top_scores if i == info['name']])
 
     return game_information
