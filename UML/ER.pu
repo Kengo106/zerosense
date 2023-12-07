@@ -1,4 +1,4 @@
-@startuml 20231007_ER図
+@startuml 20231206_ER図
 
 
 entity HorsePlace {
@@ -8,6 +8,7 @@ entity HorsePlace {
   place
   ==
   レース結果
+  各馬の順位を表す
 }
 
 entity User {
@@ -16,7 +17,7 @@ entity User {
   # uid [FK]
   username
   ==
-  ゼロセンスユーザー
+  ユーザー
 }
 
 entity FirebaseUser {
@@ -26,7 +27,7 @@ entity FirebaseUser {
   username
   ==
   Firebase上に用意している
-  ゼロセンスユーザーDB
+  ユーザーDB
 }
 
 entity Game {
@@ -34,7 +35,7 @@ entity Game {
   --
   # game_rule [FK] NULL=TRUE
   name
-  start_datetime
+  start_datetime ゲームを作成した日
   id_for_serch
   ==
   大会
@@ -43,8 +44,8 @@ entity Game {
 entity GameRule {
   + id [PK]
   --
-  start
-  end
+  start 大会の開始日
+  end 大会の終了日
   open
   logic_id
   ==
@@ -79,8 +80,7 @@ entity Race{
   ==
   投票対象のレース名
   grade(GⅢなど)を取得する  
-  投票受付中ならis_votable
-  が1終了なら0
+  投票ステータスを管理する等
 }
 
 entity Horse {
@@ -108,6 +108,7 @@ entity Odds {
   trio
   tierce
   ==
+  オッズ
   払い戻し金を取得する
 }
 
@@ -120,6 +121,7 @@ entity GameComment {
   created_at
   ==
   大会に対するコメント
+  (未実装)
 }
 
 entity GamePlayers {
@@ -128,7 +130,7 @@ entity GamePlayers {
   # game [FK]
   # user [FK]
   ==
-  大会の参加者を登録する
+  大会の参加者
 }
 
 Race ||--|| Odds
