@@ -45,6 +45,7 @@ jobs:
 # 静的ファイルの収集
       - name: Collect static files
         run: |
+          ls
           cd ../
           ls
           python manage.py collectstatic --noinput
