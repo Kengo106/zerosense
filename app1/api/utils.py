@@ -206,21 +206,6 @@ def game_info(game_id):
     game_object = Game.objects.filter(id_for_serch=game_id).first()
     player_objects = GamePlayer.objects.filter(game=game_object)
     game_information = []
-    # game_span_month = calc_game_span_month(game_object=game_object)
-    # month_top_scores = []
-    # for game_month in game_span_month:
-    #     month_key = f'{game_month.year}-{game_month.month}'
-    #     top_scorers = []
-    #     top_score = 0
-    #     for player_object in player_objects:
-    #         tmp_monthly_score_dict = calc_monthly_socere(
-    #             player_object=player_object)
-    #         if top_score < tmp_monthly_score_dict[month_key]:
-    #             top_scorers = [player_object.user.username]
-    #         elif top_score == tmp_monthly_score_dict[month_key]:
-    #             top_scorers.append(player_object.user.username)
-    #     for top_scorer in top_scorers:
-    #         month_top_scores.append(top_scorer)
 
     user_monthly_score_dict = {}
     for player_object in player_objects:
