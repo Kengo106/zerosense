@@ -46,8 +46,6 @@ jobs:
       - name: Collect static files
         run: |
           ls
-          cd ../
-          ls
           python manage.py collectstatic --noinput
 
       # App Engineへのデプロイ
