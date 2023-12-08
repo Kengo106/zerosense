@@ -59,6 +59,8 @@ jobs:
           echo "  DATABASE_PORT: '${{ secrets.DATABASE_PORT }}'" >> .env
           echo "  DJANGO_DEBUG: '${{ secrets.DJANGO_DEBUG }}'" >> .env
 
+      # GCPキーを作成
+
       - name: Auth with Google Cloud
         run: |
           echo "${{ secrets.GCLOUD_AUTH }}" > gcloud.json
