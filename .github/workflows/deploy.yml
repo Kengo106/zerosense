@@ -14,9 +14,6 @@ jobs:
       matrix:
         python-version: [3.11]
     # python環境のインストール
-    environment:
-      - name: DATABASE
-
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -28,13 +25,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           # DB設定のインポート
-        env:
-          DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-          DATABASE_USER: ${{ secrets.DATABASE_USER }}
-          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-          DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
-          DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
-          DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}
+        # env:
+        #   DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+        #   DATABASE_USER: ${{ secrets.DATABASE_USER }}
+        #   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+        #   DATABASE_HOST: ${{ secrets.DATABASE_HOST }}
+        #   DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+        #   DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}
 
       # Angularのビルド
       - name: Install Angular CLI
@@ -55,12 +52,12 @@ jobs:
         run: |
           echo "runtime: python39" > .env
           echo "env_variables:" >> .env
-          echo "  DATABASE_NAME: '${{ secrets.DATABASE_NAME }}'" >> .env
-          echo "  DATABASE_USER: '${{ secrets.DATABASE_USER }}'" >> .env
-          echo "  DATABASE_PASSWORD: '${{ secrets.DATABASE_PASSWORD }}'" >> .env
-          echo "  DATABASE_HOST: '${{ secrets.DATABASE_HOST }}'" >> .env
-          echo "  DATABASE_PORT: '${{ secrets.DATABASE_PORT }}'" >> .env
-          echo "  DJANGO_DEBUG: '${{ secrets.DJANGO_DEBUG }}'" >> .env
+          echo "DATABASE_NAME: ${{ secrets.DATABASE_NAME }}" >> .env
+          echo "DATABASE_USER: ${{ secrets.DATABASE_USER }}" >> .env
+          echo "DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}" >> .env
+          echo "DATABASE_HOST: ${{ secrets.DATABASE_HOST }}" >> .env
+          echo "DATABASE_PORT: ${{ secrets.DATABASE_PORT }}" >> .env
+          echo "DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}" >> .env
 
       # GCPキーを作成
       - name: Auth with Google Cloud
