@@ -1,11 +1,8 @@
-from django.test import TestCase
-from ..models import User, Game, GameRule, Race, Horse, HorsePlace, Vote, Odds
-from django.test import RequestFactory
-from datetime import date, timedelta
+from django.test import SimpleTestCase
 from .utils import judge_hit
 
 
-class JudgeHitTest(TestCase):
+class JudgeHitTest(SimpleTestCase):
     '''
     scores = [tan,fuku1,fuku2,fuku3,umaren,umatan,wide12,wide13,wide23,trio,teirce]
 
