@@ -7,13 +7,13 @@ on:
 
 jobs:
   build:
-  # 実行環境の指定
+    # 実行環境の指定
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
         python-version: [3.11]
-# python環境のインストール
+    # python環境のインストール
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
@@ -42,11 +42,27 @@ jobs:
           npm install
           ng build
 
-# 静的ファイルの収集
+      # 静的ファイルの収集
       - name: Collect static files
         run: |
           ls
           python manage.py collectstatic --noinput
+
+      - name: Create .env
+        run: |
+          echo "runtime: python39" > .env
+          echo "env_variables:" >> .env
+          echo "  DATABASE_NAME: '${{ secrets.DATABASE_NAME }}'" >> .env
+          echo "  DATABASE_USER: '${{ secrets.DATABASE_USER }}'" >> .env
+          echo "  DATABASE_PASSWORD: '${{ secrets.DATABASE_PASSWORD }}'" >> .env
+          echo "  DATABASE_HOST: '${{ secrets.DATABASE_HOST }}'" >> .env
+          echo "  DATABASE_PORT: '${{ secrets.DATABASE_PORT }}'" >> .env
+          echo "  DJANGO_DEBUG: '${{ secrets.DJANGO_DEBUG }}'" >> .env
+
+      - name: Auth with Google Cloud
+        run: |
+          echo "${{ secrets.GCLOUD_AUTH }}" > gcloud.json
+          gcloud auth activate-service-account --key-file=gcloud.json
 
       # App Engineへのデプロイ
       - name: Deploy to App Engine
