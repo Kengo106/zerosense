@@ -1,0 +1,51 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+###############################################################################
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pythonのセットアップ
+      - name: Set up Python
+        uses: actions/djanog
+        with:
+          python-version: "3.x"
+
+      # 依存関係のインストール
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # テストの実行
+      - name: Run tests
+        run: python manage.py test
+
+      # Angularのビルド
+      - name: Build Angular
+        run: |
+          cd angular_project_directory
+          npm install
+          ng build
+
+      # 静的ファイルの収集
+      - name: Collect static files
+        run: python manage.py collectstatic --noinput
+
+      # App Engineへのデプロイ
+      - name: Deploy to App Engine
+        run: gcloud app deploy
+        env:
+          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+
+    # 必要に応じて環境変数や秘密情報を設定
+    # secretsはGitHubリポジトリのSettings > Secretsで設定
