@@ -1,9 +1,0 @@
-{
-  "hosting": [
-    {
-      "target": "angular_app",
-      "source": ".",
-      "frameworksBackend": {}
-    }
-  ]
-}
