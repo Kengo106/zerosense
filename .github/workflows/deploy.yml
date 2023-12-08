@@ -46,8 +46,9 @@ jobs:
       - name: Collect static files
         run: |
           cd ../
+          ls
           python manage.py collectstatic --noinput
 
       # App Engineへのデプロイ
       - name: Deploy to App Engine
-        run: gcloud app deploy
+        run: gcloud app deploy -q
