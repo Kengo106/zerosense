@@ -1,0 +1,20 @@
+<div class="container">
+  <span class="title">アカウントの削除</span>
+  <form (ngSubmit)="deleteAccount()" class="forms">
+    <span class="serch-box">
+      <label for="name" class="left">パスワード</label>
+      <span class="text-box">
+        <input
+          class="text"
+          type="text"
+          name="password"
+          id="password"
+          [(ngModel)]="password"
+          placeholder="password"
+          required
+        />
+      </span>
+    </span>
+    <button type="submit">削除</button>
+  </form>
+</div>

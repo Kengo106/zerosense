@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "zerosence": {
+      "hosting": {
+        "angular_app": [
+          "zerosence"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "zerosence"
+  }
+}

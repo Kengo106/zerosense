@@ -1,0 +1,206 @@
+$green: #268300;
+$grade: #00695c;
+$cellline: #ddd;
+$header: #37474f;
+$tablehover: #f0f0f0;
+$containerline: #1fac37;
+$slash: #797979cd;
+$canclickblue: #0066aa;
+$icon: #188542;
+$date: #1b521f;
+
+.grade {
+    background-color: $grade;
+    color: white;
+    padding: 5px 5px 4px 5px;
+    margin: 10px;
+    border-radius: 5px;
+    font-size: small;
+    letter-spacing: -2px;
+}
+
+.big {
+    font-size: 5vw; // ビューポートの幅に応じて文字サイズを調整
+    white-space: nowrap;
+}
+
+.racename {
+    display: inline-block;
+    font-weight: 700;
+    padding: 5px 10px 5px 5px;
+    margin: 0px;
+}
+
+.center-text {
+    text-align: center;
+    display: block; // この行を追加して、spanをブロック要素として表示
+    align-items: center;
+}
+
+.table {
+    width: calc(100% - 20px); // コンテナの幅を設定
+    overflow-x: auto !important;
+    margin: 0 10px 0 10px;
+    overflow-x: hidden;
+
+    table {
+        padding: 10px;
+        border-collapse: collapse; // セルのボーダーを一つにまとめる
+        background-color: white;
+
+        th,
+        td {
+            border: 1px solid #ddd; // セルのボーダーを設定
+            padding: 0px 0px; // セルの内側の余白を設定
+            text-align: center; // テキストを中央に配置
+
+            &.place {
+                // 順位の列
+                width: 50px;
+                min-width: 50px;
+            }
+
+            &.horse {
+                // 出走馬の列
+                width: 200px;
+                min-width: 200px;
+            }
+
+            .participant {
+                // 3番目以降の列
+                width: 100px;
+                min-width: 100px;
+            }
+        }
+
+        thead {
+            background-color: $header; // ヘッダーの背景色を設定
+
+            th {
+                font-weight: bold; // ヘッダーのテキストを太字にする
+                color: white;
+                padding: 5px;
+            }
+        }
+
+        tbody tr:hover {
+            background-color: $tablehover; // ホバー時の背景色を設定
+        }
+
+        &.payout {
+            th,
+            td {
+                &.ticket {
+                    // 1番目の列
+                    width: 50px;
+                    min-width: 50px;
+                }
+
+                &.price {
+                    // 2番目の列
+                    width: 200px;
+                    min-width: 200px;
+                }
+            }
+        }
+    }
+}
+
+.container.racelist {
+    .flex-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 1px 3px rgba(0, 0, 0, 0.1);
+        margin: 7px;
+    }
+    .racename {
+        color: $canclickblue;
+        font-weight: 700;
+        display: inline-block;
+        width: 200px;
+        font-size: 3vw; // ビューポートの幅に応じて文字サイズを調整
+        white-space: nowrap;
+        &.vote0 {
+            color: rgba(0, 0, 0, 0.696);
+        }
+    }
+
+    .icon {
+        color: $icon;
+        display: inline-block;
+        width: 15px;
+        margin-left: 5px;
+    }
+
+    button {
+        display: inline-block;
+        width: 70px;
+        margin-right: 10px;
+    }
+
+    .votetime {
+        margin-right: 10px;
+    }
+}
+
+.pastrace {
+    .icon {
+        color: $icon;
+        display: inline-block;
+        width: 15px;
+    }
+
+    .here {
+        color: $canclickblue;
+        font-weight: 700;
+        display: inline-block;
+        width: 200px;
+        font-size: 3vw; // ビューポートの幅に応じて文字サイズを調整
+        white-space: nowrap;
+    }
+}
+
+.comment .flex-box {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 1px 3px rgba(0, 0, 0, 0.1);
+    height: 40px;
+    padding: 5px;
+    margin: 3px;
+
+    .content {
+        display: flex;
+        margin: 10 5px;
+        align-items: stretch;
+        margin-left: 10px;
+        width: calc(100% - 20px); // コンテナの幅を設定
+        overflow-x: auto !important;
+        padding: 10px 0px;
+    }
+
+    .name {
+        display: flex;
+        border-right: 1px dashed $slash;
+        align-self: stretch;
+        align-items: center;
+        margin-left: 5px;
+        padding-right: 5px;
+        width: 100px;
+        font-weight: 700;
+        overflow-x: auto !important;
+        padding: 10px 0px;
+    }
+}
+
+.goback {
+    .text {
+        color: $canclickblue;
+        font-weight: 700;
+    }
+}

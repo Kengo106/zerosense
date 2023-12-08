@@ -1,0 +1,74 @@
+name: Deploy
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.11]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Build Angular
+        run: |
+          cd angular_app_sourse
+          npm install
+          ng build
+
+      - name: Collect static files
+        run: python manage.py collectstatic --noinput
+
+      - name: Create app.yaml
+        run: |
+          echo 'service: default' > app.yaml
+          echo 'runtime: python311' >> app.yaml
+          echo 'env_variables:' >> app.yaml
+          echo "  MODE: production" >> app.yaml
+          echo "  DATABASE_NAME: ${{ secrets.DATABASE_NAME }}" >> app.yaml
+          echo "  DATABASE_USER: ${{ secrets.DATABASE_USER }}" >> app.yaml
+          echo "  DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}" >> app.yaml
+          echo "  DATABASE_HOST: ${{ secrets.DATABASE_HOST }}" >> app.yaml
+          echo "  DATABASE_PORT: ${{ secrets.DATABASE_PORT }}" >> app.yaml
+          echo "  DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}" >> app.yaml
+          echo 'instance_class: F1' >> app.yaml
+          echo 'handlers:' >> app.yaml
+          echo '- url: /static' >> app.yaml
+          echo '  static_dir: static/' >> app.yaml
+          echo '- url: /.*' >> app.yaml
+          echo '  script: auto' >> app.yaml
+          echo 'entrypoint: gunicorn -b :$PORT zerosence.wsgi' >> app.yaml
+          echo 'inbound_services:' >> app.yaml
+          echo '- warmup' >> app.yaml
+          echo 'automatic_scaling:' >> app.yaml
+          echo '  target_cpu_utilization: 0.8' >> app.yaml
+          echo '  target_throughput_utilization: 0.8' >> app.yaml
+
+      - name: Auth with Google Cloud
+        run: |
+          echo "${{ secrets.GCLOUD_AUTH }}" > gcloud.json
+          gcloud auth activate-service-account --key-file=gcloud.json
+
+      - name: Deploy to App Engine
+        run: gcloud app deploy app.yaml -q
+        env:
+          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}

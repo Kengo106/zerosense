@@ -1,0 +1,150 @@
+@startuml 20231206_ER図
+
+
+entity HorsePlace {
+  + id [PK]
+  --
+  # horse [FK]
+  place
+  ==
+  レース結果
+  各馬の順位を表す
+}
+
+entity User {
+  + id [PK]
+  --
+  # uid [FK]
+  username
+  ==
+  ユーザー
+}
+
+entity FirebaseUser {
+  + UID [PK]
+  --
+  adress 
+  username
+  ==
+  Firebase上に用意している
+  ユーザーDB
+}
+
+entity Game {
+  + id [PK]
+  --
+  # game_rule [FK] NULL=TRUE
+  name
+  start_datetime ゲームを作成した日
+  id_for_serch
+  ==
+  大会
+}
+
+entity GameRule {
+  + id [PK]
+  --
+  start 大会の開始日
+  end 大会の終了日
+  open
+  logic_id
+  ==
+  大会のルール
+}
+
+entity Vote {
+  + id [PK]
+  --
+  # user [FK]
+  # race [FK]
+  # game [FK]
+  # horse_first [FK]
+  # horse_second [FK]
+  # horse_third [FK]
+  created_at
+  comment
+  ==
+  投票
+  投票時点で大会に参加
+  ユーザーと大会を紐づける
+}
+
+entity Race{
+  + id [PK]
+  --
+  race_name
+  rank
+  race_date
+  start_time
+  is_votable
+  ==
+  投票対象のレース名
+  grade(GⅢなど)を取得する  
+  投票ステータスを管理する等
+}
+
+entity Horse {
+  + id [PK]
+  --
+  # race [FK] 
+  horse_name NULL=TRUE
+  ==
+  大会の出走馬
+}
+
+entity Odds {
+  + id [PK]
+  --
+  # race [FK]
+  tan
+  fuku_1
+  fuku_2
+  fuku_3
+  umaren
+  umatan
+  wide_12
+  wide_13
+  wide_23
+  trio
+  tierce
+  ==
+  オッズ
+  払い戻し金を取得する
+}
+
+entity GameComment {
+  + id [PK]
+  --
+  # game [FK]
+  # user [FK]
+  comment_text
+  created_at
+  ==
+  大会に対するコメント
+  (未実装)
+}
+
+entity GamePlayers {
+  + id [PK]
+  --
+  # game [FK]
+  # user [FK]
+  ==
+  大会の参加者
+}
+
+Race ||--|| Odds
+User ||--o{ Vote
+Horse }--o{ Vote
+Race ||--o{ Vote
+Game ||--o{ Vote
+Race ||--{ Horse
+User ||--o{ GameComment
+Game ||--o{ GameComment
+GameRule ||--o{ Game
+HorsePlace ||--|| Horse
+FirebaseUser ||..|| User
+Game ||--|{ GamePlayers
+User ||--o{ GamePlayers
+@enduml
+

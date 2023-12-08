@@ -1,0 +1,25 @@
+
+<h1>テスト画面</h1>
+<h3>すべてのレース一覧</h3>
+<div *ngIf="AllRace; then votableBlock else noVotable"></div>
+    <ng-template #votableBlock>
+        <table>
+            <tbody>
+                <tr *ngFor="let race of AllRace" (click)="moveVote(race,game)">
+                        <td>{{race.date}}</td>
+                        <td>{{race.name}}</td>
+                        <td>{{race.grade}}</td>
+                        <div *ngIf="race.voted;then votedBlock else noVoted"></div>
+                        <ng-template #votedBlock>
+                        <td><button>更新する</button></td>
+                    </ng-template>
+                    <ng-template #noVoted>
+                        <td><button class="no-voted">投票する</button></td>
+                    </ng-template>
+                </tr>
+            </tbody>
+        </table>
+    </ng-template>
+    <ng-template #noVotable>
+        投票対象のレースがありません        
+   </ng-template>

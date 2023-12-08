@@ -1,0 +1,36 @@
+<div class="container">
+  <div *ngIf="isLogin; then login; else nologin"></div>
+  <ng-template #login>
+    <span class="title">参加中の大会</span>
+
+    <div *ngIf="gameNumber; then game; else noGame"></div>
+    <ng-template #game>
+      <span *ngFor="let game of games"
+        ><span class="game"
+          ><div class="item gamename" (click)="moveGameMain(game)">
+            <span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i></span>
+            <span class="name">{{ game.gamename }}</span>
+          </div>
+          <div class="item copyid">
+            <span ngxClipboard [cbContent]="game.id" (click)="copyID(game.id)"> Copy ID </span>
+          </div>
+        </span>
+      </span>
+    </ng-template>
+    <ng-template #noGame class="noGame">
+      <span class="flex-box noGame"> 参加中の大会がありません </span>
+
+      <span class="flex-box joingame" routerLink="/joingame"
+        ><span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i></span
+        ><span class="text">大会に参加する</span></span
+      >
+      <span class="flex-box newgame" routerLink="/newgame"
+        ><span class="icon"> <i class="fa fa-chevron-circle-right" aria-hidden="true"></i></span
+        ><span class="text">大会を作成する</span></span
+      >
+    </ng-template>
+  </ng-template>
+  <ng-template #nologin>
+    <h2><a routerLink="/account/login"></a></h2>
+  </ng-template>
+</div>
