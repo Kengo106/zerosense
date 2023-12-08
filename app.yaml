@@ -2,8 +2,6 @@ service: default
 runtime: python311
 env_variables:
   MODE: production
-  # DATABASE_URL: "postgres://kengo:5W69E2yH7X@develop-matsushima:asia-northeast1:develop/zerosense"
-  # DATABASE_URL: "postgres://kengo:5W69E2yH7X@/cloudsql/develop-matsushima:asia-northeast1:develop/zerosense"
   DATABASE_NAME: "zerosense"
   DATABASE_USER: "kengo"
   DATABASE_PASSWORD: "5W69E2yH7X"
@@ -20,15 +18,6 @@ handlers:
   - url: /.*
     script: auto
 
-# - url: /.*
-#   static_files: staticfile/angular_app/index.html
-#   upload: staticfile/angular_app/index.html
-
-# handlers: # urlにアクセスしたときの処理
-#   - url: /static # setting.pyに指定したurlと同じものを書く
-#     static_dir: staticfile/angular_app/ # staticfileのルートからのパスを設定する
-# #     secure: always
-# #     script: auto
 entrypoint: gunicorn -b :$PORT zerosence.wsgi #wsgiを起動するため
 
 inbound_services:
