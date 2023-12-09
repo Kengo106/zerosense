@@ -1,0 +1,9 @@
+/zerosence/.env
+**/__pycache__/
+/static/drf-yasg/
+app.yaml
+/debug.log
+/y/
+/static/
+/dist/
+
