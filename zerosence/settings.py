@@ -171,7 +171,5 @@ CSRF_COOKIE_NAME = 'csrftoken'  # デフォルト
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # デフォルト
 
 print("あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ")
-print('STATIC_ROOT:', STATIC_ROOT)
-print('STATIC_URL:', STATIC_URL)
-print("STATICFILES_DIRS:", STATICFILES_DIRS)
+print(DATABASES)
 print("あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ")
