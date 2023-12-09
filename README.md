@@ -21,6 +21,18 @@ url:https://develop-matsushima.an.r.appspot.com/
   - Cloud SQL
 - Github actions
 - Firebase
+
+## 画面構成
+<img width="400" alt="ログイン" src="https://github.com/Kengo106/zerosense/assets/131678198/1e25d9e9-7a36-4887-b6f8-348f166a627a">
+<br>
+<img width="400" alt="新規登録" src="https://github.com/Kengo106/zerosense/assets/131678198/0a2b733f-ee92-4dca-b7bf-4d612bb767ef">
+<br>
+<img width="400" alt="大会選択画面" src="https://github.com/Kengo106/zerosense/assets/131678198/34741867-6681-44ed-a902-4c7bc7204e5c">
+<br>
+<img width="400" alt="大会メイン画面" src="https://github.com/Kengo106/zerosense/assets/131678198/190123f7-f5d6-41d4-9ed4-4b7165600c75">
+<br>
+<img width="400" alt="投票" src="https://github.com/Kengo106/zerosense/assets/131678198/9a60db5f-ffd6-4646-84e6-002e5b856e6a">
+
 ## インフラ構成図
 
 ![インフラ構成図_20231209 drawio](https://github.com/Kengo106/zerosense/assets/131678198/da78d697-a11a-475e-86a7-b5dcaf93c1d0)
