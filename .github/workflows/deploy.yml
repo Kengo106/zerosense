@@ -64,10 +64,11 @@ jobs:
           echo '  target_cpu_utilization: 0.8' >> app.yaml
           echo '  target_throughput_utilization: 0.8' >> app.yaml
 
-      - name: Auth with Google Cloud
+      - name: Setup GCloud Auth
+        env:
+          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
         run: |
-          echo ${{ secrets.GCLOUD_AUTH }} > gcloud.json
-          echo "${{ secrets.GCLOUD_AUTH }}"
+          echo "$GCLOUD_AUTH" > gcloud.json
           gcloud auth activate-service-account --key-file=gcloud.json
 
       - name: Deploy to App Engine
