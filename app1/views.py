@@ -39,12 +39,29 @@ class FinishVoteView(View):
         now_date = jst_now.date()
         print(jst_now, now_date)
         vote_deadline_plusone = (jst_now + timedelta(hours=1)).time()
-        races = Race.objects.filter(
-            Q(race_date=now_date) &
-            Q(start_time__lte=vote_deadline_plusone)
-        )
+        if jst_now.time() > vote_deadline_plusone:
+            races = Race.objects.filter(
+                Q(race_date=now_date)
+            )
+        else:
+            races = Race.objects.filter(
+                Q(race_date=now_date)
+                & Q(start_time__lte=vote_deadline_plusone)
+            )
+        print(len(races))
+
         for race in races:
+            print(race.race_name)
             race.is_votable = 2
+            race.save()
+
+        past_race_date = (now_date - timedelta(days=4))
+        print(past_race_date)
+        past_races = Race.objects.filter(
+            Q(race_date__lte=past_race_date)
+        )
+        for race in past_races:
+            race.is_votable = 0
             race.save()
         return render(request, 'finish.html')
 
