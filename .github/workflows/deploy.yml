@@ -44,12 +44,14 @@ jobs:
           echo 'runtime: python311' >> app.yaml
           echo 'env_variables:' >> app.yaml
           echo "  MODE: production" >> app.yaml
+          echo "  MODE: production" # test
           echo "  DATABASE_NAME: ${{ secrets.DATABASE_NAME }}" >> app.yaml
           echo "  DATABASE_USER: ${{ secrets.DATABASE_USER }}" >> app.yaml
           echo "  DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}" >> app.yaml
           echo "  DATABASE_HOST: ${{ secrets.DATABASE_HOST }}" >> app.yaml
           echo "  DATABASE_PORT: ${{ secrets.DATABASE_PORT }}" >> app.yaml
           echo "  DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}" >> app.yaml
+          echo "  DJANGO_DEBUG: ${{ secrets.DJANGO_DEBUG }}" # test
           echo 'instance_class: F1' >> app.yaml
           echo 'handlers:' >> app.yaml
           echo '- url: /static' >> app.yaml
@@ -62,6 +64,9 @@ jobs:
           echo 'automatic_scaling:' >> app.yaml
           echo '  target_cpu_utilization: 0.8' >> app.yaml
           echo '  target_throughput_utilization: 0.8' >> app.yaml
+
+          echo ' import os \n os.environ['my_secret_token']' >> print.py
+          python
 
       - name: Auth with Google Cloud
         run: |
