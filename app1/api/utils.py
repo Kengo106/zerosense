@@ -80,21 +80,22 @@ def calc_last_week_score(player_object):
     last_week_score = 0
 
     for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
-        scores = []
-        if is_latest_week_race(vote_object.race.id):
-            odds_list = get_odds(race=vote_object.race)
-            if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
-                vote_1_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_first).first().place
-                vote_2_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_second).first().place
-                vote_3_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_third).first().place
-                votes = [vote_1_place, vote_2_place, vote_3_place]
+        if Odds.objects.filter(race=vote_object.race).exists():
+            scores = []
+            if is_latest_week_race(vote_object.race.id):
+                odds_list = get_odds(race=vote_object.race)
+                if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
+                    vote_1_place = HorsePlace.objects.filter(
+                        horse=vote_object.horse_first).first().place
+                    vote_2_place = HorsePlace.objects.filter(
+                        horse=vote_object.horse_second).first().place
+                    vote_3_place = HorsePlace.objects.filter(
+                        horse=vote_object.horse_third).first().place
+                    votes = [vote_1_place, vote_2_place, vote_3_place]
 
-                hit_list = judge_hit(votes)
-                scores = [a*b for a, b in zip(hit_list, odds_list)]
-            last_week_score += sum(scores)
+                    hit_list = judge_hit(votes)
+                    scores = [a*b for a, b in zip(hit_list, odds_list)]
+                last_week_score += sum(scores)
 
     return last_week_score
 
@@ -114,30 +115,33 @@ def calc_hit_time(player_object):
     trio_time = 0
     tierce_time = 0
     million_time = 0
+    vote_time = 0
 
     for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
-        odds_list = get_odds(race=vote_object.race)
-        if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
-            vote_1_place = HorsePlace.objects.filter(
-                horse=vote_object.horse_first).first().place
-            vote_2_place = HorsePlace.objects.filter(
-                horse=vote_object.horse_second).first().place
-            vote_3_place = HorsePlace.objects.filter(
-                horse=vote_object.horse_third).first().place
-            votes = [vote_1_place, vote_2_place, vote_3_place]
+        if Odds.objects.filter(race=vote_object.race).exists():
+            odds_list = get_odds(race=vote_object.race)
+            vote_time += 1
+            if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
+                vote_1_place = HorsePlace.objects.filter(
+                    horse=vote_object.horse_first).first().place
+                vote_2_place = HorsePlace.objects.filter(
+                    horse=vote_object.horse_second).first().place
+                vote_3_place = HorsePlace.objects.filter(
+                    horse=vote_object.horse_third).first().place
+                votes = [vote_1_place, vote_2_place, vote_3_place]
 
-            hit_list = judge_hit(votes)
-            scores = [a*b for a, b in zip(hit_list, odds_list)]
+                hit_list = judge_hit(votes)
+                scores = [a*b for a, b in zip(hit_list, odds_list)]
 
-        tan_time += hit_list[0]
-        fuku_time += sum(hit_list[1:4])
-        umaren_time += hit_list[4]
-        umatan_time += hit_list[5]
-        wide_time += sum(hit_list[6:9])
-        trio_time += hit_list[9]
-        tierce_time += hit_list[10]
-        million_time += sum(
-            1 for ticket in scores if int(ticket) >= 10000)
+            tan_time += hit_list[0]
+            fuku_time += sum(hit_list[1:4])
+            umaren_time += hit_list[4]
+            umatan_time += hit_list[5]
+            wide_time += sum(hit_list[6:9])
+            trio_time += hit_list[9]
+            tierce_time += hit_list[10]
+            million_time += sum(
+                1 for ticket in scores if int(ticket) >= 10000)
     time_datamu['tan_time'] = tan_time
     time_datamu['fuku_time'] = fuku_time
     time_datamu['umaren_time'] = umaren_time
@@ -146,7 +150,7 @@ def calc_hit_time(player_object):
     time_datamu['trio_time'] = trio_time
     time_datamu['tierce_time'] = tierce_time
     time_datamu['million_time'] = million_time
-    time_datamu['vote_time'] = len(vote_objects)
+    time_datamu['vote_time'] = vote_time
 
     return time_datamu
 
@@ -169,21 +173,23 @@ def calc_monthly_socere(player_object):
                                                  Q(race__race_date__gte=game_month))
 
         for vote_object in month_vote_objects:  # 各参加者のraceごとの投票を取得
-            odds_list = get_odds(race=vote_object.race)
-            scores = []
-            if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
-                vote_1_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_first).first().place
-                vote_2_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_second).first().place
-                vote_3_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_third).first().place
-                votes = [vote_1_place, vote_2_place, vote_3_place]
+            if Odds.objects.filter(race=vote_object.race).exists():
 
-                hit_list = judge_hit(votes)
-                scores = [a*b for a, b in zip(hit_list, odds_list)]
+                odds_list = get_odds(race=vote_object.race)
+                scores = []
+                if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
+                    vote_1_place = HorsePlace.objects.filter(
+                        horse=vote_object.horse_first).first().place
+                    vote_2_place = HorsePlace.objects.filter(
+                        horse=vote_object.horse_second).first().place
+                    vote_3_place = HorsePlace.objects.filter(
+                        horse=vote_object.horse_third).first().place
+                    votes = [vote_1_place, vote_2_place, vote_3_place]
 
-                monthly_datam[month_key] += sum(scores)
+                    hit_list = judge_hit(votes)
+                    scores = [a*b for a, b in zip(hit_list, odds_list)]
+
+                    monthly_datam[month_key] += sum(scores)
 
     return monthly_datam
 
