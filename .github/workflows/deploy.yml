@@ -74,4 +74,3 @@ jobs:
         run: gcloud app deploy app.yaml -q
         env:
           GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
-#
