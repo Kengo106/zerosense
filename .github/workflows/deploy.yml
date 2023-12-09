@@ -67,6 +67,7 @@ jobs:
       - name: Auth with Google Cloud
         run: |
           echo "${{ secrets.GCLOUD_AUTH }}" > gcloud.json
+          echo "${{ secrets.GCLOUD_AUTH }}"
           gcloud auth activate-service-account --key-file=gcloud.json
 
       - name: Deploy to App Engine
