@@ -35,7 +35,8 @@ url:https://develop-matsushima.an.r.appspot.com/
 ![20231206_ER図](https://github.com/Kengo106/zerosense/assets/131678198/29443331-19ca-4f19-a4ac-b33c991bcdb7)
 ## 画面遷移図
 
-![画面遷移図_20231210](https://github.com/Kengo106/zerosense/assets/131678198/f66c3220-d0fa-4487-9660-0aafa7a5aefe)
+![画面遷移図_20231213](https://github.com/Kengo106/zerosense/assets/131678198/400e1c29-f733-4b14-abb0-274c5eaff2b6)
+
 
 ## 画面一覧
 | 画面名   |説明| 画面 |
