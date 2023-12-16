@@ -1,4 +1,4 @@
-from ..models import Race, HorsePlace, Odds, Vote, Game, GamePlayer, GameRule
+from .models import Race, HorsePlace, Odds, Vote, Game, GamePlayer, GameRule
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views import View
-from .models import Race
+from .api.models import Race
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Q
