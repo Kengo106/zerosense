@@ -12,44 +12,62 @@ const apiUrl = environment.apiUrl;
 export class RaceService {
     constructor(private http: HttpClient) {}
 
+    // 修正済み↓
     postUID(uid: string, username: string) {
-        return this.http.post<any>(this.UIDUrl, { uid: uid, username: username });
+        return this.http.post<any>(this.userUrl, { uid: uid, username: username });
     }
-
+    // 修正済み↓
+    updateUserName(name: string, uid: string) {
+        const url = `${this.userUrl}${uid}/`;
+        return this.http.put(url, { name: name });
+    }
+    // 修正済み↓
+    deleteAccount(uid: string) {
+        const url = `${this.userUrl}${uid}/`;
+        return this.http.delete(url);
+    }
+    // 修正済み↓
     createNewGame(gameName: string, open: boolean, uid: string, span: any) {
-        return this.http.post(this.newGameUrl, {
+        return this.http.post(this.gamesUrl, {
             gamename: gameName,
             open: open,
             uid: uid,
             span: span,
         });
     }
-
+    // 修正済み↓
+    getCurrentGames(uid: string) {
+        const url = `${this.gamesUrl}${uid}/`;
+        return this.http.get<any>(url);
+    }
+    // 修正済み↓
+    joinGame(gameId: string, uid: string) {
+        const url = `${this.gamesUrl}${gameId}/players/`;
+        return this.http.post<any>(url, { uid: uid });
+    }
+    // 修正済み↓
+    exitGame(gameId: string, uid: string) {
+        const url = `${this.gamesUrl}${gameId}/players/${uid}`;
+        return this.http.delete(url);
+    }
+    // 修正済み↓
     gameSerch(gameSerchId: string) {
         let params = new HttpParams().set('gameserchid', gameSerchId);
-        return this.http.get(this.serchGameUrl, { params });
+        const url = `${this.gamesUrl}serch/`;
+        return this.http.get(url, { params });
     }
-
-    joinGame(gameId: string, uid: string) {
-        return this.http.post<any>(this.gameUrl, { gameid: gameId, uid: uid });
-    }
-
-    getCurrentGames(uid: string) {
-        let params = new HttpParams().set('uid', uid);
-        return this.http.get<any>(this.gameUrl, { params: params });
-    }
-
+    // 修正済み↓
     getThisWeekRaces(uid: string, gameId: string): Observable<Race[]> {
         let params = new HttpParams().set('flag', 1).set('uid', uid).set('gameid', gameId);
         console.log(gameId);
-        return this.http.get<Race[]>(this.raceUrl, { params });
+        return this.http.get<Race[]>(this.racesUrl, { params });
     }
-
+    // 修正済み↓
     getAllRaces(uid: string, gameId: string): Observable<Race[]> {
         let params = new HttpParams().set('flag', 0).set('uid', uid).set('gameid', gameId);
-        return this.http.get<Race[]>(this.raceUrl, { params });
+        return this.http.get<Race[]>(this.racesUrl, { params });
     }
-
+    // 修正済み↓
     getVote(race: Race, uid: string, gameId: string) {
         let params = new HttpParams()
             .set('grade', race.grade)
@@ -57,60 +75,34 @@ export class RaceService {
             .set('racename', race.name)
             .set('uid', uid)
             .set('gameid', gameId);
-        return this.http.get(this.voteUrl, { params });
+        return this.http.get(this.votesUrl, { params });
     }
-
+    // 修正済み↓
     submitVote(voteForm: VoteForm, uid: string, race: Race, gameId: string) {
-        // console.log({ voteForm: voteForm, uid: uid, racename: race });
-        return this.http.post(this.voteUrl, {
+        return this.http.post(this.votesUrl, {
             voteForm: voteForm,
             uid: uid,
             racename: race,
             gameid: gameId,
         });
     }
-
-    getScore(gameId: string) {
-        let params = new HttpParams().set('gameid', gameId);
-        return this.http.get(this.scoreUrl, { params });
-    }
-
-    updateUserName(name: string, uid: string) {
-        return this.http.put(this.userNameUrl, { name: name, uid: uid });
-    }
-
+    // 修正済み↓
     getRaceResult(race: string, gameId: string) {
-        let params = new HttpParams().set('racename', race).set('gameid', gameId);
-        return this.http.get(this.raceResult, { params });
+        const url = `${this.racesUrl}${race}/games/${gameId}/`;
+        return this.http.get(url);
+    }
+    // 修正済み↓
+    getScore(gameId: string) {
+        // let params = new HttpParams().set('gameid', gameId);
+        const url = `${this.gamesUrl}${gameId}/scores/`;
+        return this.http.get(url);
     }
 
-    deleteAccount(uid: string) {
-        let params = new HttpParams().set('uid', uid);
-        return this.http.delete(this.accountUrl, { params });
-    }
+    private racesUrl: string = `${apiUrl}/races/`;
 
-    exitGame(gameId: string, uid: string) {
-        let params = new HttpParams().set('gameid', gameId).set('uid', uid);
-        return this.http.delete(this.gameUrl, { params });
-    }
+    private gamesUrl: string = `${apiUrl}/games/`;
 
-    private raceUrl: string = `${apiUrl}/race/`;
+    private votesUrl: string = `${apiUrl}/votes/`;
 
-    private gameUrl: string = `${apiUrl}/game/`;
-
-    private newGameUrl: string = `${apiUrl}/newgame/`;
-
-    private UIDUrl: string = `${apiUrl}/UID/`;
-
-    private voteUrl: string = `${apiUrl}/vote/`;
-
-    private scoreUrl: string = `${apiUrl}/score/`;
-
-    private userNameUrl: string = `${apiUrl}/username/`;
-
-    private raceResult: string = `${apiUrl}/raceresult/`;
-
-    private accountUrl: string = `${apiUrl}/account/`;
-
-    private serchGameUrl: string = `${apiUrl}/serchgame/`;
+    private userUrl: string = `${apiUrl}/user/`;
 }

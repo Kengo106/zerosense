@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Game, GameRule, Vote, Race, Horse, HorsePlace, GameComment, User, GamePlayer
+from .api.models import Game, GameRule, Vote, Race, Horse, HorsePlace, GameComment, User, GamePlayer
 
 admin.site.register(Game)
 admin.site.register(GameRule)

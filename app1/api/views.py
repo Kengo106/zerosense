@@ -1,4 +1,4 @@
-from ..models import User, Game, GameRule, GamePlayer, GameComment, Race, Horse, Vote, Odds, HorsePlace
+from .models import User, Game, GameRule, GamePlayer, GameComment, Race, Horse, Vote, Odds, HorsePlace
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Subquery, OuterRef
@@ -14,19 +14,9 @@ from drf_yasg import openapi
 from .utils import judge_hit, get_odds, is_latest_week_race, calc_hit_time, calc_monthly_socere, game_info
 
 
-class ApiUIDView(APIView):
+class APIUserView(APIView):
 
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('uid', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ユーザーID', required=True),
-            openapi.Parameter('username', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ユーザー名', required=True)
-        ],
-        responses={201: openapi.Response(
-            description="ユーザー作成成功"), 400: openapi.Response(description="不正なリクエスト")}
-    )
-    def post(self, request, format=None):
+    def post(self, request, format=None):  # 修正済み
         uid = request.data.get('uid')
         username = request.data.get('username')
         try:
@@ -41,6 +31,52 @@ class ApiUIDView(APIView):
                                 status=status.HTTP_400_BAD_REQUEST)
 
         return response
+
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['name'],
+            properties={
+                'name': openapi.Schema(type=openapi.TYPE_STRING, description='新しいユーザー名')
+            },
+        ),
+        responses={
+            200: openapi.Response(description="更新しました"),
+            400: openapi.Response(description="Error")
+        }
+    )
+    def put(self, request, uid, format=None):  # 修正済み
+        try:
+            update_name = request.data.get('name')
+            User.objects.filter(uid=uid).update(username=update_name)
+            return Response({"message": f'変更しました： {update_name}'}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            print(f"Error occurred: {e}")  # エラーメッセージを表示
+            traceback.print_exc()
+            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('uid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ユーザーID', required=True)
+        ],
+        responses={200: openapi.Response(
+            description="Success"), 400: openapi.Response(description="Error")}
+    )
+    def delete(self, request, uid, format=None):  # 修正済み
+        try:
+            with transaction.atomic():
+                user = User.objects.filter(uid=uid).first()
+                GamePlayer.objects.filter(user=user).delete()
+                GameComment.objects.filter(user=user).delete()
+                Vote.objects.filter(user=user).delete()
+                user.delete()
+            return Response({"Success"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error occurred: {e}")  # エラーメッセージを表示
+            traceback.print_exc()
+            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ApiNewGameView(APIView):
@@ -57,9 +93,9 @@ class ApiNewGameView(APIView):
                               type=openapi.TYPE_OBJECT, description='ゲーム期間', required=True)
         ],
         responses={201: openapi.Response(
-            description="ゲーム作成成功"), 400: openapi.Response(description="不正なリクエスト")}
+            description="Sucsess"), 400: openapi.Response(description="Error")}
     )
-    def post(self, request, format=None):
+    def post(self, request, format=None):  # 修正済み
         gamename = request.data.get("gamename")
         uid = request.data.get("uid")
         public = request.data.get("open")
@@ -100,9 +136,8 @@ class ApiGameView(APIView):
         responses={200: openapi.Response(
             description="ゲームリストの取得に成功"), 400: openapi.Response(description="不正なリクエスト")}
     )
-    def get(self, request, format=None):
+    def get(self, request, uid, format=None):  # 修正済み
         try:
-            uid = request.query_params.get("uid")
             user = User.objects.filter(uid=uid).first()
             gameplayers = GamePlayer.objects.filter(user=user)
             games = []
@@ -121,10 +156,9 @@ class ApiGameView(APIView):
             traceback.print_exc()
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, format=None):
-        game_id = request.data.get("gameid")
+    def post(self, request, gameid, format=None):  # 修正済み
         uid = request.data.get("uid")
-        game = Game.objects.filter(id_for_serch=game_id).first()
+        game = Game.objects.filter(id_for_serch=gameid).first()
         try:
             user = User.objects.filter(uid=uid).first()
             if game:
@@ -143,14 +177,9 @@ class ApiGameView(APIView):
         except:
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, format=None):
+    def delete(self, request, gameid, uid, format=None):  # 修正済み
         try:
-            game_id = request.query_params.get('gameid')
-            uid = request.query_params.get('uid')
-
-            print(game_id, uid)
-
-            game_object = Game.objects.filter(id_for_serch=game_id).first()
+            game_object = Game.objects.filter(id_for_serch=gameid).first()
             user_object = User.objects.filter(uid=uid).first()
             game_player = {'game': game_object, 'user': user_object}
             with transaction.atomic():
@@ -158,6 +187,57 @@ class ApiGameView(APIView):
                 GameComment.objects.filter(**game_player).delete()
                 Vote.objects.filter(**game_player).delete()
             return Response({"complete delete"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error occurred: {e}")  # エラーメッセージを表示
+            traceback.print_exc()
+            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class APISarchGameView(APIView):
+    def get(self, request, format=None):  # 修正済み
+        try:
+            gameserchid = request.query_params.get('gameserchid')
+            print(gameserchid)
+
+            def is_valid_uuid(val):
+                try:
+                    uuid.UUID(str(val))
+                    return True
+                except:
+                    return False
+
+            if is_valid_uuid(gameserchid):
+                game = Game.objects.filter(id_for_serch=gameserchid).first()
+                if game:
+                    response = {
+                        'id': game.id_for_serch,
+                        "gamename": game.name
+                    }
+                else:
+                    response = '大会が存在しません'
+            else:
+                response = '大会が存在しません'
+
+            return Response({'message': response}, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(f"Error occurred: {e}")  # エラーメッセージを表示
+            traceback.print_exc()
+            return Response({"message": '大会が存在しません'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class APIScoreView(APIView):
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('gameid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ゲームID', required=True)
+        ],
+        responses={200: openapi.Response(description="スコアデータ取得に成功")}
+    )
+    def get(self, request, gameid, format=None):
+        try:
+            response_data = game_info(game_id=gameid)
+            return Response(response_data, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()
@@ -178,7 +258,7 @@ class ApiRaceView(APIView):
         responses={200: openapi.Response(
             description="レース情報の取得に成功"), 400: openapi.Response(description="不正なリクエスト")}
     )
-    def get(self, request, format=None):
+    def get(self, request, format=None):  # 修正済み
         try:
             flag = request.query_params.get('flag')
             if flag == '1':
@@ -248,7 +328,8 @@ class ApiVoteView(APIView):
         ],
         responses={200: openapi.Response(description="投票データ取得に成功")}
     )
-    def get(self, request, format=None):
+    def get(self, request, format=None):  # 修正済み
+        print(9999999999999999999)
         try:
             grade = request.query_params.get('grade')
             date = request.query_params.get('date')
@@ -303,7 +384,7 @@ class ApiVoteView(APIView):
             traceback.print_exc()
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
-    def post(self, request, format=None):
+    def post(self, request, format=None):  # 修正済み
         try:
             vote_form = request.data.get('voteForm')
             uid = request.data.get("uid")
@@ -338,52 +419,6 @@ class ApiVoteView(APIView):
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class APIScoreView(APIView):
-
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('gameid', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ゲームID', required=True)
-        ],
-        responses={200: openapi.Response(description="スコアデータ取得に成功")}
-    )
-    def get(self, request, format=None):
-        try:
-            game_id = request.query_params.get("gameid")
-
-            response_data = game_info(game_id=game_id)
-
-            return Response(response_data, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(f"Error occurred: {e}")  # エラーメッセージを表示
-            traceback.print_exc()
-            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class APIUserNameView(APIView):
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('name', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='新しいユーザー名', required=True),
-            openapi.Parameter('uid', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ユーザーID', required=True)
-        ],
-        responses={200: openapi.Response(
-            description="ユーザー名更新に成功"), 400: openapi.Response(description="不正なリクエスト")}
-    )
-    def put(self, request, format=None):
-        try:
-            update_name = request.data.get('name')
-            uid = request.data.get('uid')
-            User.objects.filter(uid=uid).update(username=update_name)
-            return Response({"message": f'変更しました： {update_name}'}, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            print(f"Error occurred: {e}")  # エラーメッセージを表示
-            traceback.print_exc()
-            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
-
-
 class APIRaceResultView(APIView):
     @swagger_auto_schema(
         manual_parameters=[
@@ -394,15 +429,13 @@ class APIRaceResultView(APIView):
         ],
         responses={200: openapi.Response(description="レース結果取得に成功")}
     )
-    def get(self, request, format=None):
+    def get(self, request, racename, gameid, format=None):  # 修正済み
         try:
-            race_name = request.query_params.get('racename')
-            game_id = request.query_params.get('gameid')
-            race = Race.objects.filter(race_name=race_name).first()
+            race = Race.objects.filter(race_name=racename).first()
             horses = [{'id': horse.id, 'place': HorsePlace.objects.filter(horse=horse).first().place, 'name': horse.horse_name}
                       for horse in Horse.objects.filter(race=race)]
             horses = sorted(horses, key=lambda x: x["place"])
-            game = Game.objects.filter(id_for_serch=game_id).first()
+            game = Game.objects.filter(id_for_serch=gameid).first()
 
             odds = Odds.objects.filter(race=race).first()
             odds_datamu = {
@@ -421,7 +454,6 @@ class APIRaceResultView(APIView):
 
             vote_list = []
             for vote in Vote.objects.filter(game=game, race=race):
-                # user_name = User.objects.filter(id=vote.user).first()
                 score = 0
                 user_name = vote.user.username
                 vote_1_place = HorsePlace.objects.filter(
@@ -474,60 +506,3 @@ class APIRaceResultView(APIView):
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class APIAccountView(APIView):
-
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('uid', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ユーザーID', required=True)
-        ],
-        responses={200: openapi.Response(
-            description="アカウント削除に成功"), 400: openapi.Response(description="不正なリクエスト")}
-    )
-    def delete(self, request, format=None):
-        try:
-            uid = request.query_params.get('uid')
-            with transaction.atomic():
-                user = User.objects.filter(uid=uid).first()
-                GamePlayer.objects.filter(user=user).delete()
-                GameComment.objects.filter(user=user).delete()
-                Vote.objects.filter(user=user).delete()
-                user.delete()
-            return Response({"Success"}, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(f"Error occurred: {e}")  # エラーメッセージを表示
-            traceback.print_exc()
-            return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class APISarchGameView(APIView):
-    def get(self, request, format=None):
-        try:
-            serch_game_id = request.query_params.get('gameserchid')
-
-            def is_valid_uuid(val):
-                try:
-                    uuid.UUID(str(val))
-                    return True
-                except:
-                    return False
-
-            if is_valid_uuid(serch_game_id):
-                game = Game.objects.filter(id_for_serch=serch_game_id).first()
-                if game:
-                    response = {
-                        'id': game.id_for_serch,
-                        "gamename": game.name
-                    }
-                else:
-                    response = '大会が存在しません'
-            else:
-                response = '大会が存在しません'
-
-            return Response({'message': response}, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(f"Error occurred: {e}")  # エラーメッセージを表示
-            traceback.print_exc()
-            return Response({"message": '大会が存在しません'}, status=status.HTTP_400_BAD_REQUEST)

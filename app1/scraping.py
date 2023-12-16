@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 from django.db import transaction
-from .models import Race, Horse, HorsePlace, Odds
+from .api.models import Race, Horse, HorsePlace, Odds
 import os
 import time
 import re

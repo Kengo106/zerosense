@@ -37,7 +37,7 @@ jobs:
           ng build
 
       - name: Collect static files
-        run: python manage.py collectstatic --noinput
+        run: python manage.py collectstatic --noinput #  noinputは対話が始まらないようにする
 
       - name: Create app.yaml
         run: |
