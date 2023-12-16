@@ -54,11 +54,11 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -165,11 +165,9 @@ CORS_ORIGIN_WHITELIST = [
     'https://develop-matsushima.an.r.appspot.com',
 ]
 
-
 # settings.py
 CSRF_COOKIE_NAME = 'csrftoken'  # デフォルト
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'  # デフォルト
 
-print("あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ")
 print(DATABASES)
-print("あああああああああああああああああああああああああああああああああああああああああああああああああああああああああああ")
+print(DEBUG)
