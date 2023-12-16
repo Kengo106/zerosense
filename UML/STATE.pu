@@ -1,0 +1,46 @@
+@startuml 画面遷移図_20231213
+
+skinparam StateFontColor<<Specified>> #White
+skinparam StateFontSize<<Specified>> 10
+
+state logout {
+    state アカウント登録
+    state ログイン
+}
+
+state login {
+    state レース結果確認
+    state 大会メイン
+    state 投票
+    state レース結果選択
+    state 大会選択
+}
+
+state navbar {
+state アカウント情報
+state 大会検索
+state 大会作成
+state ログアウトボタン
+}
+state アカウント削除
+[*] --> ログイン
+login --> navbar
+
+ログイン -left-> 大会選択 
+ログイン -> アカウント登録
+アカウント登録 -> ログイン
+大会選択 --> 大会メイン
+投票 -> 大会メイン
+大会メイン -> 投票
+大会メイン --> レース結果選択
+レース結果選択 -> 大会メイン
+レース結果選択 -> レース結果確認
+レース結果確認 -> レース結果選択
+ログアウトボタン --> logout
+アカウント情報 --> アカウント削除
+
+
+
+
+
+@enduml
