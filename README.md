@@ -20,6 +20,8 @@ url:https://develop-matsushima.an.r.appspot.com/
   - AppEngine
   - Cloud SQL
 - Github actions
+- docker 
+- terraform 1.6.6
 - Firebase
 
 
