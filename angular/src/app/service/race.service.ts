@@ -14,21 +14,24 @@ export class RaceService {
 
     // 修正済み↓
     postUID(uid: string, username: string) {
-        return this.http.post<any>(this.userUrl, { uid: uid, username: username });
+        const url = `${this.userUrl}regist/`;
+        return this.http.post<any>(url, { uid: uid, username: username });
     }
     // 修正済み↓
     updateUserName(name: string, uid: string) {
-        const url = `${this.userUrl}${uid}/`;
+        const url = `${this.userUrl}edit/${uid}/`;
         return this.http.put(url, { name: name });
     }
     // 修正済み↓
     deleteAccount(uid: string) {
-        const url = `${this.userUrl}${uid}/`;
+        const url = `${this.userUrl}edit/${uid}/`;
         return this.http.delete(url);
     }
+
     // 修正済み↓
     createNewGame(gameName: string, open: boolean, uid: string, span: any) {
-        return this.http.post(this.gamesUrl, {
+        const url = `${this.gamesUrl}create/`;
+        return this.http.post(url, {
             gamename: gameName,
             open: open,
             uid: uid,
@@ -37,17 +40,17 @@ export class RaceService {
     }
     // 修正済み↓
     getCurrentGames(uid: string) {
-        const url = `${this.gamesUrl}${uid}/`;
+        const url = `${this.gamesUrl}list/${uid}/`;
         return this.http.get<any>(url);
     }
     // 修正済み↓
     joinGame(gameId: string, uid: string) {
-        const url = `${this.gamesUrl}${gameId}/players/`;
+        const url = `${this.gamesPlayerUrl}regist/${gameId}/`;
         return this.http.post<any>(url, { uid: uid });
     }
     // 修正済み↓
     exitGame(gameId: string, uid: string) {
-        const url = `${this.gamesUrl}${gameId}/players/${uid}`;
+        const url = `${this.gamesPlayerUrl}delete/${gameId}/${uid}/`;
         return this.http.delete(url);
     }
     // 修正済み↓
@@ -94,7 +97,7 @@ export class RaceService {
     // 修正済み↓
     getScore(gameId: string) {
         // let params = new HttpParams().set('gameid', gameId);
-        const url = `${this.gamesUrl}${gameId}/scores/`;
+        const url = `${this.gamesUrl}scores/${gameId}/`;
         return this.http.get(url);
     }
 
@@ -102,7 +105,13 @@ export class RaceService {
 
     private gamesUrl: string = `${apiUrl}/games/`;
 
+    private gamesPlayerUrl: string = `${apiUrl}/player/`;
+
+    // private gamesDetailUrl: string = `${apiUrl}/games/detail/`;
+
     private votesUrl: string = `${apiUrl}/votes/`;
 
     private userUrl: string = `${apiUrl}/user/`;
+
+    // private userRegistUrl: string = `${apiUrl}/user-regist/`;
 }
