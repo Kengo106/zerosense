@@ -1,0 +1,374 @@
+swagger: '2.0'
+info:
+  title: zerosense backend API
+  description: zerosenseのバックエンドのAPI仕様です
+  termsOfService: https://www.google.com/policies/terms/
+  contact:
+    email: contact@snippets.local
+  license:
+    name: BSD License
+  version: v1
+host: 127.0.0.1:8000
+schemes:
+- http
+basePath: /api
+consumes:
+- application/json
+produces:
+- application/json
+securityDefinitions:
+  Basic:
+    type: basic
+security:
+- Basic: []
+paths:
+  /games/create/:
+    post:
+      operationId: games_create_create
+      description: 新しい大会を作成する。
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          required:
+          - gamename
+          - uid
+          - public
+          - span
+          type: object
+          properties:
+            gamename:
+              description: ゲーム名
+              type: string
+            uid:
+              description: ユーザーID
+              type: string
+            public:
+              description: 公開設定(現状非公開のみ)
+              type: string
+            span:
+              description: ゲーム期間
+              type: object
+              properties:
+                start:
+                  description: 開始日
+                  type: string
+                  format: date
+                end:
+                  description: 終了日
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Sucsess
+        '400':
+          description: Error
+      tags:
+      - games
+    parameters: []
+  /games/list/{uid}/:
+    get:
+      operationId: games_list_read
+      description: 画面上に表示している大会の大会情報を取得する。
+      parameters: []
+      responses:
+        '200':
+          description: games
+        '400':
+          description: 不正なリクエスト
+      tags:
+      - games
+    parameters:
+    - name: uid
+      in: path
+      required: true
+      type: string
+  /games/scores/{gameid}/:
+    get:
+      operationId: games_scores_read
+      description: 参加者の成績などメイン画面上に表示している大会の詳細情報を取得する。
+      parameters: []
+      responses:
+        '200':
+          description: Error
+      tags:
+      - games
+    parameters:
+    - name: gameid
+      in: path
+      required: true
+      type: string
+  /games/serch/:
+    get:
+      operationId: games_serch_list
+      description: 大会検索用IDにより、参加する大会を検索する。
+      parameters:
+      - name: gameserchid
+        in: query
+        description: ゲーム検索用ID
+        required: true
+        type: string
+      responses:
+        '200':
+          description: 'message: 内容'
+        '400':
+          description: 'message: Error'
+      tags:
+      - games
+    parameters: []
+  /player/delete/{gameid}/{uid}/:
+    delete:
+      operationId: player_delete_delete
+      description: ユーザーが大会から抜ける。
+      parameters: []
+      responses:
+        '200':
+          description: complete delete
+        '400':
+          description: Error
+      tags:
+      - player
+    parameters:
+    - name: gameid
+      in: path
+      required: true
+      type: string
+    - name: uid
+      in: path
+      required: true
+      type: string
+  /player/regist/{gameid}/:
+    post:
+      operationId: player_regist_create
+      description: ユーザーが大会に参加する。
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          required:
+          - uid
+          type: object
+          properties:
+            uid:
+              description: ユーザーID
+              type: string
+      responses:
+        '200':
+          description: 大会に参加しました等
+        '400':
+          description: Error
+      tags:
+      - player
+    parameters:
+    - name: gameid
+      in: path
+      required: true
+      type: string
+  /races/:
+    get:
+      operationId: races_list
+      description: レースを取得する。取得するレースはフラグにより選択する。
+      parameters:
+      - name: flag
+        in: query
+        description: フラグ(どのステータスのレースを取得するか決定する)
+        required: false
+        type: string
+      - name: uid
+        in: query
+        description: ユーザーID
+        required: true
+        type: string
+      - name: gameid
+        in: query
+        description: ゲームID
+        required: true
+        type: string
+      responses:
+        '200':
+          description: 取得レース
+        '400':
+          description: Error
+      tags:
+      - races
+    parameters: []
+  /races/{racename}/games/{gameid}/:
+    get:
+      operationId: races_games_read
+      description: レース結果を取得する。
+      parameters: []
+      responses:
+        '200':
+          description: レース結果取得に成功
+        '400':
+          description: Error
+      tags:
+      - races
+    parameters:
+    - name: racename
+      in: path
+      required: true
+      type: string
+    - name: gameid
+      in: path
+      required: true
+      type: string
+  /user/edit/{uid}/:
+    put:
+      operationId: user_edit_update
+      description: 表示するユーザー名を変更する。
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          required:
+          - name
+          type: object
+          properties:
+            name:
+              description: ユーザー名
+              type: string
+      responses:
+        '200':
+          description: 変更しました
+        '400':
+          description: Error
+      tags:
+      - user
+    delete:
+      operationId: user_edit_delete
+      description: Firebaseで削除したアカウントをデータベースでも削除する。
+      parameters: []
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Error
+      tags:
+      - user
+    parameters:
+    - name: uid
+      in: path
+      required: true
+      type: string
+  /user/regist/:
+    post:
+      operationId: user_regist_create
+      description: Firebaseに登録したユーザーをデータベースにも登録する。
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          required:
+          - username
+          - uid
+          type: object
+          properties:
+            username:
+              description: ユーザー名
+              type: string
+            uid:
+              description: ユーザーID
+              type: string
+      responses:
+        '200':
+          description: 更新しました
+        '400':
+          description: Error
+      tags:
+      - user
+    parameters: []
+  /votes/:
+    get:
+      operationId: votes_list
+      description: 参加者の投票を取得する
+      parameters:
+      - name: grade
+        in: query
+        description: レースのグレード
+        required: true
+        type: string
+      - name: date
+        in: query
+        description: レース日
+        required: true
+        type: string
+      - name: racename
+        in: query
+        description: レース名
+        required: true
+        type: string
+      - name: uid
+        in: query
+        description: ユーザーID
+        required: true
+        type: string
+      - name: gameid
+        in: query
+        description: ゲームID
+        required: true
+        type: string
+      responses:
+        '200':
+          description: 投票データ取得に成功
+        '400':
+          description: Error
+      tags:
+      - votes
+    post:
+      operationId: votes_create
+      description: ユーザーの投票を送信する。
+      parameters:
+      - name: data
+        in: body
+        required: true
+        schema:
+          required:
+          - gamename
+          - uid
+          - public
+          - span
+          type: object
+          properties:
+            racename:
+              description: レース名
+              type: string
+            uid:
+              description: ユーザーID
+              type: string
+            public:
+              description: 公開設定(現状非公開のみ)
+              type: string
+            voteForm:
+              description: 投票内容
+              type: object
+              properties:
+                first:
+                  description: 本命
+                  type: number
+                  format: int32
+                second:
+                  description: 対抗
+                  type: number
+                  format: int32
+                third:
+                  description: 大穴
+                  type: number
+                  format: int32
+                comment:
+                  description: コメント
+                  type: string
+                  format: int32
+      responses:
+        '201':
+          description: Sucsess
+        '400':
+          description: Error
+      tags:
+      - votes
+    parameters: []
+definitions: {}

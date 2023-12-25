@@ -1,21 +1,31 @@
 from .models import User, Game, GameRule, GamePlayer, GameComment, Race, Horse, Vote, Odds, HorsePlace
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.db.models import Subquery, OuterRef
-from django_filters import rest_framework as filters
 from rest_framework import status
 from django.db import transaction
 import traceback
-from datetime import timedelta
-from django.db.models.functions import ExtractMonth
 import uuid
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from .utils import judge_hit, get_odds, is_latest_week_race, calc_hit_time, calc_monthly_socere, game_info
+from .utils import game_info
 
 
-class APIUserView(APIView):
-
+class APIUserRegistView(APIView):
+    @swagger_auto_schema(
+        operation_description='Firebaseに登録したユーザーをデータベースにも登録する。',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['username', 'uid'],
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description='ユーザー名'),
+                'uid': openapi.Schema(type=openapi.TYPE_STRING, description='ユーザーID'),
+            },
+        ),
+        responses={
+            200: openapi.Response(description="更新しました"),
+            400: openapi.Response(description="Error")
+        }
+    )
     def post(self, request, format=None):  # 修正済み
         uid = request.data.get('uid')
         username = request.data.get('username')
@@ -32,16 +42,19 @@ class APIUserView(APIView):
 
         return response
 
+
+class APIUserEditView(APIView):
     @swagger_auto_schema(
+        operation_description='表示するユーザー名を変更する。',
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             required=['name'],
             properties={
-                'name': openapi.Schema(type=openapi.TYPE_STRING, description='新しいユーザー名')
+                'name': openapi.Schema(type=openapi.TYPE_STRING, description='ユーザー名')
             },
         ),
         responses={
-            200: openapi.Response(description="更新しました"),
+            200: openapi.Response(description="変更しました"),
             400: openapi.Response(description="Error")
         }
     )
@@ -57,12 +70,10 @@ class APIUserView(APIView):
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('uid', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ユーザーID', required=True)
-        ],
+        operation_description='Firebaseで削除したアカウントをデータベースでも削除する。',
         responses={200: openapi.Response(
-            description="Success"), 400: openapi.Response(description="Error")}
+            description="Success"),
+            400: openapi.Response(description="Error")}
     )
     def delete(self, request, uid, format=None):  # 修正済み
         try:
@@ -82,16 +93,22 @@ class APIUserView(APIView):
 class ApiNewGameView(APIView):
 
     @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('gamename', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ゲーム名', required=True),
-            openapi.Parameter('uid', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ユーザーID', required=True),
-            openapi.Parameter('public', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_BOOLEAN, description='公開設定', required=True),
-            openapi.Parameter('span', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_OBJECT, description='ゲーム期間', required=True)
-        ],
+        operation_description='新しい大会を作成する。',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['gamename', 'uid', 'public', 'span'],
+            properties={
+                'gamename': openapi.Schema(type=openapi.TYPE_STRING, description='ゲーム名'),
+                'uid': openapi.Schema(type=openapi.TYPE_STRING, description='ユーザーID'),
+                'public': openapi.Schema(type=openapi.TYPE_STRING, description='公開設定(現状非公開のみ)'),
+                'span': openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'start': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_DATE, description='開始日'),
+                        'end': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_DATE, description='終了日')
+                    }, description='ゲーム期間')
+            },
+        ),
         responses={201: openapi.Response(
             description="Sucsess"), 400: openapi.Response(description="Error")}
     )
@@ -126,15 +143,11 @@ class ApiNewGameView(APIView):
             return Response("Error", status=status.HTTP_400_BAD_REQUEST)
 
 
-class ApiGameView(APIView):
-
+class ApiGameslistView(APIView):
     @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('uid', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ユーザーID', required=True)
-        ],
+        operation_description='画面上に表示している大会の大会情報を取得する。',
         responses={200: openapi.Response(
-            description="ゲームリストの取得に成功"), 400: openapi.Response(description="不正なリクエスト")}
+            description="games"), 400: openapi.Response(description="不正なリクエスト")}
     )
     def get(self, request, uid, format=None):  # 修正済み
         try:
@@ -156,6 +169,21 @@ class ApiGameView(APIView):
             traceback.print_exc()
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ApiGamesPlayerRegistView(APIView):
+
+    @swagger_auto_schema(
+        operation_description='ユーザーが大会に参加する。',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['uid'],
+            properties={
+                'uid': openapi.Schema(type=openapi.TYPE_STRING, description='ユーザーID'),
+            },
+        ),
+        responses={200: openapi.Response(description="大会に参加しました等"),
+                   400: openapi.Response(description="Error")}
+    )
     def post(self, request, gameid, format=None):  # 修正済み
         uid = request.data.get("uid")
         game = Game.objects.filter(id_for_serch=gameid).first()
@@ -177,7 +205,15 @@ class ApiGameView(APIView):
         except:
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class ApiGamesPlayerDeleteView(APIView):
+    @swagger_auto_schema(
+        operation_description='ユーザーが大会から抜ける。',
+        responses={200: openapi.Response(
+            description="complete delete"), 400: openapi.Response(description="Error")}
+    )
     def delete(self, request, gameid, uid, format=None):  # 修正済み
+        print(uid)
         try:
             game_object = Game.objects.filter(id_for_serch=gameid).first()
             user_object = User.objects.filter(uid=uid).first()
@@ -194,6 +230,15 @@ class ApiGameView(APIView):
 
 
 class APISarchGameView(APIView):
+    @swagger_auto_schema(
+        operation_description='大会検索用IDにより、参加する大会を検索する。',
+        manual_parameters=[
+            openapi.Parameter('gameserchid', in_=openapi.IN_QUERY,
+                              type=openapi.TYPE_STRING, description='ゲーム検索用ID', required=True)
+        ],
+        responses={200: openapi.Response(description="message: 内容"),
+                   400: openapi.Response(description="message: Error")}
+    )
     def get(self, request, format=None):  # 修正済み
         try:
             gameserchid = request.query_params.get('gameserchid')
@@ -222,17 +267,16 @@ class APISarchGameView(APIView):
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
             traceback.print_exc()
-            return Response({"message": '大会が存在しません'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": 'Error'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class APIScoreView(APIView):
 
     @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('gameid', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ゲームID', required=True)
-        ],
-        responses={200: openapi.Response(description="スコアデータ取得に成功")}
+        operation_description='参加者の成績などメイン画面上に表示している大会の詳細情報を取得する。',
+        responses={200: openapi.Response(description="スコアデータ取得に成功"),
+                   200: openapi.Response(description="Error"),
+                   }
     )
     def get(self, request, gameid, format=None):
         try:
@@ -247,16 +291,17 @@ class APIScoreView(APIView):
 class ApiRaceView(APIView):
 
     @swagger_auto_schema(
+        operation_description='レースを取得する。取得するレースはフラグにより選択する。',
         manual_parameters=[
             openapi.Parameter('flag', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='フラグ', required=False),
+                              type=openapi.TYPE_STRING, description='フラグ(どのステータスのレースを取得するか決定する)', required=False),
             openapi.Parameter('uid', in_=openapi.IN_QUERY,
                               type=openapi.TYPE_STRING, description='ユーザーID', required=True),
             openapi.Parameter('gameid', in_=openapi.IN_QUERY,
                               type=openapi.TYPE_STRING, description='ゲームID', required=True)
         ],
         responses={200: openapi.Response(
-            description="レース情報の取得に成功"), 400: openapi.Response(description="不正なリクエスト")}
+            description="取得レース"), 400: openapi.Response(description="Error")}
     )
     def get(self, request, format=None):  # 修正済み
         try:
@@ -302,8 +347,6 @@ class ApiRaceView(APIView):
                 else:
                     race["isdisplay"] = True
                 compare_date = race['date']
-                print(races)
-
             return Response(races, status=status.HTTP_200_OK)
         except Exception as e:
             print(f"Error occurred: {e}")  # エラーメッセージを表示
@@ -314,6 +357,7 @@ class ApiRaceView(APIView):
 class ApiVoteView(APIView):
 
     @swagger_auto_schema(
+        operation_description='参加者の投票を取得する',
         manual_parameters=[
             openapi.Parameter('grade', in_=openapi.IN_QUERY,
                               type=openapi.TYPE_STRING, description='レースのグレード', required=True),
@@ -326,10 +370,10 @@ class ApiVoteView(APIView):
             openapi.Parameter('gameid', in_=openapi.IN_QUERY,
                               type=openapi.TYPE_STRING, description='ゲームID', required=True)
         ],
-        responses={200: openapi.Response(description="投票データ取得に成功")}
+        responses={200: openapi.Response(description="投票データ取得に成功"),
+                   400: openapi.Response(description="Error")}
     )
     def get(self, request, format=None):  # 修正済み
-        print(9999999999999999999)
         try:
             grade = request.query_params.get('grade')
             date = request.query_params.get('date')
@@ -384,6 +428,28 @@ class ApiVoteView(APIView):
             traceback.print_exc()
             return Response({"Error"}, status=status.HTTP_400_BAD_REQUEST)
 
+    @swagger_auto_schema(
+        operation_description='ユーザーの投票を送信する。',
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['gamename', 'uid', 'public', 'span'],
+            properties={
+                'racename': openapi.Schema(type=openapi.TYPE_STRING, description='レース名'),
+                'uid': openapi.Schema(type=openapi.TYPE_STRING, description='ユーザーID'),
+                'public': openapi.Schema(type=openapi.TYPE_STRING, description='公開設定(現状非公開のみ)'),
+                'voteForm': openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'first': openapi.Schema(type=openapi.TYPE_NUMBER, format=openapi.FORMAT_INT32, description='本命'),
+                        'second': openapi.Schema(type=openapi.TYPE_NUMBER, format=openapi.FORMAT_INT32, description='対抗'),
+                        'third': openapi.Schema(type=openapi.TYPE_NUMBER, format=openapi.FORMAT_INT32, description='大穴'),
+                        'comment': openapi.Schema(type=openapi.TYPE_STRING, format=openapi.FORMAT_INT32, description='コメント'),
+                    }, description='投票内容')
+            },
+        ),
+        responses={201: openapi.Response(
+            description="Sucsess"), 400: openapi.Response(description="Error")}
+    )
     def post(self, request, format=None):  # 修正済み
         try:
             vote_form = request.data.get('voteForm')
@@ -421,13 +487,10 @@ class ApiVoteView(APIView):
 
 class APIRaceResultView(APIView):
     @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('racename', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='レース名', required=True),
-            openapi.Parameter('gameid', in_=openapi.IN_QUERY,
-                              type=openapi.TYPE_STRING, description='ゲームID', required=True)
-        ],
-        responses={200: openapi.Response(description="レース結果取得に成功")}
+        operation_description='レース結果を取得する。',
+        responses={200: openapi.Response(description="レース結果取得に成功"),
+                   400: openapi.Response(description="Error"),
+                   }
     )
     def get(self, request, racename, gameid, format=None):  # 修正済み
         try:
