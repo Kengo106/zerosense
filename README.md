@@ -17,7 +17,8 @@ url:https://develop-matsushima.an.r.appspot.com/
   - Angular 16.1.0
 - PostgraSQL 14.7
 - GCP
-  - AppEngine
+  - App Engine
+  - Cloud Run
   - Cloud SQL
 - Github actions
 - Docker 
