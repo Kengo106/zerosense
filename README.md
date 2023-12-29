@@ -21,7 +21,7 @@ url:https://develop-matsushima.an.r.appspot.com/
   - Cloud Run
   - Cloud SQL
 - Github actions
-- Docker 
+- docker 
 - terraform 1.6.6
 - Firebase
 - swagger
@@ -32,7 +32,7 @@ url:https://develop-matsushima.an.r.appspot.com/
 
 ![インフラ構成図_20231225 drawio](https://github.com/Kengo106/zerosense/assets/131678198/2e04e089-aeea-4a7d-9349-0dfda3619f94)
 
-<br>※スクレイピングするためのアプリケーションはこちらにあります。https://github.com/Kengo106/zerosense_scraping/blob/main/README.md
+<br>※スクレイピングするためのアプリケーションはこちらにあります。https://github.com/Kengo106/zerosense_scraping
 
 ## API仕様
 <br>
