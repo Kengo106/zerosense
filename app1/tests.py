@@ -37,7 +37,7 @@
 #     def test_game_score_calculation(self):
 
 #         request = self.factory.get(
-#             '/fake-url', {'gameid': str(self.game.id_for_serch)})
+#             '/fake-url', {'gameid': str(self.game.id_for_search)})
 #         _, response_data = game_score(request)
 
 #         expected_score = 100

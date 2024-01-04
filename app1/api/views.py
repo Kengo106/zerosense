@@ -156,7 +156,7 @@ class ApiGameslistView(APIView):
             games = []
             for gameplayer in gameplayers:
                 game_datamu = {
-                    'id': gameplayer.game.id_for_serch,
+                    'id': gameplayer.game.id_for_search,
                     'gamename': gameplayer.game.name,
                     'start': gameplayer.game.game_rule.start,
                     'end': gameplayer.game.game_rule.end, }
@@ -186,7 +186,7 @@ class ApiGamesPlayerRegistView(APIView):
     )
     def post(self, request, gameid, format=None):  # 修正済み
         uid = request.data.get("uid")
-        game = Game.objects.filter(id_for_serch=gameid).first()
+        game = Game.objects.filter(id_for_search=gameid).first()
         try:
             user = User.objects.filter(uid=uid).first()
             if game:
@@ -215,7 +215,7 @@ class ApiGamesPlayerDeleteView(APIView):
     def delete(self, request, gameid, uid, format=None):  # 修正済み
         print(uid)
         try:
-            game_object = Game.objects.filter(id_for_serch=gameid).first()
+            game_object = Game.objects.filter(id_for_search=gameid).first()
             user_object = User.objects.filter(uid=uid).first()
             game_player = {'game': game_object, 'user': user_object}
             with transaction.atomic():
@@ -252,10 +252,10 @@ class APISarchGameView(APIView):
                     return False
 
             if is_valid_uuid(gameserchid):
-                game = Game.objects.filter(id_for_serch=gameserchid).first()
+                game = Game.objects.filter(id_for_search=gameserchid).first()
                 if game:
                     response = {
-                        'id': game.id_for_serch,
+                        'id': game.id_for_search,
                         "gamename": game.name
                     }
                 else:
@@ -315,11 +315,11 @@ class ApiRaceView(APIView):
             uid = request.query_params.get('uid')
             gameid = request.query_params.get('gameid')
             start_date = Game.objects.filter(
-                id_for_serch=gameid).first().game_rule.start
+                id_for_search=gameid).first().game_rule.start
             end_date = Game.objects.filter(
-                id_for_serch=gameid).first().game_rule.end
+                id_for_search=gameid).first().game_rule.end
             print(start_date, end_date)
-            game = Game.objects.filter(id_for_serch=gameid).first()
+            game = Game.objects.filter(id_for_search=gameid).first()
             user = User.objects.filter(uid=uid).first()
             voted_races = [
                 vote.race for vote in Vote.objects.filter(user=user, game=game)]
@@ -387,7 +387,7 @@ class ApiVoteView(APIView):
             horses = [{'id': horse.id, 'name': horse.horse_name}
                       for horse in Horse.objects.filter(race=race)]
             user = User.objects.filter(uid=uid).first()
-            game = Game.objects.filter(id_for_serch=game_id).first()
+            game = Game.objects.filter(id_for_search=game_id).first()
             my_vote = Vote.objects.filter(
                 user=user,
                 race=race,
@@ -459,7 +459,7 @@ class ApiVoteView(APIView):
             game_id = request.data.get('gameid')
             race = Race.objects.filter(
                 rank=race_name['grade'], race_date=race_name['date'], race_name=race_name['name']).first()
-            game = Game.objects.filter(id_for_serch=game_id).first()
+            game = Game.objects.filter(id_for_search=game_id).first()
             if race.is_votable == 1:
 
                 _, created = Vote.objects.update_or_create(
@@ -498,7 +498,7 @@ class APIRaceResultView(APIView):
             horses = [{'id': horse.id, 'place': HorsePlace.objects.filter(horse=horse).first().place, 'name': horse.horse_name}
                       for horse in Horse.objects.filter(race=race)]
             horses = sorted(horses, key=lambda x: x["place"])
-            game = Game.objects.filter(id_for_serch=gameid).first()
+            game = Game.objects.filter(id_for_search=gameid).first()
 
             odds = Odds.objects.filter(race=race).first()
             odds_datamu = {

@@ -1,4 +1,4 @@
-@startuml 20231206_ER図
+@startuml 20240105_ER図
 
 
 entity HorsePlace {
@@ -36,7 +36,7 @@ entity Game {
   # game_rule [FK] NULL=TRUE
   name
   start_datetime ゲームを作成した日
-  id_for_serch
+  id_for_search
   ==
   大会
 }
@@ -133,7 +133,7 @@ entity GamePlayers {
   大会の参加者
 }
 
-Race ||--|| Odds
+Race ||--o| Odds
 User ||--o{ Vote
 Horse }--o{ Vote
 Race ||--o{ Vote
@@ -142,7 +142,7 @@ Race ||--{ Horse
 User ||--o{ GameComment
 Game ||--o{ GameComment
 GameRule ||--o{ Game
-HorsePlace ||--|| Horse
+HorsePlace |o--|| Horse
 FirebaseUser ||..|| User
 Game ||--|{ GamePlayers
 User ||--o{ GamePlayers

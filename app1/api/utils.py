@@ -1,10 +1,31 @@
-from .models import Race, HorsePlace, Odds, Vote, Game, GamePlayer, GameRule
+from .models import Race, HorsePlace, Odds, Vote, Game, GamePlayer
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
 
-# どの馬券が当たったかを判定する
+# game_idにリレーションのあるデータを取得する
 
+
+def get_game_related_info(game_id):
+    game = Game.objects.select_related(
+        'game_rule'
+    ).prefetch_related(
+        'gameplayer_set__user',
+        'vote_set__race',
+        'vote_set__race__odds',
+        'vote_set__user',
+        'vote_set__horse_first',
+        'vote_set__horse_second',
+        'vote_set__horse_third',
+        'vote_set__horse_first__horseplace',
+        'vote_set__horse_second__horseplace',
+        'vote_set__horse_third__horseplace',
+    ).get(id_for_search=game_id)
+
+    return game
+
+
+# どの馬券が当たったかを判定する
 
 def judge_hit(votes):
     '''
@@ -31,81 +52,71 @@ def judge_hit(votes):
 # レースのオッズを取得する
 
 
-def get_odds(race):
+def get_odds(odds):
 
-    odds_object = Odds.objects.filter(
-        race=race).first()  # 払戻金を取得
+    # odds_object = race.odds  # 払戻金を取得
 
     odds_list = []
-    odds_list.append(odds_object.tan)
-    odds_list.append(odds_object.fuku_1)
-    odds_list.append(odds_object.fuku_2)
-    odds_list.append(odds_object.fuku_3)
-    odds_list.append(odds_object.umaren)
-    odds_list.append(odds_object.umatan)
-    odds_list.append(odds_object.wide_12)
-    odds_list.append(odds_object.wide_13)
-    odds_list.append(odds_object.wide_23)
-    odds_list.append(odds_object.trio)
-    odds_list.append(odds_object.tierce)
+    odds_list.append(odds.tan)
+    odds_list.append(odds.fuku_1)
+    odds_list.append(odds.fuku_2)
+    odds_list.append(odds.fuku_3)
+    odds_list.append(odds.umaren)
+    odds_list.append(odds.umatan)
+    odds_list.append(odds.wide_12)
+    odds_list.append(odds.wide_13)
+    odds_list.append(odds.wide_23)
+    odds_list.append(odds.trio)
+    odds_list.append(odds.tierce)
 
     return odds_list
 
 # 今週のレースかを判定する
 
 
-def is_latest_week_race(race_id):
-    latest_race = Race.objects.filter(
-        is_votable=0).order_by('-race_date').first()
+def is_latest_week_race(race_id, game):
+    latest_date = None
 
-    if latest_race:
-        end_date = latest_race.race_date
-        start_date = end_date - timedelta(days=3)
-        latest_week_race = Race.objects.filter(
-            race_date__range=(start_date, end_date))
+    for vote in game.vote_set.all():
+        if vote.race.id == race_id:
+            race_date = vote.race.race_date
+        if vote.race.is_votable == 0 and (latest_date is None or (vote.race.race_date > latest_date)):
+            latest_date = vote.race.race_date
 
-    is_latest_week_race = False
-    if latest_week_race.filter(id=race_id).exists():
-        is_latest_week_race = True
-
-    return is_latest_week_race
+    return race_date > latest_date - timedelta(days=4)
 
 
-def calc_last_week_score(player_object):
+#  最新のレースから3日以内のレースのスコアを計算する
+def calc_last_week_score(player_instance, game):
 
-    game_object = player_object.game
-    vote_objects = Vote.objects.filter(
-        game=game_object, user=player_object.user).order_by('-created_at')
-
+    vote_instances = player_instance.user.vote_set.all()  # Corrected here
     last_week_score = 0
 
-    for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
-        if Odds.objects.filter(race=vote_object.race).exists():
+    for vote_instance in vote_instances:  # 各参加者のraceごとの投票を取得
+        race = vote_instance.race
+        if hasattr(race, 'odds'):  # oddsが取得済みのレースのみ対象  # Corrected here
             scores = []
-            if is_latest_week_race(vote_object.race.id):
-                odds_list = get_odds(race=vote_object.race)
-                if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
-                    vote_1_place = HorsePlace.objects.filter(
-                        horse=vote_object.horse_first).first().place
-                    vote_2_place = HorsePlace.objects.filter(
-                        horse=vote_object.horse_second).first().place
-                    vote_3_place = HorsePlace.objects.filter(
-                        horse=vote_object.horse_third).first().place
-                    votes = [vote_1_place, vote_2_place, vote_3_place]
+            if is_latest_week_race(vote_instance.race.id, game=game):
+                odds = race.odds
+                odds_list = get_odds(odds=odds)
 
+                if vote_instance.horse_first.horseplace:
+                    vote_1_place = vote_instance.horse_first.horseplace.place
+                    vote_2_place = vote_instance.horse_second.horseplace.place
+                    vote_3_place = vote_instance.horse_third.horseplace.place
+                    votes = [vote_1_place, vote_2_place, vote_3_place]
                     hit_list = judge_hit(votes)
                     scores = [a*b for a, b in zip(hit_list, odds_list)]
-                last_week_score += sum(scores)
+
+                    last_week_score += sum(scores)
 
     return last_week_score
 
 # 的中回数、投票回数を計算する
 
 
-def calc_hit_time(player_object):
-    game_object = player_object.game
-    vote_objects = Vote.objects.filter(
-        game=game_object, user=player_object.user).order_by('-created_at')
+def calc_hit_time(player_instance):
+    vote_instances = player_instance.user.vote_set.all()  # Corrected here
     time_datamu = {}
     tan_time = 0
     fuku_time = 0
@@ -117,17 +128,16 @@ def calc_hit_time(player_object):
     million_time = 0
     vote_time = 0
 
-    for vote_object in vote_objects:  # 各参加者のraceごとの投票を取得
-        if Odds.objects.filter(race=vote_object.race).exists():
-            odds_list = get_odds(race=vote_object.race)
+    for vote_instance in vote_instances:  # 各参加者のraceごとの投票を取得
+        race = vote_instance.race
+        if hasattr(race, 'odds'):  # oddsが取得済みのレースのみ対象  # Corrected here
+            odds = race.odds
+            odds_list = get_odds(odds=odds)
             vote_time += 1
-            if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
-                vote_1_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_first).first().place
-                vote_2_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_second).first().place
-                vote_3_place = HorsePlace.objects.filter(
-                    horse=vote_object.horse_third).first().place
+            if vote_instance.horse_first.horseplace:
+                vote_1_place = vote_instance.horse_first.horseplace.place
+                vote_2_place = vote_instance.horse_second.horseplace.place
+                vote_3_place = vote_instance.horse_third.horseplace.place
                 votes = [vote_1_place, vote_2_place, vote_3_place]
 
                 hit_list = judge_hit(votes)
@@ -157,33 +167,27 @@ def calc_hit_time(player_object):
 # 月ごとのスコアを算出する
 
 
-def calc_monthly_socere(player_object):
-    game_object = player_object.game
-    vote_objects = Vote.objects.filter(
-        game=game_object, user=player_object.user).order_by('-created_at')
-
-    game_span_month = calc_game_span_month(game_object=game_object)
+def calc_monthly_socere(player_instance, game):
+    vote_instances = player_instance.user.vote_set.all()
+    game_span_month = calc_game_span_month(game=game)
 
     monthly_datam = {}
 
     for game_month in game_span_month:
         month_key = f'{game_month.year}-{game_month.month}'
         monthly_datam[month_key] = 0  # キーを初期化
-        month_vote_objects = vote_objects.filter(Q(race__race_date__lt=game_month + relativedelta(months=1)) &
-                                                 Q(race__race_date__gte=game_month))
+        month_vote_instances = vote_instances.filter(Q(race__race_date__lt=game_month + relativedelta(months=1)) &
+                                                     Q(race__race_date__gte=game_month))
 
-        for vote_object in month_vote_objects:  # 各参加者のraceごとの投票を取得
-            if Odds.objects.filter(race=vote_object.race).exists():
-
-                odds_list = get_odds(race=vote_object.race)
-                scores = []
-                if HorsePlace.objects.filter(horse=vote_object.horse_first).first():
-                    vote_1_place = HorsePlace.objects.filter(
-                        horse=vote_object.horse_first).first().place
-                    vote_2_place = HorsePlace.objects.filter(
-                        horse=vote_object.horse_second).first().place
-                    vote_3_place = HorsePlace.objects.filter(
-                        horse=vote_object.horse_third).first().place
+        for vote_instance in month_vote_instances:  # 各参加者のraceごとの投票を取得
+            race = vote_instance.race  # oddsを取得するため
+            if hasattr(race, 'odds'):  # oddsが取得済みのレースのみ対象
+                odds = race.odds
+                odds_list = get_odds(odds=odds)
+                if vote_instance.horse_first.horseplace:
+                    vote_1_place = vote_instance.horse_first.horseplace.place
+                    vote_2_place = vote_instance.horse_second.horseplace.place
+                    vote_3_place = vote_instance.horse_third.horseplace.place
                     votes = [vote_1_place, vote_2_place, vote_3_place]
 
                     hit_list = judge_hit(votes)
@@ -194,9 +198,9 @@ def calc_monthly_socere(player_object):
     return monthly_datam
 
 
-def calc_game_span_month(game_object):
-    start_date = game_object.game_rule.start
-    end_date = game_object.game_rule.end
+def calc_game_span_month(game):
+    start_date = game.game_rule.start
+    end_date = game.game_rule.end
     date_tmp = start_date.replace(day=1)
     game_span_month = []
 
@@ -209,20 +213,24 @@ def calc_game_span_month(game_object):
 
 
 def game_info(game_id):
-    game_object = Game.objects.filter(id_for_serch=game_id).first()
-    player_objects = GamePlayer.objects.filter(game=game_object)
+
+    game = get_game_related_info(game_id)
+    player_instances = game.gameplayer_set.all()
     game_information = []
 
     user_monthly_score_dict = {}
-    for player_object in player_objects:
+    for player_instance in player_instances:
         player_data = {}
-        hit_time_dict = calc_hit_time(player_object=player_object)
-        last_week_score = calc_last_week_score(player_object=player_object)
-        monthly_score_dict = calc_monthly_socere(player_object=player_object)
-        user_monthly_score_dict[player_object.user.username] = monthly_score_dict
+        hit_time_dict = calc_hit_time(
+            player_instance=player_instance)
+        last_week_score = calc_last_week_score(
+            player_instance=player_instance, game=game)
+        monthly_score_dict = calc_monthly_socere(
+            player_instance=player_instance, game=game)
+        user_monthly_score_dict[player_instance.user.username] = monthly_score_dict
 
         player_data = {
-            'name': player_object.user.username,
+            'name': player_instance.user.username,
             'vote_time': hit_time_dict['vote_time'],
             'nowscore': sum(monthly_score_dict.values()),  # 月ごとのスコアの合計
             'recovery_rate': int(sum(monthly_score_dict.values())/(11*hit_time_dict['vote_time'])) if hit_time_dict['vote_time'] else 0,
@@ -235,24 +243,23 @@ def game_info(game_id):
             'trio_time': hit_time_dict['trio_time'],
             'tierce_time': hit_time_dict['tierce_time'],
             'million_time': hit_time_dict['million_time'],
-
         }
 
         game_information.append(player_data)
 
-    game_span_month = calc_game_span_month(game_object=game_object)
+    game_span_month = calc_game_span_month(game=game)
     month_top_scores = []
     for game_month in game_span_month:
         month_key = f'{game_month.year}-{game_month.month}'
         top_scorers = []
         top_score = 0
-        for player_object in player_objects:
-            player_score = user_monthly_score_dict[player_object.user.username][month_key]
+        for player_instance in player_instances:
+            player_score = user_monthly_score_dict[player_instance.user.username][month_key]
             if top_score < player_score:
-                top_scorers = [player_object.user.username]
+                top_scorers = [player_instance.user.username]
                 top_score = player_score
             elif top_score == player_score and player_score != 0:
-                top_scorers.append(player_object.user.username)
+                top_scorers.append(player_instance.user.username)
             print(month_key, top_scorers, top_score)
         for top_scorer in top_scorers:
             month_top_scores.append(top_scorer)
