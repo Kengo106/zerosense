@@ -21,7 +21,7 @@ class Game(models.Model):
         GameRule, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255)
     start_datetime = models.DateTimeField(auto_now_add=True)
-    id_for_serch = models.UUIDField(
+    id_for_search = models.UUIDField(
         default=uuid.uuid4,  editable=False)
 
 
