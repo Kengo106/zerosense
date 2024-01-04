@@ -44,7 +44,7 @@ class Horse(models.Model):
 
 
 class HorsePlace(models.Model):
-    horse = models.ForeignKey(Horse, on_delete=models.CASCADE)
+    horse = models.OneToOneField(Horse, on_delete=models.CASCADE)
     place = models.IntegerField(null=True)
 
 
@@ -70,7 +70,7 @@ class Vote(models.Model):
 
 
 class Odds(models.Model):
-    race = models.ForeignKey(Race, on_delete=models.CASCADE)
+    race = models.OneToOneField(Race, on_delete=models.CASCADE)
     tan = models.IntegerField(default=0)
     fuku_1 = models.IntegerField(default=0)
     fuku_2 = models.IntegerField(default=0)

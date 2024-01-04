@@ -1,10 +1,29 @@
-from .models import Race, HorsePlace, Odds, Vote, Game, GamePlayer, GameRule
+from .models import Race, HorsePlace, Odds, Vote, Game, GamePlayer
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
 from django.db.models import Q
 
-# どの馬券が当たったかを判定する
+# game_idにリレーションのあるデータを取得する
 
+
+def get_game_related_info(game_id):
+    game = Game.objects.filter(id=game_id).prefetch_related(
+        'gameplayers_set__user',
+        'vote_set__race',
+        'vote_set__race__odds',
+        'vote_set__user',
+        'vote_set__horse_first',
+        'vote_set__horse_second',
+        'vote_set__horse_third',
+        'vote_set__horse_first__horseplace',
+        'vote_set__horse_second__horseplace',
+        'vote_set__horse_third__horseplace',
+    )
+
+    return game
+
+
+# どの馬券が当たったかを判定する
 
 def judge_hit(votes):
     '''

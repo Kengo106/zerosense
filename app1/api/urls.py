@@ -38,9 +38,6 @@ urlpatterns = [
     path('votes/', ApiVoteView.as_view(), name='api-vote'),
     path('user/regist/', APIUserRegistView.as_view(), name='api-user'),
     path('user/edit/<str:uid>/', APIUserEditView.as_view(), name='api-user'),
-
-
-
 ]
 
 if settings.DEBUG:
