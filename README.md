@@ -83,7 +83,8 @@ url:https://develop-matsushima.an.r.appspot.com/
 
 ## インフラ構成図
 
-![インフラ構成図_20231229](https://github.com/Kengo106/zerosense/assets/131678198/b797d8cc-9948-4ec5-b345-66ab3d06c360)
+![インフラ構成図_20240106 drawio](https://github.com/Kengo106/zerosense/assets/131678198/a43d66a5-12ca-409f-a2c7-18d17828b4d8)
+
 
 
 <br>※スクレイピングするためのアプリケーションはこちらにあります。https://github.com/Kengo106/zerosense_scraping
