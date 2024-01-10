@@ -68,7 +68,7 @@ url:https://develop-matsushima.an.r.appspot.com/
   - Django REST Framework 3.14.0
 - TypeScript 5.1.3
   - Angular 16.1.0
-- PostgraSQL 14.7
+- PostgreSQL 14.7
 - GCP
   - App Engine
   - Cloud Run
