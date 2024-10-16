@@ -63,6 +63,12 @@ jobs:
           echo 'automatic_scaling:' >> app.yaml
           echo '  target_cpu_utilization: 0.8' >> app.yaml
           echo '  target_throughput_utilization: 0.8' >> app.yaml
+          echo "DATABASE_NAME: $DATABASE_NAME"
+          echo "DATABASE_USER: $DATABASE_USER"
+          echo "DATABASE_PASSWORD: $DATABASE_PASSWORD"
+          echo "DATABASE_HOST: $DATABASE_HOST"
+          echo "DATABASE_PORT: $DATABASE_PORT"
+          echo "DJANGO_DEBUG: $DJANGO_DEBUG"
 
       - name: Setup GCloud Auth
         env:
