@@ -1,15 +1,16 @@
 {
     "[python]": {
-        "editor.defaultFormatter": "ms-python.autopep8"
+        "editor.defaultFormatter": "ms-python.autopep8"  // Pythonの自動フォーマッターを指定
     },
-    "python.formatting.provider": "none",
+    "python.formatting.provider": "autopep8",  // フォーマッターを有効化
 
-      "editor.formatOnSave": true,
+    "editor.formatOnSave": true,  // すべてのファイル形式で保存時にフォーマットを実行
 
     "[scss]": {
         "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter",
-        "editor.formatOnSave": true
-    }
+        "editor.formatOnSave": true  // SCSSファイルの保存時フォーマットを有効化
+    },
 
-
+    "python.defaultInterpreterPath": "C:/Users/81806/desktop/python/JRA/venv/zerosense/Scripts/python.exe",  // 仮想環境のPython実行ファイルのパス
+    "python.terminal.activateEnvironment": true  // 新しいターミナルで仮想環境を自動アクティブ化
 }
