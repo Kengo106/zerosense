@@ -7,6 +7,19 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zerosence.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zerosence.settings')
+    name = os.environ.get('DATABASE_NAME')
+    user = os.environ.get('DATABASE_USER')
+    password = os.environ.get('DATABASE_PASSWORD')
+    host = os.environ.get('DATABASE_HOST')
+    port = os.environ.get('DATABASE_PORT')
+
+    # 環境変数の内容を出力して確認
+    print('DATABASE_NAME:', name)
+    print('DATABASE_USER:', user)
+    print('DATABASE_PASSWORD:', password)
+    print('DATABASE_HOST:', host)
+    print('DATABASE_PORT:', port)
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
