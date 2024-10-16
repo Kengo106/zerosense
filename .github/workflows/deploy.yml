@@ -76,7 +76,7 @@ jobs:
         run: |
           echo "$GCLOUD_AUTH" > gcloud.json
           gcloud auth activate-service-account --key-file=gcloud.json
-
+          
       - name: Deploy to App Engine
         run: gcloud app deploy app.yaml -q
         env:

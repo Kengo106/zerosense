@@ -34,6 +34,7 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ExitgameComponent } from './exitgame/exitgame.component';
+import { TopComponent } from './top/top.component';
 
 @NgModule({
     declarations: [
@@ -52,6 +53,7 @@ import { ExitgameComponent } from './exitgame/exitgame.component';
         RaceresultComponent,
         DeleteaccountComponent,
         ExitgameComponent,
+        TopComponent,
     ],
     imports: [
         ClipboardModule,

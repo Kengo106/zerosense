@@ -7,7 +7,6 @@ import sys
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zerosence.settings')
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'zerosence.settings')
     name = os.environ.get('DATABASE_NAME')
     user = os.environ.get('DATABASE_USER')
     password = os.environ.get('DATABASE_PASSWORD')

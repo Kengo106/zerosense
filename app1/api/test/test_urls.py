@@ -48,32 +48,3 @@ class TestUrls(SimpleTestCase):
     def test_user_edit_url(self):
         view = resolve('/api/user/edit/test/')
         self.assertEqual(view.func.view_class, APIUserEditView)
-
-
-'''
-urlpatterns = [
-    path('races/<str:racename>/games/<str:gameid>/',
-         APIRaceResultView.as_view(), name='api-raceresult'),
-    path('races/', ApiRaceView.as_view(), name='api-race'),
-    path('player/delete/<str:gameid>/<str:uid>/',
-         ApiGamesPlayerDeleteView.as_view(), name='api-game'),
-
-    path('player/regist/<str:gameid>/',
-         ApiGamesPlayerRegistView.as_view(), name='api-game'),
-
-    path('games/scores/<str:gameid>/', APIScoreView.as_view(), name='api-score'),
-
-    path('games/serch/', APISarchGameView.as_view(), name='api-game'),
-
-    path('games/list/<str:uid>/',
-         ApiGameslistView.as_view(), name='api-game-data'),
-
-    path('games/create/', ApiNewGameView.as_view(), name='api-newgame'),
-
-    path('votes/', ApiVoteView.as_view(), name='api-vote'),
-
-    path('user/regist/', APIUserRegistView.as_view(), name='api-user'),
-
-    path('user/edit/<str:uid>/', APIUserEditView.as_view(), name='api-user'),
-]
-'''
